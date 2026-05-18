@@ -1,9 +1,9 @@
-services:
+\services:
   - type: web
     name: aarogyalink
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:$PORT app:app
+    startCommand: gunicorn --workers 1 --bind 0.0.0.0:$PORT --timeout 120 server:app
     envVars:
       - key: SECRET_KEY
         generateValue: true
