@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Online Patients — Admin{% endblock %}
+{% block extra_styles %}
+.admin-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.admin-wrap{max-width:1000px;margin:0 auto}
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:1.5rem;font-weight:800;color:var(--ink)}
+.filter-tabs{display:flex;gap:6px}
+.ft{padding:6px 16px;border-radius:20px;font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;text-decoration:none;border:1px solid var(--border);background:var(--card);color:var(--muted);transition:all .15s}
+.ft.active,.ft:hover{background:var(--g);color:#fff;border-color:var(--g)}
+.pt-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow)}
+.pc-top{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.pc-photo{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--border);flex-shrink:0}
+.pc-av{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--gxl),var(--gxxl));color:var(--g);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;flex-shrink:0}
+.pc-info{flex:1}
+.pc-name{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pc-meta{font-size:.78rem;color:var(--muted);margin-bottom:6px}
+.sp{display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.sp-pending{background:var(--amberl);color:var(--amber)}.sp-approved{background:var(--gxl);color:var(--g)}.sp-rejected{background:var(--redl);color:var(--red)}
+.pc-docs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.doc-link{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;background:var(--bluel);color:var(--blue);font-size:.75rem;font-weight:600;text-decoration:none;transition:background .15s}
+.doc-link:hover{background:#dbeafe}
+.pc-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-approve{padding:9px 18px;border-radius:9px;background:var(--g);color:#fff;border:none;font-family:'Sora',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-approve:hover{background:var(--gl);transform:translateY(-1px)}
+.reject-toggle{padding:9px 18px;border-radius:9px;background:var(--redl);color:var(--red);border:1px solid rgba(220,38,38,.2);font-family:'Sora',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.reject-form{display:none;margin-top:10px;padding:14px;background:var(--redl);border-radius:10px;border:1px solid rgba(220,38,38,.15)}
+.reject-form.show{display:block}
+.rj-input{width:100%;padding:9px 12px;border-radius:8px;border:1px solid rgba(220,38,38,.2);background:#fff;font-family:'Sora',sans-serif;font-size:.82rem;color:var(--ink);outline:none;margin-bottom:8px}
+.rj-btn{padding:8px 18px;border-radius:8px;background:var(--red);color:#fff;border:none;font-family:'Sora',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer}
+.empty{text-align:center;padding:60px;color:var(--muted);background:var(--card);border-radius:20px;border:1px solid var(--border)}
+{% endblock %}
+{% block content %}
+<div class="admin-page">
+  <div class="admin-wrap">
+    <div class="page-head">
+      <div class="page-title">🧑‍💻 Online Patient Accounts</div>
+      <div class="filter-tabs">
+        <a href="?status=pending"  class="ft {{ 'active' if status=='pending'  }}">⏳ Pending</a>
+        <a href="?status=approved" class="ft {{ 'active' if status=='approved' }}">✅ Approved</a>
+        <a href="?status=rejected" class="ft {{ 'active' if status=='rejected' }}">❌ Rejected</a>
+        <a href="?status=all"      class="ft {{ 'active' if status=='all'      }}">All</a>
+      </div>
+    </div>
+
+    {% if patients %}
+      {% for op in patients %}
+      <div class="pt-card">
+        <div class="pc-top">
+          {% if op.photo_path %}
+            <img src="{{ url_for('static', filename=op.photo_path) }}" class="pc-photo" alt="{{ op.name }}">
+          {% else %}
+            <div class="pc-av">{{ op.name[0] }}</div>
+          {% endif %}
+          <div class="pc-info">
+            <div class="pc-name">{{ op.name }}</div>
+            <div class="pc-meta">{{ op.email }} · {{ op.phone }} · {{ op.age or '—' }} yrs · {{ op.gender or '—' }} · Aadhar: {{ op.aadhar_number or '—' }}</div>
+            <span class="sp sp-{{ op.verify_status }}">{{ op.verify_status.title() }}</span>
+          </div>
+          <div style="font-size:.72rem;color:var(--muted);flex-shrink:0">{{ op.created_at.strftime('%d %b %Y') }}</div>
+        </div>
+
+        <div class="pc-docs">
+          {% if op.photo_path %}<a href="{{ url_for('static', filename=op.photo_path) }}" target="_blank" class="doc-link">📸 Live Photo</a>{% endif %}
+          {% if op.aadhar_doc %}<a href="{{ url_for('static', filename=op.aadhar_doc) }}" target="_blank" class="doc-link">🪪 Aadhar Card</a>{% endif %}
+          {% if op.medical_doc1 %}<a href="{{ url_for('static', filename=op.medical_doc1) }}" target="_blank" class="doc-link">📄 Report 1</a>{% endif %}
+          {% if op.medical_doc2 %}<a href="{{ url_for('static', filename=op.medical_doc2) }}" target="_blank" class="doc-link">📄 Report 2</a>{% endif %}
+        </div>
+
+        {% if op.verify_status == 'pending' %}
+        <div class="pc-actions">
+          <form method="POST" action="{{ url_for('tele.admin_approve_op', patient_id=op.id) }}" style="display:inline">
+            <button type="submit" class="btn-approve">✅ Approve Account</button>
+          </form>
+          <button type="button" class="reject-toggle" onclick="this.nextElementSibling.classList.toggle('show')">❌ Reject</button>
+          <div class="reject-form">
+            <form method="POST" action="{{ url_for('tele.admin_reject_op', patient_id=op.id) }}">
+              <input type="text" name="note" class="rj-input" placeholder="Reason for rejection (shown to patient)">
+              <button type="submit" class="rj-btn">Confirm Rejection</button>
+            </form>
+          </div>
+        </div>
+        {% elif op.verify_status == 'approved' %}
+        <div style="font-size:.8rem;color:var(--g);font-weight:600">✅ Approved on {{ op.verified_at.strftime('%d %b %Y') if op.verified_at else '—' }}</div>
+        {% elif op.verify_status == 'rejected' %}
+        <div style="font-size:.8rem;color:var(--red);">❌ Rejected{% if op.verify_note %} — {{ op.verify_note }}{% endif %}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty">
+      <div style="font-size:2rem;margin-bottom:10px">👤</div>
+      <p style="font-weight:700;color:var(--ink);margin-bottom:5px">No patients in this category</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

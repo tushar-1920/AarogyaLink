@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}My Appointments{% endblock %}
+{% block extra_styles %}
+.appt-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.appt-wrap{max-width:860px;margin:0 auto}
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:1.5rem;font-weight:800;color:var(--ink)}
+.nav-links-row{display:flex;gap:8px}
+.nl-btn{padding:7px 16px;border-radius:9px;font-family:'Sora',sans-serif;font-size:.8rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+.nl-g{background:var(--g);color:#fff}.nl-o{background:var(--card);color:var(--g);border:1px solid var(--border)}.nl-o:hover{background:var(--gxl)}
+.appt-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow)}
+.ac-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px}
+.ac-av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--gxl),var(--gxxl));color:var(--g);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0}
+.ac-info{flex:1}
+.ac-name{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+.ac-meta{font-size:.78rem;color:var(--muted);margin-bottom:6px}
+.status-pill{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.sp-pending{background:var(--amberl);color:var(--amber)}.sp-submitted{background:var(--bluel);color:var(--blue)}.sp-confirmed{background:var(--gxl);color:var(--g)}.sp-completed{background:var(--gxl);color:var(--g)}.sp-cancelled{background:var(--redl);color:var(--red)}.sp-in_call{background:var(--gxl);color:var(--g)}
+.sp-payment_submitted{background:var(--bluel);color:var(--blue)}.sp-payment_verified{background:var(--gxl);color:var(--g)}
+.ac-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--borderl)}
+.ac-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:9px;font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+.ab-video{background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;box-shadow:0 3px 12px rgba(26,107,74,.25)}
+.ab-video:hover{transform:translateY(-1px)}
+.ab-msg{background:var(--gxl);color:var(--g);border:1px solid rgba(26,107,74,.2)}
+.ac-note{font-size:.8rem;color:var(--muted);background:var(--gxxl);border-radius:8px;padding:9px 12px;margin-top:8px;line-height:1.6}
+.empty{text-align:center;padding:60px;color:var(--muted);background:var(--card);border-radius:20px;border:1px solid var(--border)}
+{% endblock %}
+{% block content %}
+<div class="appt-page">
+  <div class="appt-wrap">
+    <div class="page-head">
+      <div class="page-title">📋 My Appointments</div>
+      <a href="{{ url_for('tele.find_doctors') }}" class="nl-btn nl-g">+ Book New</a>
+    </div>
+
+    {% if appts %}
+      {% for appt in appts %}
+      <div class="appt-card">
+        <div class="ac-top">
+          <div class="ac-av">{{ appt.doctor.name[0] }}</div>
+          <div class="ac-info">
+            <div class="ac-name">Dr. {{ appt.doctor.name }} · {{ appt.doctor.speciality or 'General' }}</div>
+            <div class="ac-meta">📅 {{ appt.slot.slot_date.strftime('%d %b %Y') }} at {{ appt.slot.slot_time }} · ₹{{ appt.fee }}</div>
+            <span class="status-pill sp-{{ appt.status }}">
+              {% if appt.status == 'pending' %}⏳ Awaiting Payment
+              {% elif appt.status == 'payment_submitted' %}📸 Payment Under Review
+              {% elif appt.status == 'confirmed' %}✅ Confirmed
+              {% elif appt.status == 'in_call' %}🎥 In Call
+              {% elif appt.status == 'completed' %}✓ Completed
+              {% elif appt.status == 'cancelled' %}❌ Cancelled
+              {% else %}{{ appt.status }}{% endif %}
+            </span>
+          </div>
+          <div style="font-size:.75rem;color:var(--muted);flex-shrink:0">{{ appt.created_at.strftime('%d %b') }}</div>
+        </div>
+
+        {% if appt.symptoms %}
+        <div class="ac-note">🩺 <strong>Your symptoms:</strong> {{ appt.symptoms[:150] }}{% if appt.symptoms|length > 150 %}…{% endif %}</div>
+        {% endif %}
+        {% if appt.payment_note %}
+        <div class="ac-note" style="background:var(--amberl);color:var(--amber)">📝 Doctor's note: {{ appt.payment_note }}</div>
+        {% endif %}
+
+        <div class="ac-actions">
+          {% if appt.status in ['confirmed', 'in_call'] %}
+          <a href="{{ url_for('tele.patient_video', appt_id=appt.id) }}" class="ac-btn ab-video">🎥 Join Video Call →</a>
+          {% endif %}
+          {% if appt.status == 'completed' %}
+          <a href="{{ url_for('tele.patient_messages') }}" class="ac-btn ab-msg">💬 View Doctor's Message</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty">
+      <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
+      <p style="font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:6px">No appointments yet</p>
+      <p style="font-size:.85rem;margin-bottom:16px">Book your first consultation with a verified doctor</p>
+      <a href="{{ url_for('tele.find_doctors') }}" style="display:inline-flex;align-items:center;gap:6px;padding:10px 22px;background:var(--g);color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:.875rem">Find a Doctor →</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

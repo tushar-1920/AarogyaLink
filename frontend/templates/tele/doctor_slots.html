@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Manage My Slots{% endblock %}
+{% block extra_styles %}
+.slots-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.slots-wrap{max-width:900px;margin:0 auto}
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:1.5rem;font-weight:800;color:var(--ink)}
+/* nav moved to base.html navbar */
+.add-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;box-shadow:var(--shadow);margin-bottom:20px}
+.card-title{font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--borderl);display:flex;align-items:center;gap:7px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fl{font-size:.8rem;font-weight:600;color:var(--inkm)}
+.fi,.fs{padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
+.fi:focus,.fs:focus{border-color:var(--g);background:var(--card)}
+.add-btn{padding:11px 26px;background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;border:none;border-radius:10px;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(26,107,74,.3)}
+.add-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,107,74,.4)}
+.slots-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;box-shadow:var(--shadow)}
+.day-group{margin-bottom:20px}
+.day-label{font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--borderl)}
+.slots-row{display:flex;flex-wrap:wrap;gap:8px}
+.slot-item{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:10px;border:1.5px solid;font-size:.8rem;font-weight:600}
+.si-avail{background:var(--gxl);border-color:rgba(26,107,74,.2);color:var(--g)}
+.si-booked{background:var(--bluel);border-color:rgba(29,78,216,.2);color:var(--blue)}
+.si-unavail{background:var(--redl);border-color:rgba(220,38,38,.15);color:var(--red)}
+.si-btn{background:none;border:none;cursor:pointer;font-size:.8rem;padding:2px 6px;border-radius:5px;transition:background .15s;font-family:'Sora',sans-serif}
+.si-btn:hover{background:rgba(0,0,0,.08)}
+.empty-slots{text-align:center;padding:36px;color:var(--muted);font-size:.875rem}
+.online-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--gxl);border:1px solid rgba(26,107,74,.2);border-radius:14px;padding:16px 20px;margin-bottom:20px;flex-wrap:wrap}
+.ot-label{font-size:.88rem;font-weight:600;color:var(--ink);flex:1}
+.ot-status{font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:20px}
+.ot-on{background:var(--gxl);color:var(--g)}.ot-off{background:var(--redl);color:var(--red)}.ot-week{background:var(--bluel);color:var(--blue)}
+@media(max-width:640px){.fg2{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+<div class="slots-page">
+  <div class="slots-wrap">
+    <div class="page-head">
+      <div class="page-title">📅 Manage My Slots</div>
+    </div>
+
+    <!-- Status indicator -->
+    {% set today_avail = slots | selectattr('slot_date','equalto',today) | selectattr('is_available','equalto',True) | selectattr('is_booked','equalto',False) | list | length %}
+    {% set total_avail = slots | selectattr('is_available','equalto',True) | selectattr('is_booked','equalto',False) | list | length %}
+    <div class="online-toggle">
+      <div>
+        <div class="ot-label">Your Live Availability</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:2px">Visible to patients browsing doctors</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span class="ot-status {{ 'ot-on' if today_avail > 0 else 'ot-off' }}">
+          {% if today_avail > 0 %}🟢 Online Today — {{ today_avail }} slot{{ 's' if today_avail != 1 }}
+          {% else %}🔴 No slots today{% endif %}
+        </span>
+        {% if total_avail > 0 %}
+        <span class="ot-status ot-week">📅 {{ total_avail }} total upcoming slot{{ 's' if total_avail != 1 }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Add slots form -->
+    <div class="add-card">
+      <div class="card-title">➕ Generate New Slots</div>
+      <form method="POST">
+        <input type="hidden" name="action" value="add">
+        <div class="fg2">
+          <div class="fg"><label class="fl">Date</label><input type="date" name="slot_date" class="fi" required min="{{ today.strftime('%Y-%m-%d') }}"></div>
+          <div class="fg"><label class="fl">Duration per patient</label><select name="duration" class="fs"><option value="15">15 minutes</option><option value="20" selected>20 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option></select></div>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label class="fl">Start Time</label><input type="time" name="start_time" class="fi" value="09:00" required></div>
+          <div class="fg"><label class="fl">End Time</label><input type="time" name="end_time" class="fi" value="13:00" required></div>
+        </div>
+        <button type="submit" class="add-btn">Generate Slots →</button>
+      </form>
+    </div>
+
+    <!-- Existing slots -->
+    <div class="slots-card">
+      <div class="card-title">📆 Upcoming Slots</div>
+      {% if slots %}
+        {% set ns = namespace(current_date=None) %}
+        {% for slot in slots %}
+          {% if slot.slot_date != ns.current_date %}
+            {% if ns.current_date != None %}</div></div>{% endif %}
+            {% set ns.current_date = slot.slot_date %}
+            <div class="day-group"><div class="day-label">📅 {{ slot.slot_date.strftime('%A, %d %B %Y') }}{% if slot.slot_date == today %} — Today{% endif %}</div><div class="slots-row">
+          {% endif %}
+
+          <div class="slot-item {{ 'si-booked' if slot.is_booked else ('si-avail' if slot.is_available else 'si-unavail') }}">
+            {{ slot.slot_time }}
+            {% if slot.is_booked %}
+              <span style="font-size:.7rem">Booked</span>
+            {% else %}
+              <form method="POST" style="display:inline">
+                <input type="hidden" name="action" value="toggle_available">
+                <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                <button type="submit" class="si-btn" title="{{ 'Mark unavailable' if slot.is_available else 'Mark available' }}">{{ '🔴' if slot.is_available else '🟢' }}</button>
+              </form>
+              <form method="POST" style="display:inline" onsubmit="return confirm('Delete this slot?')">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="slot_id" value="{{ slot.id }}">
+                <button type="submit" class="si-btn" title="Delete">🗑</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+        {% if slots %}</div></div>{% endif %}
+      {% else %}
+        <div class="empty-slots">No upcoming slots. Generate slots above to start accepting appointments.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment — Dr. {{ doctor.name }}{% endblock %}
+{% block extra_styles %}
+.book-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.book-wrap{max-width:680px;margin:0 auto}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.82rem;text-decoration:none;margin-bottom:18px;padding:7px 13px;border-radius:9px;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow)}
+.book-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:30px;box-shadow:var(--shadow)}
+.slot-summary{background:linear-gradient(135deg,var(--gxl),var(--gxxl));border:1px solid rgba(26,107,74,.15);border-radius:14px;padding:18px;margin-bottom:24px;display:flex;align-items:center;gap:16px}
+.ss-ico{width:48px;height:48px;border-radius:12px;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.ss-info h4{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:3px}
+.ss-info p{font-size:.8rem;color:var(--muted);margin:0}
+.section-title{font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g);margin:20px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--borderl)}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fl{font-size:.8rem;font-weight:600;color:var(--inkm)}
+.fta{padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s;width:100%;resize:vertical;min-height:90px}
+.fta:focus{border-color:var(--g);background:var(--card);box-shadow:0 0 0 3px rgba(26,107,74,.1)}
+.file-up{border:2px dashed var(--border);border-radius:10px;padding:14px;text-align:center;position:relative;cursor:pointer;transition:all .2s;background:var(--gxxl);font-size:.82rem;color:var(--muted)}
+.file-up:hover{border-color:var(--g);background:var(--gxl);color:var(--g)}
+.file-up input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.submit-btn{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;border:none;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(26,107,74,.3)}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,107,74,.4)}
+{% endblock %}
+{% block content %}
+<div class="book-page">
+  <div class="book-wrap">
+    <a href="{{ url_for('tele.doctor_profile', doctor_id=doctor.id) }}" class="back-link">← Back to Dr. {{ doctor.name }}</a>
+
+    <div class="book-card">
+      <div style="font-size:1.4rem;font-weight:800;color:var(--ink);margin-bottom:6px">Book Your Appointment</div>
+      <div style="font-size:.88rem;color:var(--muted);margin-bottom:20px">Fill in your details — you'll pay on the next step</div>
+
+      <div class="slot-summary">
+        <div class="ss-ico">📅</div>
+        <div class="ss-info">
+          <h4>Dr. {{ doctor.name }} · {{ doctor.speciality or 'General Physician' }}</h4>
+          <p>{{ slot.slot_date.strftime('%A, %d %B %Y') }} at {{ slot.slot_time }} · {{ slot.duration_mins }} min · ₹200</p>
+        </div>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="step" value="1">
+        <div class="section-title">🩺 Your Symptoms</div>
+        <div class="fg">
+          <label class="fl">Describe your symptoms / reason for consultation *</label>
+          <textarea name="symptoms" class="fta" required placeholder="E.g. Fever for 3 days, headache, cough. Be as detailed as possible so the doctor can prepare..."></textarea>
+        </div>
+
+        <div class="section-title">📁 Upload Previous Reports <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(optional)</span></div>
+        <div class="fg">
+          <label class="fl">Previous lab reports, X-rays, prescriptions</label>
+          <div class="file-up"><input type="file" name="report_doc" accept=".jpg,.jpeg,.png,.pdf">📎 Upload any relevant medical document (JPG, PNG, PDF)</div>
+        </div>
+
+        <button type="submit" class="submit-btn">Continue to Payment →</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

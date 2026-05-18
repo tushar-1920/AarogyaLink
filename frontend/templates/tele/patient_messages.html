@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}My Messages{% endblock %}
+{% block extra_styles %}
+.msg-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.msg-wrap{max-width:780px;margin:0 auto}
+.page-title{font-size:1.5rem;font-weight:800;color:var(--ink);margin-bottom:22px;display:flex;align-items:center;gap:10px}
+.msg-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow);transition:box-shadow .2s}
+.msg-card:hover{box-shadow:var(--shadow-md)}
+.mc-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--borderl)}
+.mc-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gxl),var(--gxxl));color:var(--g);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0}
+.mc-dr-name{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+.mc-dr-info{font-size:.75rem;color:var(--muted)}
+.mc-time{font-size:.73rem;color:var(--muted);margin-left:auto;flex-shrink:0}
+.mc-message{font-size:.88rem;color:var(--inkm);line-height:1.7;margin-bottom:12px}
+.mc-rx{background:linear-gradient(135deg,var(--gxl),var(--gxxl));border:1px solid rgba(26,107,74,.15);border-radius:12px;padding:14px;margin-top:10px}
+.mc-rx-title{font-size:.65rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g);margin-bottom:6px}
+.mc-rx-text{font-size:.85rem;color:var(--ink);line-height:1.65}
+.unread-badge{background:var(--redl);color:var(--red);font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px}
+.empty{text-align:center;padding:60px;color:var(--muted);background:var(--card);border-radius:20px;border:1px solid var(--border)}
+{% endblock %}
+{% block content %}
+<div class="msg-page">
+  <div class="msg-wrap">
+    <div class="page-title">
+      💬 Messages from Doctors
+      {% set unread = msgs|selectattr('is_read','equalto',False)|list|length %}
+      {% if unread > 0 %}<span class="unread-badge">{{ unread }} new</span>{% endif %}
+    </div>
+
+    {% if msgs %}
+      {% for msg in msgs %}
+      <div class="msg-card">
+        <div class="mc-top">
+          <div class="mc-av">{{ msg.doctor.name[0] }}</div>
+          <div>
+            <div class="mc-dr-name">Dr. {{ msg.doctor.name }}</div>
+            <div class="mc-dr-info">{{ msg.doctor.speciality or 'General Physician' }} · Appt #{{ msg.appointment_id }}</div>
+          </div>
+          <div class="mc-time">{{ msg.sent_at.strftime('%d %b · %I:%M %p') }}</div>
+        </div>
+        <div class="mc-message">{{ msg.message }}</div>
+        {% if msg.prescription %}
+        <div class="mc-rx">
+          <div class="mc-rx-title">💊 Prescription</div>
+          <div class="mc-rx-text">{{ msg.prescription }}</div>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty">
+      <div style="font-size:2.5rem;margin-bottom:12px">💬</div>
+      <p style="font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:6px">No messages yet</p>
+      <p style="font-size:.85rem">After your video consultation, the doctor will send you prescription and advice here.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

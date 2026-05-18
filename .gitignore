@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Environment files
+.env
+*.env
+
+# Database (don't commit the SQLite DB — Render uses its own)
+database/*.db
+database/*.sqlite
+
+# Uploads (user generated content — not in git)
+frontend/static/uploads/*
+!frontend/static/uploads/.gitkeep
+
+# QR codes, photos, cards (generated at runtime)
+frontend/static/qrcodes/*
+!frontend/static/qrcodes/.gitkeep
+frontend/static/cards/*
+!frontend/static/cards/.gitkeep
+frontend/static/photos/*
+!frontend/static/photos/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Compiled
+*.pyc
+*.pyo
+
+# Backup files
+*.bak
+*.bk

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Video Consultation — AarogyaLink{% endblock %}
+{% block extra_styles %}
+.video-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 3% 40px;background:#0a1510}
+.video-wrap{max-width:1100px;margin:0 auto}
+.vc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.vc-info{color:#fff}
+.vc-info h2{font-size:1.1rem;font-weight:700;margin-bottom:3px}
+.vc-info p{font-size:.8rem;color:rgba(255,255,255,.5)}
+.vc-timer{font-size:1.4rem;font-weight:800;color:#4ade80;font-family:monospace}
+.jitsi-frame{width:100%;height:70vh;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+.post-call{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px;margin-top:18px}
+.pc-title{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:14px}
+.pc-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pc-label{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:5px}
+.pc-ta{width:100%;padding:10px 13px;border-radius:9px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.07);color:#fff;font-family:'Sora',sans-serif;font-size:.85rem;outline:none;resize:vertical;min-height:80px}
+.pc-ta:focus{border-color:rgba(74,222,128,.4);box-shadow:0 0 0 3px rgba(74,222,128,.1)}
+.pc-ta::placeholder{color:rgba(255,255,255,.3)}
+.pc-btn{padding:11px 24px;border-radius:10px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;border:none;font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:transform .2s;margin-top:12px}
+.pc-btn:hover{transform:translateY(-2px)}
+.vc-status{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;color:#4ade80;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);padding:6px 14px;border-radius:20px}
+.live-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 1.5s infinite}
+@media(max-width:640px){.pc-form-grid{grid-template-columns:1fr}.jitsi-frame{height:55vh}}
+{% endblock %}
+{% block content %}
+<div class="video-page">
+  <div class="video-wrap">
+    <div class="vc-header">
+      <div class="vc-info">
+        <h2>Video Consultation
+          {% if role == 'doctor' %}with {{ appt.online_patient.name }}
+          {% else %}with Dr. {{ appt.doctor.name }}{% endif %}
+        </h2>
+        <p>Appointment #{{ appt.id }} · {{ appt.slot.slot_date.strftime('%d %b %Y') }} at {{ appt.slot.slot_time }}</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="vc-status"><div class="live-dot"></div> Live Call</div>
+        <div class="vc-timer" id="callTimer">00:00</div>
+      </div>
+    </div>
+
+    <div class="jitsi-frame">
+      <iframe
+        src="https://meet.jit.si/{{ room }}#config.startWithAudioMuted=false&config.startWithVideoMuted=false&userInfo.displayName={{ 'Dr. ' + appt.doctor.name if role=='doctor' else appt.online_patient.name }}&config.toolbarButtons=['microphone','camera','hangup','chat','tileview']"
+        allow="camera; microphone; fullscreen; display-capture"
+        style="width:100%;height:100%;border:none;border-radius:18px;"
+        id="jitsiFrame">
+      </iframe>
+    </div>
+
+    {% if role == 'doctor' %}
+    <div class="post-call">
+      <div class="pc-title">Post-Call: Send Message & Prescription to Patient</div>
+      <form method="POST" action="{{ url_for('tele.send_message', appt_id=appt.id) }}">
+        <div class="pc-form-grid">
+          <div>
+            <div class="pc-label">Clinical Notes / Advice</div>
+            <textarea name="message" class="pc-ta" placeholder="Diagnosis, recommendations, follow-up instructions..." required></textarea>
+          </div>
+          <div>
+            <div class="pc-label">Prescription</div>
+            <textarea name="prescription" class="pc-ta" placeholder="Medicines, dosage, duration..."></textarea>
+          </div>
+        </div>
+        <button type="submit" class="pc-btn">✅ End Call & Send to Patient →</button>
+      </form>
+    </div>
+    {% else %}
+    <div class="post-call" style="text-align:center">
+      <div class="pc-title">After the call</div>
+      <div style="font-size:.875rem;color:rgba(255,255,255,.6);line-height:1.7">The doctor will send you a prescription and advice after the consultation ends.<br>You'll see it in <a href="{{ url_for('tele.patient_messages') }}" style="color:#4ade80;font-weight:600">💬 My Messages</a>.</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+// Call timer
+let seconds=0;
+const timer=document.getElementById('callTimer');
+setInterval(()=>{
+  seconds++;
+  const m=Math.floor(seconds/60).toString().padStart(2,'0');
+  const s=(seconds%60).toString().padStart(2,'0');
+  timer.textContent=m+':'+s;
+},1000);
+</script>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Dr. {{ doctor.name }} — Book Consultation{% endblock %}
+{% block extra_styles %}
+.dp-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.dp-wrap{max-width:900px;margin:0 auto}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.82rem;text-decoration:none;margin-bottom:18px;padding:7px 13px;border-radius:9px;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow)}
+.back-link:hover{color:var(--g)}
+.dp-hero{background:linear-gradient(135deg,var(--gdx),var(--gd),var(--g));border-radius:24px;padding:32px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden;display:flex;align-items:center;gap:24px}
+.dp-bg{position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:rgba(255,255,255,.05);border-radius:50%}
+.dp-photo{width:100px;height:100px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,.3);box-shadow:0 6px 24px rgba(0,0,0,.25);flex-shrink:0;position:relative;z-index:1}
+.dp-av{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.15);border:4px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2rem;color:#fff;flex-shrink:0;position:relative;z-index:1}
+.dp-info{position:relative;z-index:1}
+.dp-name{font-size:1.7rem;font-weight:800;margin-bottom:4px;letter-spacing:-.02em}
+.dp-spec{font-size:1rem;color:rgba(255,255,255,.75);margin-bottom:3px}
+.dp-hosp{font-size:.85rem;color:rgba(255,255,255,.6)}
+.dp-status{margin-top:10px;display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:5px 14px;border-radius:20px;background:rgba(74,222,128,.2);border:1px solid rgba(74,222,128,.3);color:#4ade80}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;box-shadow:var(--shadow);margin-bottom:18px}
+.card-title{font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--borderl)}
+.day-section{margin-bottom:20px}
+.day-label{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.slots-row{display:flex;flex-wrap:wrap;gap:8px}
+.slot-btn{padding:8px 16px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .18s}
+.slot-btn:hover,.slot-btn.selected{background:var(--g);color:#fff;border-color:var(--g)}
+.no-slots{text-align:center;padding:36px;color:var(--muted);font-size:.875rem}
+.book-cta{background:linear-gradient(135deg,var(--g),var(--gl));border-radius:14px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.bc-txt h3{font-size:1rem;font-weight:700;color:#fff;margin-bottom:3px}
+.bc-txt p{font-size:.8rem;color:rgba(255,255,255,.7);margin:0}
+.bc-btn{padding:12px 26px;border-radius:11px;background:#fff;color:var(--g);font-family:'Sora',sans-serif;font-size:.9rem;font-weight:700;text-decoration:none;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(0,0,0,.15);flex-shrink:0}
+.bc-btn:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,.2)}
+.login-prompt{background:var(--gxl);border:1px solid rgba(26,107,74,.2);border-radius:12px;padding:14px 18px;font-size:.85rem;color:var(--g);margin-top:8px}
+.login-prompt a{color:var(--g);font-weight:700}
+{% endblock %}
+{% block content %}
+<div class="dp-page">
+  <div class="dp-wrap">
+    <a href="{{ url_for('tele.find_doctors') }}" class="back-link">← Back to doctors</a>
+
+    <div class="dp-hero">
+      <div class="dp-bg"></div>
+      {% if doctor.photo_path %}
+        <img src="{{ url_for('static', filename=doctor.photo_path) }}" class="dp-photo" alt="{{ doctor.name }}">
+      {% else %}
+        <div class="dp-av">{{ doctor.name[0] }}</div>
+      {% endif %}
+      <div class="dp-info">
+        <div class="dp-name">Dr. {{ doctor.name }}</div>
+        <div class="dp-spec">{{ doctor.speciality or 'General Physician' }}</div>
+        <div class="dp-hosp">🏥 {{ doctor.hospital or 'Hospital not specified' }} · {{ doctor.district or '' }}</div>
+        <div class="dp-status">🟢 Accepting appointments</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 Available Slots — Next 7 Days</div>
+      {% if slots_by_day %}
+        <form method="GET" action="#" id="slotForm">
+          {% for day, slots in slots_by_day.items() %}
+          <div class="day-section">
+            <div class="day-label">📆 {{ day }}</div>
+            <div class="slots-row">
+              {% for slot in slots %}
+              <button type="button" class="slot-btn" data-slot="{{ slot.id }}"
+                      onclick="selectSlot({{ slot.id }}, '{{ day }}', '{{ slot.slot_time }}', this)">
+                {{ slot.slot_time }}
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </form>
+
+        <div id="bookSection" style="display:none;margin-top:20px">
+          <div class="book-cta">
+            <div class="bc-txt">
+              <h3 id="selectedSlotInfo">Selected: —</h3>
+              <p>Consultation fee: ₹{{ doctor.consult_fee or 200 }} · {{ doctor.slot.duration_mins if doctor.slot else 20 }} min video call</p>
+            </div>
+            {% if op %}
+              <a id="bookLink" href="#" class="bc-btn">Book This Slot →</a>
+            {% else %}
+              <a id="bookLinkGuest" href="{{ url_for('tele.op_login') }}" class="bc-btn">Sign in to Book →</a>
+            {% endif %}
+          </div>
+          {% if not op %}
+          <div class="login-prompt" style="margin-top:10px">
+            👋 New patient? <a href="{{ url_for('tele.op_register') }}">Create free account</a> &nbsp;·&nbsp; Already registered? <a href="{{ url_for('tele.op_login') }}">Sign in</a>
+          </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="no-slots">
+          <div style="font-size:2rem;margin-bottom:10px">📅</div>
+          <p style="font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:6px">No slots available this week</p>
+          <p>Check back later or search for another doctor.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+let selectedSlotId=null;
+function selectSlot(slotId, day, time, btn){
+  document.querySelectorAll('.slot-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedSlotId=slotId;
+  document.getElementById('selectedSlotInfo').textContent=day+' at '+time;
+  document.getElementById('bookSection').style.display='block';
+  const link=document.getElementById('bookLink');
+  if(link) link.href='/consult/book/'+slotId;
+  // For guest — redirect to login then come back to booking
+  const guestLink=document.getElementById('bookLinkGuest');
+  if(guestLink){
+    const bookUrl='/consult/book/'+slotId;
+    guestLink.href='/consult/login?next='+encodeURIComponent(bookUrl);
+  }
+}
+</script>
+{% endblock %}

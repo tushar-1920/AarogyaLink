@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Search Patients{% endblock %}
+
+{% block extra_styles %}
+.search-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.search-wrap{max-width:800px;margin:0 auto}
+.search-header{text-align:center;margin-bottom:40px}
+.search-header h1{font-size:2rem;font-weight:800;margin-bottom:10px}
+.search-bar-wrap{position:relative;margin-bottom:32px}
+.search-bar{width:100%;padding:16px 56px 16px 20px;border-radius:16px;border:2px solid var(--border);background:var(--card);font-family:'Sora',sans-serif;font-size:1rem;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;box-shadow:var(--shadow)}
+.search-bar:focus{border-color:var(--g);box-shadow:0 0 0 4px rgba(26,107,74,.1)}
+.search-icon{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.2rem;pointer-events:none}
+.results-count{font-size:.82rem;color:var(--muted);margin-bottom:16px}
+.results-count strong{color:var(--ink)}
+.patient-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;margin-bottom:12px;display:flex;align-items:center;gap:18px;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;text-decoration:none}
+.patient-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.09);border-color:rgba(26,107,74,.3)}
+.pc-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--gxl),var(--gxxl));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;color:var(--g);flex-shrink:0;border:2px solid rgba(26,107,74,.15)}
+.pc-info{flex:1}
+.pc-name{font-size:.98rem;font-weight:700;color:var(--ink);margin-bottom:3px}
+.pc-meta{font-size:.78rem;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.pc-id{font-family:monospace;font-size:.72rem;background:var(--gxl);color:var(--g);padding:2px 8px;border-radius:6px;font-weight:600}
+.pc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.pc-tag{font-size:.68rem;padding:2px 8px;border-radius:10px;font-weight:500}
+.pc-arrow{font-size:1.1rem;color:var(--border);transition:color .2s}
+.patient-card:hover .pc-arrow{color:var(--g)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-state .es-icon{font-size:3rem;margin-bottom:12px}
+.empty-state h3{font-size:1.1rem;font-weight:600;color:var(--inkm);margin-bottom:6px}
+.empty-state p{font-size:.875rem;line-height:1.6}
+.loading-spinner{text-align:center;padding:30px;display:none}
+.loading-spinner.show{display:block}
+{% endblock %}
+
+{% block content %}
+<div class="search-page">
+  <div class="search-wrap">
+    <div class="search-header reveal">
+      <div class="eyebrow" style="justify-content:center;margin-bottom:14px">
+        <span class="eyebrow-dot"></span> Patient Lookup
+      </div>
+      <h1>Search <span class="serif">Patients</span></h1>
+      <p style="color:var(--muted);font-size:.95rem">Search by name, patient ID, village, district, or phone number</p>
+    </div>
+
+    <div class="search-bar-wrap reveal reveal-delay-1">
+      <input type="text" class="search-bar" id="searchBar"
+             placeholder="Type a name, ID, village or phone..."
+             value="{{ query or '' }}"
+             autocomplete="off">
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <div id="resultsCount" class="results-count" style="display:none"></div>
+    <div class="loading-spinner" id="spinner">🔄 Searching...</div>
+
+    <div id="resultsList">
+      {% if results %}
+        <div class="results-count"><strong>{{ results|length }}</strong> result{{ 's' if results|length != 1 }}</div>
+        {% for p in results %}
+        <a href="{{ url_for('patient.profile', patient_id=p.id) }}" class="patient-card reveal">
+          <div class="pc-avatar">{{ p.name[0] }}{{ p.name.split()[-1][0] if p.name.split()|length > 1 else '' }}</div>
+          <div class="pc-info">
+            <div class="pc-name">{{ p.name }}</div>
+            <div class="pc-meta">
+              <span>{{ p.age }} yrs · {{ p.gender or 'N/A' }}</span>
+              <span>{{ p.village or '—' }}{% if p.district %}, {{ p.district }}{% endif %}</span>
+              <span>{{ p.phone or '' }}</span>
+            </div>
+            <div class="pc-tags">
+              <span class="pc-id">{{ p.id }}</span>
+              {% if p.blood_group %}<span class="pc-tag tag-green">{{ p.blood_group }}</span>{% endif %}
+              {% if p.conditions %}<span class="pc-tag tag-amber">{{ p.conditions.split(',')[0].strip() }}</span>{% endif %}
+            </div>
+          </div>
+          <span class="pc-arrow">→</span>
+        </a>
+        {% endfor %}
+      {% elif query %}
+        <div class="empty-state">
+          <div class="es-icon">🔍</div>
+          <h3>No patients found</h3>
+          <p>No results for "<strong>{{ query }}</strong>".<br>Try searching by ID like "RH-DEMO1" or a village name.</p>
+        </div>
+      {% else %}
+        <div class="empty-state" id="defaultState">
+          <div class="es-icon">👥</div>
+          <h3>Start searching</h3>
+          <p>Type a patient's name, ID, village or phone number above.<br>Results appear as you type.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let debounceTimer;
+const bar = document.getElementById('searchBar');
+const list = document.getElementById('resultsList');
+const spinner = document.getElementById('spinner');
+const countEl = document.getElementById('resultsCount');
+
+bar.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  const q = bar.value.trim();
+  if (!q) {
+    list.innerHTML = '<div class="empty-state"><div class="es-icon">👥</div><h3>Start searching</h3><p>Type a patient name, ID, village or phone number above.</p></div>';
+    countEl.style.display = 'none';
+    spinner.classList.remove('show');
+    return;
+  }
+  if (q.length < 2) return;
+  spinner.classList.add('show');
+  list.innerHTML = '';
+  debounceTimer = setTimeout(() => fetchResults(q), 350);
+});
+
+async function fetchResults(q) {
+  try {
+    const res = await fetch(`/patient/search?q=${encodeURIComponent(q)}`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    const data = await res.json();
+    spinner.classList.remove('show');
+    countEl.style.display = 'block';
+
+    if (!data.length) {
+      countEl.textContent = '';
+      list.innerHTML = `<div class="empty-state"><div class="es-icon">🔍</div><h3>No patients found</h3><p>No results for "<strong>${q}</strong>". Try a different search.</p></div>`;
+      return;
+    }
+
+    countEl.innerHTML = `<strong>${data.length}</strong> result${data.length !== 1 ? 's' : ''}`;
+    list.innerHTML = data.map(p => `
+      <a href="/patient/${p.id}" class="patient-card">
+        <div class="pc-avatar">${p.name[0]}${p.name.split(' ').length > 1 ? p.name.split(' ').pop()[0] : ''}</div>
+        <div class="pc-info">
+          <div class="pc-name">${p.name}</div>
+          <div class="pc-meta">
+            <span>${p.age} yrs</span>
+            <span>${p.village || '—'}</span>
+          </div>
+          <div class="pc-tags">
+            <span class="pc-id">${p.id}</span>
+            ${p.blood ? `<span class="pc-tag tag-green">${p.blood}</span>` : ''}
+          </div>
+        </div>
+        <span class="pc-arrow">→</span>
+      </a>
+    `).join('');
+  } catch(e) {
+    spinner.classList.remove('show');
+    list.innerHTML = '<div class="empty-state"><div class="es-icon">⚠️</div><h3>Search failed</h3><p>Please try again.</p></div>';
+  }
+}
+
+// Auto-focus
+bar.focus();
+</script>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}My Appointments — Doctor{% endblock %}
+{% block extra_styles %}
+.da-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.da-wrap{max-width:960px;margin:0 auto}
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:1.5rem;font-weight:800;color:var(--ink)}
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.ft{padding:6px 15px;border-radius:20px;font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;text-decoration:none;border:1px solid var(--border);background:var(--card);color:var(--muted);transition:all .15s}
+.ft.active,.ft:hover{background:var(--g);color:#fff;border-color:var(--g)}
+.appt-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:14px;box-shadow:var(--shadow)}
+.ac-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+.pt-av{width:50px;height:50px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid var(--border)}
+.pt-av img{width:100%;height:100%;object-fit:cover}
+.pt-av-fallback{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--gxl),var(--gxxl));color:var(--g);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0;border:2px solid var(--border)}
+.pt-info{flex:1}
+.pt-name{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+.pt-meta{font-size:.77rem;color:var(--muted);margin-bottom:6px}
+.status-pill{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.sp-payment_submitted{background:var(--amberl);color:var(--amber)}
+.sp-confirmed{background:var(--gxl);color:var(--g)}
+.sp-completed{background:var(--gxl);color:var(--g)}
+.sp-cancelled{background:var(--redl);color:var(--red)}
+.sp-in_call{background:#ede9fe;color:#7c3aed}
+.sp-pending{background:var(--borderl);color:var(--muted)}
+.sym-box{font-size:.82rem;color:var(--inkm);background:var(--gxxl);border-radius:8px;padding:10px 12px;margin-bottom:12px;line-height:1.6}
+.pay-section{background:var(--amberl);border:1px solid rgba(180,83,9,.2);border-radius:12px;padding:14px;margin-bottom:12px}
+.pay-title{font-size:.75rem;font-weight:700;color:var(--amber);margin-bottom:8px;letter-spacing:.05em;text-transform:uppercase}
+.pay-ss{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.view-ss{padding:7px 14px;border-radius:8px;background:var(--amber);color:#fff;font-size:.78rem;font-weight:600;text-decoration:none;transition:opacity .2s}
+.view-ss:hover{opacity:.88}
+.pay-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pay-note-input{padding:8px 12px;border-radius:8px;border:1px solid rgba(180,83,9,.3);background:rgba(255,255,255,.7);font-family:'Sora',sans-serif;font-size:.8rem;color:var(--ink);outline:none;flex:1;min-width:180px}
+.btn-approve{padding:9px 18px;border-radius:9px;background:var(--g);color:#fff;border:none;font-family:'Sora',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-approve:hover{background:var(--gl);transform:translateY(-1px)}
+.btn-reject{padding:9px 18px;border-radius:9px;background:var(--redl);color:var(--red);border:1px solid rgba(220,38,38,.2);font-family:'Sora',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-reject:hover{background:#fecaca}
+.ac-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--borderl)}
+.ac-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:9px;font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+.ab-video{background:linear-gradient(135deg,var(--g),var(--gl));color:#fff}
+.ab-video:hover{transform:translateY(-1px)}
+.msg-form{background:var(--gxxl);border-radius:12px;padding:14px;margin-top:8px;display:none}
+.msg-form.show{display:block;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.mf-ta{width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);font-family:'Sora',sans-serif;font-size:.84rem;color:var(--ink);outline:none;resize:vertical;min-height:70px}
+.mf-ta:focus{border-color:var(--g)}
+.mf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.mf-submit{padding:9px 20px;background:var(--g);color:#fff;border:none;border-radius:9px;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .2s;margin-top:6px}
+.mf-submit:hover{background:var(--gl)}
+.empty{text-align:center;padding:60px;color:var(--muted);background:var(--card);border-radius:20px;border:1px solid var(--border)}
+{% endblock %}
+{% block content %}
+<div class="da-page">
+  <div class="da-wrap">
+    <div class="page-head">
+      <div class="page-title">📋 My Appointments</div>
+      <div class="filter-tabs">
+        <a href="?status=all" class="ft {{ 'active' if status=='all' }}">All</a>
+        <a href="?status=payment_submitted" class="ft {{ 'active' if status=='payment_submitted' }}">⏳ Pending Payment</a>
+        <a href="?status=confirmed" class="ft {{ 'active' if status=='confirmed' }}">✅ Confirmed</a>
+        <a href="?status=completed" class="ft {{ 'active' if status=='completed' }}">✓ Completed</a>
+      </div>
+    </div>
+
+
+
+    {% if appts %}
+      {% for appt in appts %}
+      <div class="appt-card">
+        <div class="ac-header">
+          {% if appt.online_patient.photo_path %}
+            <div class="pt-av"><img src="{{ url_for('static', filename=appt.online_patient.photo_path) }}" alt="{{ appt.online_patient.name }}"></div>
+          {% else %}
+            <div class="pt-av-fallback">{{ appt.online_patient.name[0] }}</div>
+          {% endif %}
+          <div class="pt-info">
+            <div class="pt-name">{{ appt.online_patient.name }}</div>
+            <div class="pt-meta">📅 {{ appt.slot.slot_date.strftime('%d %b %Y') }} at {{ appt.slot.slot_time }} · ₹{{ appt.fee }} · {{ appt.online_patient.phone }}</div>
+            <span class="status-pill sp-{{ appt.status }}">
+              {% if appt.status=='payment_submitted' %}📸 Payment Submitted — Review Required
+              {% elif appt.status=='confirmed' %}✅ Confirmed
+              {% elif appt.status=='in_call' %}🎥 In Call
+              {% elif appt.status=='completed' %}✓ Completed
+              {% elif appt.status=='cancelled' %}❌ Cancelled
+              {% else %}{{ appt.status }}{% endif %}
+            </span>
+          </div>
+          <div style="font-size:.72rem;color:var(--muted);flex-shrink:0">{{ appt.created_at.strftime('%d %b') }}</div>
+        </div>
+
+        {% if appt.symptoms %}
+        <div class="sym-box">🩺 <strong>Symptoms:</strong> {{ appt.symptoms }}</div>
+        {% endif %}
+
+        {% if appt.report_doc %}
+        <div style="margin-bottom:10px">
+          <a href="{{ url_for('static', filename=appt.report_doc) }}" target="_blank" style="font-size:.78rem;color:var(--blue);text-decoration:none;font-weight:600">📎 View uploaded report</a>
+        </div>
+        {% endif %}
+
+        <!-- Payment verification -->
+        {% if appt.status == 'payment_submitted' and appt.payment_screenshot %}
+        <div class="pay-section">
+          <div class="pay-title">💳 Payment Screenshot — Verify & Confirm</div>
+          <div class="pay-ss">
+            <a href="{{ url_for('static', filename=appt.payment_screenshot) }}" target="_blank" class="view-ss">👁 View Screenshot</a>
+            <span style="font-size:.78rem;color:var(--amber)">Check if payment of ₹{{ appt.fee }} is confirmed</span>
+          </div>
+          <form method="POST" action="{{ url_for('tele.verify_payment', appt_id=appt.id) }}">
+            <div class="pay-actions">
+              <input type="text" name="note" class="pay-note-input" placeholder="Optional note to patient...">
+              <button type="submit" name="action" value="approve" class="btn-approve">✅ Approve & Confirm</button>
+              <button type="submit" name="action" value="reject" class="btn-reject">❌ Reject Payment</button>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+
+        <div class="ac-actions">
+          {% if appt.status in ['confirmed', 'in_call'] %}
+          <a href="{{ url_for('tele.doctor_video', appt_id=appt.id) }}" class="ac-btn ab-video">🎥 Start Video Call →</a>
+          {% endif %}
+          {% if appt.status in ['confirmed','in_call','completed'] %}
+          <button type="button" class="ac-btn" style="background:var(--gxl);color:var(--g);border:1px solid rgba(26,107,74,.2)" onclick="document.getElementById('msgForm{{appt.id}}').classList.toggle('show')">
+            💬 Send Message / Prescription
+          </button>
+          {% endif %}
+        </div>
+
+        {% if appt.status in ['confirmed','in_call','completed'] %}
+        <div class="msg-form" id="msgForm{{appt.id}}">
+          <form method="POST" action="{{ url_for('tele.send_message', appt_id=appt.id) }}">
+            <div class="mf-grid">
+              <div><div style="font-size:.75rem;font-weight:600;color:var(--inkm);margin-bottom:5px">Message / Clinical Notes</div><textarea name="message" class="mf-ta" placeholder="Advice, diagnosis, follow-up instructions..." required></textarea></div>
+              <div><div style="font-size:.75rem;font-weight:600;color:var(--inkm);margin-bottom:5px">Prescription</div><textarea name="prescription" class="mf-ta" placeholder="Medicines, dosage, duration..."></textarea></div>
+            </div>
+            <button type="submit" class="mf-submit">Send to Patient →</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="empty">
+      <div style="font-size:2.5rem;margin-bottom:12px">📋</div>
+      <p style="font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:6px">No appointments yet</p>
+      <p style="font-size:.85rem">Generate your availability slots and patients will start booking.</p>
+      <a href="{{ url_for('tele.doctor_slots') }}" style="display:inline-flex;margin-top:14px;padding:10px 22px;background:var(--g);color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:.875rem">📅 Manage Slots →</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

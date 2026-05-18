@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}All Users — Admin{% endblock %}
+{% block extra_styles %}
+.admin-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.admin-wrap{max-width:1000px;margin:0 auto}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+.page-title{font-size:1.6rem;font-weight:800;color:var(--ink)}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem;text-decoration:none;margin-bottom:14px;transition:color .2s}
+.back-link:hover{color:var(--g)}
+.filters{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px;box-shadow:var(--shadow)}
+.filter-select{padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-family:'Sora',sans-serif;font-size:.82rem;color:var(--inkm);background:var(--white);outline:none;cursor:pointer}
+.search-wrap{position:relative;flex:1;min-width:180px}
+.search-input{width:100%;padding:9px 36px 9px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Sora',sans-serif;font-size:.82rem;color:var(--ink);outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--g)}
+.si{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.9rem;color:var(--muted);pointer-events:none}
+.filter-btn{padding:9px 18px;border-radius:8px;background:var(--g);color:#fff;border:none;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:background .2s}
+.filter-btn:hover{background:var(--gl)}
+.result-count{font-size:.82rem;color:var(--muted);margin-bottom:14px}
+.result-count strong{color:var(--ink)}
+.user-table{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.user-row{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);text-decoration:none;transition:background .15s}
+.user-row:last-child{border-bottom:none}
+.user-row:hover{background:var(--gxxl)}
+.ur-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
+.av-dr{background:#eff6ff;color:#1d4ed8}.av-as{background:var(--gxl);color:var(--g)}
+.ur-name{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:2px}
+.ur-meta{font-size:.75rem;color:var(--muted)}
+.ur-docs{font-size:.72rem;color:var(--amber);font-weight:600;margin-left:auto;white-space:nowrap;padding:0 12px}
+.ur-status{font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.st-pending{background:var(--amberl);color:var(--amber)}.st-approved{background:var(--gxl);color:var(--g)}.st-rejected{background:var(--redl);color:var(--red)}
+.empty-state{text-align:center;padding:60px;color:var(--muted)}
+{% endblock %}
+{% block content %}
+<div class="admin-page">
+  <div class="admin-wrap">
+    <a href="{{ url_for('admin.dashboard') }}" class="back-link">← Admin Dashboard</a>
+    <div class="page-header">
+      <div class="page-title">All Users</div>
+    </div>
+    <form method="GET" action="{{ url_for('admin.users') }}">
+      <div class="filters">
+        <select name="role" class="filter-select" onchange="this.form.submit()">
+          <option value="all" {{ 'selected' if role=='all' }}>All Roles</option>
+          <option value="doctor" {{ 'selected' if role=='doctor' }}>🩺 Doctors</option>
+          <option value="asha"   {{ 'selected' if role=='asha'   }}>👩‍⚕️ ASHA Workers</option>
+        </select>
+        <select name="status" class="filter-select" onchange="this.form.submit()">
+          <option value="all"      {{ 'selected' if status=='all'      }}>All Status</option>
+          <option value="pending"  {{ 'selected' if status=='pending'  }}>⏳ Pending</option>
+          <option value="approved" {{ 'selected' if status=='approved' }}>✅ Approved</option>
+          <option value="rejected" {{ 'selected' if status=='rejected' }}>❌ Rejected</option>
+        </select>
+        <div class="search-wrap">
+          <input type="text" name="q" class="search-input" placeholder="Search name, email, district..." value="{{ q }}">
+          <span class="si">🔍</span>
+        </div>
+        <button type="submit" class="filter-btn">Search</button>
+      </div>
+    </form>
+    <div class="result-count"><strong>{{ users|length }}</strong> user{{ 's' if users|length != 1 }}</div>
+    <div class="user-table">
+      {% if users %}
+        {% for u in users %}
+        <a href="{{ url_for('admin.user_detail', user_id=u.id) }}" class="user-row">
+          <div class="ur-av {{ 'av-dr' if u.is_doctor() else 'av-as' }}">{{ u.name[0] }}</div>
+          <div>
+            <div class="ur-name">{{ u.name }}</div>
+            <div class="ur-meta">{{ '🩺 Doctor' if u.is_doctor() else '👩‍⚕️ ASHA' }} · {{ u.email }} · {{ u.district or '—' }} · {{ u.created_at.strftime('%d %b %Y') }}</div>
+          </div>
+          <div class="ur-docs">{{ u.docs_uploaded() }}/{{ 3 if u.is_doctor() else 1 }} docs</div>
+          <span class="ur-status st-{{ u.verify_status }}">{{ u.verify_status.title() }}</span>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">No users found matching these filters.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

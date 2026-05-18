@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}{{ user.name }} — Admin{% endblock %}
+{% block extra_styles %}
+.admin-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.admin-wrap{max-width:900px;margin:0 auto}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem;text-decoration:none;margin-bottom:20px;transition:color .2s}
+.back-link:hover{color:var(--g)}
+.user-hero{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;box-shadow:var(--shadow);margin-bottom:20px}
+.uh-top{display:flex;align-items:center;gap:18px;margin-bottom:22px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.uh-av{width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.4rem;flex-shrink:0}
+.av-dr{background:#eff6ff;color:#1d4ed8}.av-as{background:var(--gxl);color:var(--g)}
+.uh-name{font-size:1.4rem;font-weight:800;color:var(--ink);margin-bottom:3px}
+.uh-role{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+.spill{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px}
+.sp-pending{background:var(--amberl);color:var(--amber)}.sp-approved{background:var(--gxl);color:var(--g)}.sp-rejected{background:var(--redl);color:var(--red)}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dbox{background:var(--gxxl);border-radius:10px;padding:10px 12px}
+.db-l{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:3px}
+.db-v{font-size:.88rem;font-weight:600;color:var(--ink)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:var(--shadow)}
+.ctitle{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.doc-row{padding:12px 0;border-bottom:1px solid var(--border)}
+.doc-row:last-child{border-bottom:none;padding-bottom:0}
+.doc-name{font-size:.85rem;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ds-ok{background:var(--gxl);color:var(--g);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px}
+.ds-miss{background:var(--redl);color:var(--red);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px}
+.btn-sm{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+.btn-view{background:#eff6ff;color:#1d4ed8}.btn-view:hover{background:#dbeafe}
+.btn-approve{background:var(--g);color:#fff;box-shadow:0 3px 10px rgba(26,107,74,.3)}.btn-approve:hover{background:var(--gl)}
+.btn-reject{background:var(--redl);color:var(--red)}.btn-reject:hover{background:#fecaca}
+.btn-revoke{background:var(--amberl);color:var(--amber)}.btn-revoke:hover{background:#fde68a}
+.btn-toggle{background:var(--gxxl);color:var(--inkm);border:1px solid var(--border)}.btn-toggle:hover{background:var(--gxl)}
+.reject-form{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.reject-form.show{display:block}
+.rta{width:100%;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);font-family:'Sora',sans-serif;font-size:.875rem;color:var(--ink);outline:none;resize:vertical;min-height:75px;transition:border-color .2s}
+.rta:focus{border-color:var(--red)}
+.vn{background:var(--redl);border:1px solid rgba(220,38,38,.2);border-radius:10px;padding:12px;font-size:.82rem;color:var(--red);margin-top:12px;line-height:1.6}
+@media(max-width:640px){.dgrid,.g2{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+<div class="admin-page">
+  <div class="admin-wrap">
+    <a href="{{ url_for('admin.users') }}" class="back-link">← Back to users</a>
+
+    <div class="user-hero reveal">
+      <div class="uh-top">
+        <div class="uh-av {{ 'av-dr' if user.is_doctor() else 'av-as' }}">{{ user.name[0] }}</div>
+        <div>
+          <div class="uh-name">{{ user.name }}</div>
+          <div class="uh-role">{{ '🩺 Doctor' if user.is_doctor() else '👩‍⚕️ ASHA Worker' }}{% if user.speciality %} · {{ user.speciality }}{% endif %}{% if user.hospital %} · {{ user.hospital }}{% endif %}</div>
+          <span class="spill sp-{{ user.verify_status }}">
+            {{ '✅' if user.verify_status=='approved' else ('❌' if user.verify_status=='rejected' else '⏳') }}
+            {{ user.verify_status.title() }}
+          </span>
+        </div>
+      </div>
+      <div class="dgrid">
+        <div class="dbox"><div class="db-l">Email</div><div class="db-v">{{ user.email }}</div></div>
+        <div class="dbox"><div class="db-l">Phone</div><div class="db-v">{{ user.phone or '—' }}</div></div>
+        <div class="dbox"><div class="db-l">District</div><div class="db-v">{{ user.district or '—' }}</div></div>
+        <div class="dbox"><div class="db-l">Aadhar No.</div><div class="db-v">{{ user.aadhar_number or '—' }}</div></div>
+        {% if user.is_doctor() %}<div class="dbox"><div class="db-l">License No.</div><div class="db-v">{{ user.license_number or '—' }}</div></div>{% endif %}
+        <div class="dbox"><div class="db-l">Registered</div><div class="db-v">{{ user.created_at.strftime('%d %b %Y') }}</div></div>
+        <div class="dbox"><div class="db-l">Active</div><div class="db-v">{{ '✅ Yes' if user.is_active else '❌ No' }}</div></div>
+        <div class="dbox"><div class="db-l">Docs</div><div class="db-v">{{ user.docs_uploaded() }}/{{ 3 if user.is_doctor() else 1 }}</div></div>
+      </div>
+      {% if user.verify_note %}<div class="vn" style="margin-top:16px"><strong>Rejection reason:</strong> {{ user.verify_note }}</div>{% endif %}
+    </div>
+
+    <div class="g2">
+      <div class="card reveal">
+        <div class="ctitle">📄 Uploaded Documents</div>
+        <div class="doc-row">
+          <div class="doc-name">Aadhar Card <span class="{{ 'ds-ok' if user.aadhar_doc else 'ds-miss' }}">{{ '✓ Uploaded' if user.aadhar_doc else '✗ Missing' }}</span></div>
+          {% if user.aadhar_doc %}<a href="{{ url_for('admin.view_doc', user_id=user.id, doc_type='aadhar') }}" target="_blank" class="btn-sm btn-view">👁 View Document</a>{% endif %}
+        </div>
+        {% if user.is_doctor() %}
+        <div class="doc-row">
+          <div class="doc-name">Degree Certificate <span class="{{ 'ds-ok' if user.degree_doc else 'ds-miss' }}">{{ '✓ Uploaded' if user.degree_doc else '✗ Missing' }}</span></div>
+          {% if user.degree_doc %}<a href="{{ url_for('admin.view_doc', user_id=user.id, doc_type='degree') }}" target="_blank" class="btn-sm btn-view">👁 View Document</a>{% endif %}
+        </div>
+        <div class="doc-row">
+          <div class="doc-name">Med. Registration Certificate <span class="{{ 'ds-ok' if user.certificate_doc else 'ds-miss' }}">{{ '✓ Uploaded' if user.certificate_doc else '✗ Missing' }}</span></div>
+          {% if user.certificate_doc %}<a href="{{ url_for('admin.view_doc', user_id=user.id, doc_type='certificate') }}" target="_blank" class="btn-sm btn-view">👁 View Document</a>{% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="card reveal reveal-delay-1">
+        <div class="ctitle">⚙️ Admin Actions</div>
+        {% if user.verify_status == 'pending' %}
+          <form method="POST" action="{{ url_for('admin.approve_user', user_id=user.id) }}" style="margin-bottom:10px">
+            <button type="submit" class="btn-sm btn-approve" style="width:100%;justify-content:center;padding:12px;font-size:.9rem">✅ Approve — Grant Full Access</button>
+          </form>
+          <button class="btn-sm btn-reject" style="width:100%;justify-content:center;padding:12px;font-size:.9rem" onclick="document.getElementById('rf').classList.toggle('show')">❌ Reject — Deny Access</button>
+          <div class="reject-form" id="rf">
+            <form method="POST" action="{{ url_for('admin.reject_user', user_id=user.id) }}">
+              <textarea name="note" class="rta" placeholder="Reason (e.g. 'Degree certificate is unclear. Please resubmit a clearer scan.')"></textarea>
+              <button type="submit" class="btn-sm btn-reject" style="width:100%;justify-content:center;margin-top:8px">Confirm Rejection</button>
+            </form>
+          </div>
+        {% elif user.verify_status == 'approved' %}
+          <div style="background:var(--gxl);border-radius:10px;padding:12px;font-size:.82rem;color:var(--g);margin-bottom:12px">
+            ✅ Approved on {{ user.verified_at.strftime('%d %b %Y') if user.verified_at else 'N/A' }}.<br>This user can currently log in.
+          </div>
+          <form method="POST" action="{{ url_for('admin.revoke_user', user_id=user.id) }}" style="margin-bottom:10px">
+            <button type="submit" class="btn-sm btn-revoke" style="width:100%;justify-content:center;padding:11px"
+              onclick="return confirm('Revoke access for {{ user.name }}?')">⚠️ Revoke Access</button>
+          </form>
+        {% elif user.verify_status == 'rejected' %}
+          <div style="background:var(--redl);border-radius:10px;padding:12px;font-size:.82rem;color:var(--red);margin-bottom:12px">❌ Rejected. {{ user.verify_note or 'No reason provided.' }}</div>
+          <form method="POST" action="{{ url_for('admin.approve_user', user_id=user.id) }}" style="margin-bottom:10px">
+            <button type="submit" class="btn-sm btn-approve" style="width:100%;justify-content:center;padding:11px">✅ Approve Now</button>
+          </form>
+        {% endif %}
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+          <form method="POST" action="{{ url_for('admin.toggle_active', user_id=user.id) }}">
+            <button type="submit" class="btn-sm btn-toggle" style="width:100%;justify-content:center;padding:11px">
+              {{ '🔴 Deactivate Account' if user.is_active else '🟢 Reactivate Account' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Payment — Dr. {{ doctor.name }}{% endblock %}
+{% block extra_styles %}
+.book-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.book-wrap{max-width:580px;margin:0 auto}
+.book-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:30px;box-shadow:var(--shadow)}
+.pay-header{text-align:center;margin-bottom:24px}
+.pay-amount{font-size:2.8rem;font-weight:900;color:var(--g);letter-spacing:-.04em}
+.pay-lbl{font-size:.82rem;color:var(--muted)}
+.qr-box{background:var(--gxl);border:2px solid rgba(26,107,74,.2);border-radius:16px;padding:24px;text-align:center;margin-bottom:20px}
+.qr-img{max-width:220px;width:100%;border-radius:12px;box-shadow:var(--shadow);margin-bottom:10px;display:block;margin:0 auto 10px}
+.qr-title{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.qr-upi{font-size:1rem;font-weight:800;color:var(--g);font-family:monospace;background:var(--card);padding:8px 16px;border-radius:8px;display:inline-block;margin-top:6px;border:1px solid var(--border)}
+.steps-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.step-row{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:10px;background:var(--gxxl)}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.step-txt{font-size:.84rem;color:var(--inkm);line-height:1.5}
+.section-title{font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g);margin:20px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--borderl)}
+.file-up{border:2px dashed var(--border);border-radius:10px;padding:18px;text-align:center;position:relative;cursor:pointer;transition:all .2s;background:var(--gxxl);font-size:.85rem;color:var(--muted)}
+.file-up:hover{border-color:var(--g);background:var(--gxl);color:var(--g)}
+.file-up input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.file-name{font-size:.78rem;color:var(--g);margin-top:6px;font-weight:600;display:none}
+.submit-btn{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;border:none;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(26,107,74,.3)}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,107,74,.4)}
+.warning-note{background:var(--amberl);border:1px solid rgba(180,83,9,.2);border-radius:10px;padding:12px 14px;font-size:.8rem;color:var(--amber);margin-bottom:16px}
+{% endblock %}
+{% block content %}
+<div class="book-page">
+  <div class="book-wrap">
+    <div class="book-card">
+      <div class="pay-header">
+        <div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Consultation Fee</div>
+        <div class="pay-amount">₹{{ doctor.consult_fee or fee or 200 }}</div>
+        <div class="pay-lbl">{{ 'Dr. ' if not doctor.name.startswith('Dr') else '' }}{{ doctor.name }} · {{ slot.slot_date.strftime('%d %b %Y') }} at {{ slot.slot_time }}</div>
+      </div>
+
+      <div class="qr-box">
+        <div class="qr-title">Scan QR to Pay</div>
+        {% if doctor.payment_qr %}
+          <img src="{{ url_for('static', filename=doctor.payment_qr) }}"
+               class="qr-img" alt="Payment QR"
+               onerror="this.style.display='none';document.getElementById('qrFallback').style.display='block'">
+          <div id="qrFallback" style="display:none;font-size:.82rem;color:var(--muted);padding:10px">
+            QR image could not load. Use UPI ID below.
+          </div>
+        {% else %}
+          <div id="qrFallback">
+            <div style="font-size:3rem;margin:10px 0">📱</div>
+            <div style="font-size:.82rem;color:var(--muted)">Doctor has not uploaded a QR code yet.</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Use the UPI ID below to pay directly.</div>
+          </div>
+        {% endif %}
+        {% if doctor.payment_upi %}
+          <div style="font-size:.75rem;color:var(--muted);margin-top:10px;font-weight:600">PAY TO UPI ID</div>
+          <div class="qr-upi">{{ doctor.payment_upi }}</div>
+        {% else %}
+          <div style="font-size:.78rem;color:var(--amber);margin-top:8px;font-weight:500">
+            ⚠️ Doctor has not set a UPI ID yet. Please contact them directly.
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="warning-note">⚠️ Pay exactly ₹{{ doctor.consult_fee or fee or 200 }}. Your appointment will be confirmed only after the doctor verifies your payment screenshot.</div>
+
+      <div class="steps-list">
+        <div class="step-row"><div class="step-num">1</div><div class="step-txt">Open your UPI app (Google Pay, PhonePe, Paytm) and pay ₹{{ doctor.consult_fee or fee or 200 }} using the QR code or UPI ID above</div></div>
+        <div class="step-row"><div class="step-num">2</div><div class="step-txt">Take a screenshot of the payment confirmation screen</div></div>
+        <div class="step-row"><div class="step-num">3</div><div class="step-txt">Upload the screenshot below and submit — the doctor will verify and confirm your appointment</div></div>
+      </div>
+
+      <div class="section-title">📸 Upload Payment Screenshot</div>
+      <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="step" value="2">
+        <div class="file-up" id="dropZone">
+          <input type="file" name="payment_screenshot" accept=".jpg,.jpeg,.png,.pdf" required id="ssInput" onchange="showFileName(this)">
+          <div style="font-size:2rem;margin-bottom:8px">📸</div>
+          <div style="font-weight:600;color:var(--inkm);margin-bottom:4px">Tap to upload screenshot</div>
+          <div style="font-size:.75rem">JPG, PNG or PDF payment receipt</div>
+          <div class="file-name" id="fileName"></div>
+        </div>
+        <button type="submit" class="submit-btn">Submit & Confirm Booking →</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function showFileName(input){
+  const fn=document.getElementById('fileName');
+  if(input.files && input.files[0]){
+    fn.textContent='✅ '+input.files[0].name;fn.style.display='block';
+    document.getElementById('dropZone').style.borderColor='var(--g)';
+    document.getElementById('dropZone').style.background='var(--gxl)';
+  }
+}
+</script>
+{% endblock %}

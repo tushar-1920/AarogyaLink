@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Payment Setup — Doctor{% endblock %}
+{% block extra_styles %}
+.setup-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.setup-wrap{max-width:560px;margin:0 auto}
+.setup-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:32px;box-shadow:var(--shadow)}
+.setup-title{font-size:1.4rem;font-weight:800;color:var(--ink);margin-bottom:6px}
+.setup-sub{font-size:.88rem;color:var(--muted);margin-bottom:26px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.fl{font-size:.8rem;font-weight:600;color:var(--inkm)}
+.fi{padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s;width:100%}
+.fi:focus{border-color:var(--g);background:var(--card)}
+.file-up{border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;position:relative;cursor:pointer;transition:all .2s;background:var(--gxxl);font-size:.82rem;color:var(--muted)}
+.file-up:hover{border-color:var(--g);background:var(--gxl);color:var(--g)}
+.file-up input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.sub-btn{width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;border:none;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(26,107,74,.3)}
+.sub-btn:hover{transform:translateY(-2px)}
+{% endblock %}
+{% block content %}
+<div class="setup-page">
+  <div class="setup-wrap">
+    <div class="setup-card">
+      <div class="setup-title">💳 Payment Setup</div>
+      <div class="setup-sub">Patients pay you via UPI. Upload your payment QR code — it shows on the payment page when a patient books your slot.</div>
+      {% if not current_user.payment_qr and not current_user.payment_upi %}
+      <div style="background:var(--amberl);border:1px solid rgba(180,83,9,.2);border-radius:10px;padding:10px 14px;font-size:.82rem;color:var(--amber);margin-bottom:18px">
+        ⚠️ You must set your UPI ID or QR code before patients can pay you. Slots without payment info will show no QR to the patient.
+      </div>
+      {% endif %}
+      <form method="POST" enctype="multipart/form-data">
+        <div class="fg"><label class="fl">UPI ID (e.g. yourname@upi)</label><input type="text" name="upi_id" class="fi" placeholder="doctor@upi" value="{{ current_user.payment_upi or '' }}"></div>
+        <div class="fg"><label class="fl">Consultation Fee (₹)</label><input type="number" name="fee" class="fi" value="{{ current_user.consult_fee or 200 }}" min="50" max="5000"></div>
+        <div class="fg"><label class="fl">Payment QR Code Image</label>
+          {% if current_user.payment_qr %}
+          <div style="margin-bottom:12px;text-align:center">
+            <img src="{{ url_for('static', filename=current_user.payment_qr) }}"
+                 style="max-width:180px;border-radius:12px;border:2px solid var(--border);box-shadow:var(--shadow)"
+                 alt="Current QR" onerror="this.style.display='none'">
+            <div style="font-size:.75rem;color:var(--g);font-weight:600;margin-top:6px">✅ Current QR — upload new to replace</div>
+          </div>
+          {% endif %}
+          <div class="file-up"><input type="file" name="payment_qr" accept=".jpg,.jpeg,.png">📱 {{ 'Upload new QR image' if current_user.payment_qr else 'Upload your UPI QR code image' }} (JPG/PNG)</div>
+        </div>
+        <button type="submit" class="sub-btn">Save Payment Details →</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

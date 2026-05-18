@@ -1,0 +1,504 @@
+{% extends "base.html" %}
+{% block title %}Scan QR Card{% endblock %}
+
+{% block extra_styles %}
+.scan-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--ink);display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden}
+.scan-bg{position:absolute;inset:0;z-index:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.bg-ring{position:absolute;border-radius:50%;border:1px solid rgba(26,107,74,.12);animation:ringPulse 4s ease-in-out infinite}
+.bg-ring-1{width:300px;height:300px}.bg-ring-2{width:500px;height:500px;animation-delay:.8s}
+.bg-ring-3{width:700px;height:700px;animation-delay:1.6s}.bg-ring-4{width:900px;height:900px;animation-delay:2.4s}
+@keyframes ringPulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.03)}}
+
+.scan-wrap{max-width:480px;width:100%;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center}
+
+/* Header */
+.scan-header{text-align:center;margin-bottom:28px}
+.scan-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);background:rgba(26,107,74,.15);padding:5px 14px;border-radius:20px;border:1px solid rgba(26,107,74,.3);margin-bottom:14px}
+.se-dot{width:6px;height:6px;background:var(--g);border-radius:50%;animation:navPulse 2s infinite}
+.scan-header h1{font-size:2rem;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:8px}
+.scan-header h1 em{font-family:'Noto Serif',serif;font-style:italic;color:rgba(255,255,255,.4)}
+.scan-header p{font-size:.88rem;color:rgba(255,255,255,.4);line-height:1.6}
+
+/* Doctor-only notice for non-doctors */
+.access-notice{
+  background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.25);
+  border-radius:14px;padding:20px;text-align:center;width:100%;margin-bottom:16px;
+}
+.access-notice h3{font-size:1rem;font-weight:700;color:#fca5a5;margin-bottom:6px}
+.access-notice p{font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:14px}
+.access-notice a{display:inline-block;padding:9px 20px;border-radius:9px;background:var(--g);color:#fff;text-decoration:none;font-size:.85rem;font-weight:600}
+
+/* Scanner box */
+.scanner-box{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:24px;overflow:hidden;margin-bottom:16px}
+.scan-state{display:none;padding:32px;text-align:center}
+.scan-state.active{display:block}
+
+/* IDLE */
+.idle-icon{width:80px;height:80px;border-radius:20px;background:rgba(26,107,74,.2);border:1px solid rgba(26,107,74,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2.2rem;animation:idleFloat 3s ease-in-out infinite}
+@keyframes idleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.idle-title{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:8px}
+.idle-sub{font-size:.85rem;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:24px}
+.btn-start{display:inline-flex;align-items:center;gap:8px;padding:14px 30px;border-radius:12px;background:var(--g);color:#fff;border:none;cursor:pointer;font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;box-shadow:0 4px 20px rgba(26,107,74,.4);transition:background .2s,transform .15s}
+.btn-start:hover{background:var(--gl);transform:translateY(-2px)}
+
+/* SCANNING */
+#reader{width:100%}
+#reader video{width:100%!important;border-radius:0!important}
+#reader__dashboard{display:none!important}
+#reader__scan_region img{display:none!important}
+.scan-overlay-wrap{position:relative;min-height:300px;background:#000;overflow:hidden}
+.corner-frame{position:absolute;inset:0;z-index:10;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.cf-inner{position:relative;width:200px;height:200px}
+.cn{position:absolute;width:28px;height:28px;border-color:var(--g);border-style:solid;border-width:0}
+.cn.tl{top:0;left:0;border-top-width:3px;border-left-width:3px;border-radius:4px 0 0 0}
+.cn.tr{top:0;right:0;border-top-width:3px;border-right-width:3px;border-radius:0 4px 0 0}
+.cn.bl{bottom:0;left:0;border-bottom-width:3px;border-left-width:3px;border-radius:0 0 0 4px}
+.cn.br{bottom:0;right:0;border-bottom-width:3px;border-right-width:3px;border-radius:0 0 4px 0}
+.laser{position:absolute;left:8%;right:8%;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);z-index:11;animation:laserMove 2s ease-in-out infinite;box-shadow:0 0 10px rgba(26,107,74,.7)}
+@keyframes laserMove{0%,100%{top:10%}50%{top:88%}}
+.hint-bar{background:rgba(0,0,0,.5);padding:10px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.78rem;color:rgba(255,255,255,.45)}
+.hint-dot{width:6px;height:6px;background:var(--g);border-radius:50%;animation:navPulse 1.5s infinite}
+.btn-cancel{display:block;margin:14px;padding:10px;border-radius:10px;background:rgba(220,38,38,.12);color:#fca5a5;border:1px solid rgba(220,38,38,.25);cursor:pointer;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;width:calc(100% - 28px);transition:background .2s}
+.btn-cancel:hover{background:rgba(220,38,38,.22)}
+
+/* LOADING */
+.spin-wrap{display:flex;justify-content:center;margin-bottom:18px}
+.spinner{width:52px;height:52px;border-radius:50%;border:3px solid rgba(26,107,74,.2);border-top-color:var(--g);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-title{font-size:1rem;font-weight:600;color:#fff;margin-bottom:6px}
+.load-sub{font-size:.82rem;color:rgba(255,255,255,.35)}
+
+/* SUCCESS */
+.ok-icon-wrap{display:flex;justify-content:center;margin-bottom:14px}
+.ok-icon{width:68px;height:68px;border-radius:50%;background:rgba(34,197,94,.15);border:2px solid rgba(34,197,94,.35);display:flex;align-items:center;justify-content:center;font-size:1.8rem;animation:pop .4s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.ok-title{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px}
+.ok-sub{font-size:.82rem;color:rgba(255,255,255,.3);margin-bottom:18px}
+
+/* Patient card in success */
+.p-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:18px;text-align:left;margin-bottom:16px}
+.p-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.08)}
+.p-avatar{width:48px;height:48px;border-radius:50%;background:rgba(26,107,74,.3);color:var(--g);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;flex-shrink:0;border:2px solid rgba(26,107,74,.3)}
+.p-name{font-size:1rem;font-weight:700;color:#fff;margin-bottom:2px}
+.p-id{font-size:.7rem;color:rgba(255,255,255,.3);font-family:monospace;letter-spacing:.04em}
+.p-live{display:flex;align-items:center;gap:5px;font-size:.68rem;color:rgba(34,197,94,.8);font-weight:600;margin-top:3px}
+.p-live-dot{width:5px;height:5px;background:#22c55e;border-radius:50%;animation:navPulse 1.8s infinite}
+.p-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.p-item{background:rgba(255,255,255,.05);border-radius:9px;padding:9px 11px}
+.pi-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.25);margin-bottom:3px}
+.pi-val{font-size:.88rem;font-weight:600;color:rgba(255,255,255,.85)}
+.pi-val.visits-val{color:#22c55e}
+
+/* Conditions & Allergy tags */
+.p-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.p-tag{font-size:.68rem;font-weight:600;padding:3px 10px;border-radius:20px}
+.p-tag-amber{background:rgba(180,83,9,.2);color:#fbbf24}
+.p-tag-red{background:rgba(220,38,38,.2);color:#fca5a5}
+
+.allergy-warn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.3);border-radius:8px;padding:9px 13px;font-size:.78rem;color:#fca5a5;margin-top:10px;display:none;align-items:center;gap:7px}
+.allergy-warn.show{display:flex}
+
+.btn-view{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;background:var(--g);color:#fff;text-decoration:none;font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;box-shadow:0 4px 18px rgba(26,107,74,.4);transition:background .2s,transform .15s;margin-bottom:8px}
+.btn-view:hover{background:var(--gl);transform:translateY(-1px)}
+.btn-again{width:100%;padding:10px;border-radius:10px;background:transparent;color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.09);cursor:pointer;font-family:'Sora',sans-serif;font-size:.82rem;transition:background .2s,color .2s}
+.btn-again:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.6)}
+
+/* ERROR */
+.err-icon{width:60px;height:60px;border-radius:50%;background:rgba(220,38,38,.14);border:2px solid rgba(220,38,38,.28);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 14px;animation:pop .4s cubic-bezier(.175,.885,.32,1.275)}
+.err-title{font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px}
+.err-msg{font-size:.82rem;color:rgba(220,38,38,.7);margin-bottom:18px;line-height:1.6}
+.btn-retry{width:100%;padding:11px;border-radius:10px;background:rgba(220,38,38,.14);color:#fca5a5;border:1px solid rgba(220,38,38,.28);cursor:pointer;font-family:'Sora',sans-serif;font-size:.85rem;font-weight:600;transition:background .2s}
+.btn-retry:hover{background:rgba(220,38,38,.24)}
+
+/* Manual search */
+.manual-sect{width:100%;margin-top:4px}
+.div-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.div-line{flex:1;height:1px;background:rgba(255,255,255,.07)}
+.div-txt{font-size:.7rem;color:rgba(255,255,255,.2);white-space:nowrap}
+.m-wrap{position:relative}
+.m-input{width:100%;padding:12px 50px 12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);font-family:'Sora',sans-serif;font-size:.9rem;color:#fff;outline:none;transition:border-color .2s,background .2s}
+.m-input::placeholder{color:rgba(255,255,255,.18)}
+.m-input:focus{border-color:rgba(26,107,74,.5);background:rgba(255,255,255,.07)}
+.m-go{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:8px;background:var(--g);border:none;cursor:pointer;color:#fff;font-size:.9rem;transition:background .2s}
+.m-go:hover{background:var(--gl)}
+
+/* Recent scans */
+.recent-sect{width:100%;margin-top:16px;display:none}
+.recent-lbl{font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:8px}
+.r-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;text-decoration:none;margin-bottom:6px;transition:background .2s}
+.r-item:hover{background:rgba(255,255,255,.07)}
+.r-dot{width:7px;height:7px;border-radius:50%;background:var(--g);flex-shrink:0;opacity:.55}
+.r-info{flex:1}
+.r-name{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.65)}
+.r-meta{font-size:.67rem;color:rgba(255,255,255,.22);margin-top:1px}
+.r-time{font-size:.67rem;color:rgba(255,255,255,.2);white-space:nowrap}
+
+/* Tips */
+.tips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin-top:14px}
+.tip{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:12px;text-align:center}
+.tip-icon{font-size:1.1rem;margin-bottom:6px}
+.tip-txt{font-size:.7rem;color:rgba(255,255,255,.22);line-height:1.5}
+
+@media(max-width:480px){.tips{grid-template-columns:1fr 1fr}.scan-header h1{font-size:1.6rem}}
+{% endblock %}
+
+{% block content %}
+<div class="scan-page">
+  <div class="scan-bg">
+    <div class="bg-ring bg-ring-1"></div><div class="bg-ring bg-ring-2"></div>
+    <div class="bg-ring bg-ring-3"></div><div class="bg-ring bg-ring-4"></div>
+  </div>
+
+  <div class="scan-wrap">
+
+    <div class="scan-header">
+      <div class="scan-eyebrow"><span class="se-dot"></span> Doctor QR Scanner</div>
+      <h1>Scan <em>Health Card</em></h1>
+      <p>Point camera at patient's QR card.<br>Full medical history loads instantly.</p>
+    </div>
+
+    {# ── ACCESS CONTROL — only doctors and admins see the scanner ── #}
+    {% if not current_user.is_authenticated %}
+      <div class="access-notice">
+        <h3>🔒 Sign in required</h3>
+        <p>The QR scanner is for verified doctors only.<br>Please sign in to access this tool.</p>
+        <a href="{{ url_for('auth.login') }}">Sign in →</a>
+      </div>
+
+    {% elif not (current_user.is_doctor() or current_user.is_admin()) %}
+      <div class="access-notice">
+        <h3>🩺 Doctors only</h3>
+        <p>The QR scanner is only available to verified doctors.<br>
+          As an ASHA worker, you can register and search patients instead.</p>
+        <a href="{{ url_for('patient.register') }}">Register Patient →</a>
+      </div>
+
+    {% else %}
+    {# ── DOCTOR / ADMIN — show full scanner ── #}
+
+    <div class="scanner-box">
+
+      <!-- IDLE -->
+      <div class="scan-state active" id="stateIdle">
+        <div class="idle-icon">🔲</div>
+        <div class="idle-title">Ready to scan</div>
+        <div class="idle-sub">
+          Tap the button to open your camera.<br>
+          Works on any phone — no app required.
+        </div>
+        <button class="btn-start" onclick="startScanner()">📷 &nbsp;Open Camera &amp; Scan</button>
+      </div>
+
+      <!-- SCANNING -->
+      <div class="scan-state" id="stateScanning" style="padding:0">
+        <div class="scan-overlay-wrap">
+          <div id="reader"></div>
+          <div class="corner-frame">
+            <div class="cf-inner">
+              <div class="cn tl"></div><div class="cn tr"></div>
+              <div class="cn bl"></div><div class="cn br"></div>
+              <div class="laser"></div>
+            </div>
+          </div>
+        </div>
+        <div class="hint-bar">
+          <div class="hint-dot"></div>
+          Align the QR card inside the corner frame
+        </div>
+        <button class="btn-cancel" onclick="stopScanner()">✕ &nbsp;Cancel scan</button>
+      </div>
+
+      <!-- LOADING -->
+      <div class="scan-state" id="stateLoading">
+        <div class="spin-wrap"><div class="spinner"></div></div>
+        <div class="load-title">QR detected! 🎉</div>
+        <div class="load-sub">Fetching patient record from database...</div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="scan-state" id="stateSuccess">
+        <div class="ok-icon-wrap"><div class="ok-icon">✅</div></div>
+        <div class="ok-title">Patient found!</div>
+        <div class="ok-sub">Tap below to open their full health record.</div>
+
+        <div class="p-card">
+          <div class="p-head">
+            <div class="p-avatar" id="pAv">?</div>
+            <div>
+              <div class="p-name" id="pNm">—</div>
+              <div class="p-id"   id="pId">—</div>
+              <div class="p-live"><div class="p-live-dot"></div>Live record</div>
+            </div>
+          </div>
+          <div class="p-grid">
+            <div class="p-item">
+              <div class="pi-label">Age</div>
+              <div class="pi-val" id="pAg">—</div>
+            </div>
+            <div class="p-item">
+              <div class="pi-label">Blood Group</div>
+              <div class="pi-val" id="pBl">—</div>
+            </div>
+            <div class="p-item">
+              <div class="pi-label">Village</div>
+              <div class="pi-val" id="pVi">—</div>
+            </div>
+            <div class="p-item">
+              <div class="pi-label">Total Visits</div>
+              <div class="pi-val visits-val" id="pVs">—</div>
+            </div>
+          </div>
+          <div class="p-tags" id="pTags"></div>
+          <div class="allergy-warn" id="pAw">⚠️ &nbsp;<span id="pAl"></span></div>
+        </div>
+
+        <a class="btn-view" id="btnView" href="#">Open Full Health Record →</a>
+        <button class="btn-again" onclick="resetToIdle()">Scan another patient</button>
+      </div>
+
+      <!-- ERROR -->
+      <div class="scan-state" id="stateError">
+        <div class="err-icon">⚠️</div>
+        <div class="err-title">Not found</div>
+        <div class="err-msg" id="errMsg">Could not find this patient.</div>
+        <button class="btn-retry" onclick="resetToIdle()">Try again</button>
+      </div>
+
+    </div>
+
+    <!-- Manual ID lookup -->
+    <div class="manual-sect">
+      <div class="div-row">
+        <div class="div-line"></div>
+        <div class="div-txt">or enter patient ID manually</div>
+        <div class="div-line"></div>
+      </div>
+      <div class="m-wrap">
+        <input type="text" class="m-input" id="mInput"
+               placeholder="Type patient ID — e.g. RH-DEMO1"
+               onkeydown="if(event.key==='Enter') manualLookup()">
+        <button class="m-go" onclick="manualLookup()">→</button>
+      </div>
+    </div>
+
+    <!-- Recent scans -->
+    <div class="recent-sect" id="recentSect">
+      <div class="recent-lbl">Recent scans this session</div>
+      <div id="recentList"></div>
+    </div>
+
+    <!-- Tips -->
+    <div class="tips">
+      <div class="tip"><div class="tip-icon">💡</div><div class="tip-txt">Good lighting helps camera read QR faster</div></div>
+      <div class="tip"><div class="tip-icon">📏</div><div class="tip-txt">Hold 10–20 cm away from the card</div></div>
+      <div class="tip"><div class="tip-icon">🔒</div><div class="tip-txt">All scans are logged and secure</div></div>
+    </div>
+
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{# Only load scanner JS for doctors/admins #}
+{% if current_user.is_authenticated and (current_user.is_doctor() or current_user.is_admin()) %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script>
+let qr = null, scanning = false, recent = [];
+
+/* ── Show state panel ── */
+function show(s) {
+  ['Idle','Scanning','Loading','Success','Error'].forEach(n =>
+    document.getElementById('state'+n).classList.remove('active')
+  );
+  document.getElementById('state'+s).classList.add('active');
+}
+
+/* ── Start camera ── */
+async function startScanner() {
+  show('Scanning');
+  scanning = true;
+  qr = new Html5Qrcode('reader');
+  try {
+    await qr.start(
+      { facingMode: 'environment' },
+      { fps: 15, qrbox: { width: 200, height: 200 }, aspectRatio: 1.2 },
+      onScan,
+      () => {}  // silent failure — called every frame while no QR found
+    );
+  } catch(e) {
+    showErr('Camera could not open. Allow camera permission in browser settings, then try again.');
+  }
+}
+
+/* ── Stop camera ── */
+async function stopScanner() {
+  scanning = false;
+  try { if (qr && qr.isScanning) await qr.stop(); } catch(e) {}
+  qr = null;
+  show('Idle');
+}
+
+/* ── On successful QR scan ── */
+async function onScan(raw) {
+  if (!scanning) return;
+  scanning = false;  // prevent double-fire
+  try { if (qr) await qr.stop(); } catch(e) {}
+  show('Loading');
+
+  console.log('Raw QR text:', raw);
+  const pid = parsePatientId(raw);
+  console.log('Extracted patient ID:', pid);
+
+  if (!pid) {
+    showErr('Could not extract a patient ID from this QR code.<br><small>Content: ' + esc(raw.slice(0, 60)) + '</small>');
+    return;
+  }
+  await lookupPatient(pid);
+}
+
+/* ── Extract patient ID from raw QR text ── */
+function parsePatientId(raw) {
+  // Strategy 1: Full URL like http://localhost:5000/patient/RH-XXXX
+  try {
+    const url   = new URL(raw);
+    const parts = url.pathname.split('/').filter(Boolean);
+    const idx   = parts.findIndex(p => p.toLowerCase() === 'patient');
+    if (idx !== -1 && parts[idx + 1]) return parts[idx + 1].toUpperCase();
+  } catch(e) { /* not a URL */ }
+
+  // Strategy 2: Pattern RH-XXXXX anywhere in text
+  const m1 = raw.match(/\b(RH-[A-Z0-9]{3,10})\b/i);
+  if (m1) return m1[1].toUpperCase();
+
+  // Strategy 3: /patient/XXXXX path fragment
+  const m2 = raw.match(/\/patient\/([A-Z0-9_-]+)/i);
+  if (m2) return m2[1].toUpperCase();
+
+  // Strategy 4: Raw text looks like an ID itself
+  const cl = raw.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  if (cl.length >= 3 && cl.length <= 20) return cl;
+
+  return null;
+}
+
+/* ── Fetch patient data from our dedicated API ── */
+async function lookupPatient(pid) {
+  try {
+    const res  = await fetch('/patient/api/' + encodeURIComponent(pid));
+    const data = await res.json();
+
+    if (!res.ok || !data.found) {
+      showErr('No patient found with ID <strong>' + esc(pid) + '</strong>.<br>Make sure this is an AarogyaLink QR card.');
+      return;
+    }
+    renderSuccess(data);
+
+  } catch(e) {
+    showErr('Server unreachable. Check your connection and try again.');
+  }
+}
+
+/* ── Populate success state ── */
+function renderSuccess(p) {
+  // Avatar initials
+  const initials = p.name.split(' ').map(w => w[0] || '').join('').slice(0, 2).toUpperCase();
+  document.getElementById('pAv').textContent = initials;
+
+  // Basic info
+  document.getElementById('pNm').textContent = p.name;
+  document.getElementById('pId').textContent = 'ID: ' + p.id;
+  document.getElementById('pAg').textContent = p.age ? p.age + ' yrs' : '—';
+  document.getElementById('pBl').textContent = p.blood  || '—';
+  document.getElementById('pVi').textContent = p.village || '—';
+
+  // ── FIX: visits count — use visit_count field, fallback to visits ──
+  const visitCount = (typeof p.visit_count !== 'undefined') ? p.visit_count : (p.visits || 0);
+  document.getElementById('pVs').textContent =
+    visitCount + ' visit' + (visitCount !== 1 ? 's' : '');
+
+  // Allergy warning
+  const aw = document.getElementById('pAw');
+  if (p.allergies && p.allergies.trim()) {
+    document.getElementById('pAl').textContent = 'Allergy: ' + p.allergies;
+    aw.classList.add('show');
+  } else {
+    aw.classList.remove('show');
+  }
+
+  // Condition tags
+  const tagsEl = document.getElementById('pTags');
+  tagsEl.innerHTML = '';
+  if (p.conditions && p.conditions.trim()) {
+    p.conditions.split(',').slice(0, 3).forEach(c => {
+      const span = document.createElement('span');
+      span.className = 'p-tag p-tag-amber';
+      span.textContent = c.trim();
+      tagsEl.appendChild(span);
+    });
+  }
+
+  // View button
+  document.getElementById('btnView').href = '/patient/' + p.id;
+  show('Success');
+  addToRecent(p, visitCount);
+}
+
+/* ── Error state ── */
+function showErr(msg) {
+  document.getElementById('errMsg').innerHTML = msg;
+  show('Error');
+}
+
+/* ── Reset to idle ── */
+function resetToIdle() {
+  scanning = false;
+  show('Idle');
+  document.getElementById('mInput').value = '';
+}
+
+/* ── Manual ID lookup ── */
+async function manualLookup() {
+  const val = document.getElementById('mInput').value.trim().toUpperCase();
+  if (!val) return;
+  show('Loading');
+  await lookupPatient(val);
+}
+
+/* ── Recent scans tracker ── */
+function addToRecent(p, visitCount) {
+  recent = [
+    { name: p.name, id: p.id, url: '/patient/' + p.id, visits: visitCount, time: new Date() },
+    ...recent.filter(r => r.id !== p.id)
+  ].slice(0, 5);
+
+  document.getElementById('recentSect').style.display = 'block';
+  document.getElementById('recentList').innerHTML = recent.map(r => `
+    <a href="${r.url}" class="r-item">
+      <div class="r-dot"></div>
+      <div class="r-info">
+        <div class="r-name">${esc(r.name)}</div>
+        <div class="r-meta">${r.id} · ${r.visits} visit${r.visits !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="r-time">${r.time.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</div>
+    </a>
+  `).join('');
+}
+
+/* ── Utility: escape HTML ── */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+}
+
+/* ── Auto-uppercase manual input ── */
+document.getElementById('mInput').addEventListener('input', function() {
+  const pos = this.selectionStart;
+  this.value = this.value.toUpperCase();
+  this.setSelectionRange(pos, pos);
+});
+</script>
+{% endif %}
+{% endblock %}

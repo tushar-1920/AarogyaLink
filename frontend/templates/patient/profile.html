@@ -1,0 +1,784 @@
+{% extends "base.html" %}
+{% block title %}{{ patient.name }}{% endblock %}
+
+{% block extra_styles %}
+/* ══════════════════════════════════
+   PAGE SHELL
+══════════════════════════════════ */
+.profile-page{
+  min-height:100vh;
+  padding:calc(var(--nav-h) + 56px) 5% 100px;
+  background:var(--gxxl);
+  box-sizing:border-box;
+}
+.profile-wrap{
+  max-width:1100px;
+  margin:0 auto;
+  width:100%;
+  box-sizing:border-box;
+}
+
+.back-link{
+  display:inline-flex;align-items:center;gap:7px;
+  color:var(--muted);font-size:.82rem;text-decoration:none;
+  margin-bottom:22px;transition:all .2s;font-weight:500;
+  padding:7px 14px;border-radius:9px;
+  background:var(--card);border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.back-link:hover{color:var(--g);border-color:rgba(26,107,74,.25);background:var(--gxl);transform:translateX(-2px)}
+
+/* ══════════════════════════════════
+   HERO BANNER
+══════════════════════════════════ */
+.patient-hero{
+  background:linear-gradient(135deg,var(--gdx) 0%,var(--gd) 45%,var(--g) 100%);
+  border-radius:24px;padding:28px 32px;color:#fff;
+  margin-bottom:16px;position:relative;overflow:hidden;
+  box-shadow:0 10px 40px rgba(26,107,74,.28);
+}
+.ph-bg1{position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:rgba(255,255,255,.05);border-radius:50%;pointer-events:none}
+.ph-bg2{position:absolute;bottom:-80px;right:100px;width:160px;height:160px;background:rgba(255,255,255,.04);border-radius:50%;pointer-events:none}
+.ph-shimmer{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent)}
+
+.ph-inner{
+  display:flex;align-items:center;gap:20px;
+  position:relative;z-index:1;
+}
+.ph-photo{
+  width:78px;height:78px;border-radius:50%;object-fit:cover;
+  border:3px solid rgba(255,255,255,.35);
+  box-shadow:0 4px 20px rgba(0,0,0,.25),0 0 0 5px rgba(255,255,255,.08);
+  flex-shrink:0;
+}
+.ph-avatar{
+  width:78px;height:78px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:1.7rem;color:#fff;flex-shrink:0;
+  box-shadow:0 0 0 5px rgba(255,255,255,.08);
+}
+.ph-info{flex:1;min-width:0}
+.ph-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-bottom:4px;
+  display:flex;align-items:center;gap:6px;
+}
+.ph-lv{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
+.ph-name{
+  font-size:clamp(1.4rem,3vw,1.9rem);font-weight:800;
+  letter-spacing:-.025em;margin-bottom:3px;line-height:1.1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  max-width:100%;
+}
+.ph-id{font-size:.7rem;font-family:monospace;color:rgba(255,255,255,.5);letter-spacing:.06em;margin-bottom:10px}
+.ph-pills{display:flex;flex-wrap:wrap;gap:5px}
+.pp{
+  font-size:.69rem;font-weight:600;padding:3px 10px;border-radius:20px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  white-space:nowrap;
+}
+.pp-r{background:rgba(220,38,38,.28);border-color:rgba(255,100,100,.35)}
+.pp-a{background:rgba(180,83,9,.28);border-color:rgba(251,191,36,.28)}
+.pp-g{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.22)}
+
+.ph-right{
+  flex-shrink:0;text-align:right;
+  min-width:90px;position:relative;z-index:1;
+}
+.ph-live-row{
+  display:flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;
+  color:rgba(255,255,255,.65);justify-content:flex-end;margin-bottom:6px;
+}
+.ph-live-dot{width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
+.ph-visit-num{font-size:2.2rem;font-weight:900;color:#fff;line-height:1;letter-spacing:-.04em}
+.ph-visit-lbl{font-size:.68rem;color:rgba(255,255,255,.45);font-weight:500}
+
+/* ══════════════════════════════════
+   STATS STRIP
+══════════════════════════════════ */
+.stats-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;margin-bottom:20px;overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.ss{
+  padding:16px 12px;text-align:center;
+  border-right:1px solid var(--borderl);
+  transition:background .18s;position:relative;
+}
+.ss:last-child{border-right:none}
+.ss:hover{background:var(--gxxl)}
+.ss-lbl{font-size:.57rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px;font-weight:700}
+.ss-val{font-size:1.05rem;font-weight:800;color:var(--ink)}
+.ss-g{color:var(--g)}.ss-r{color:var(--red)}.ss-a{color:var(--amber)}
+
+/* ══════════════════════════════════
+   SINGLE COLUMN LAYOUT
+══════════════════════════════════ */
+.profile-grid{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  width:100%;
+  box-sizing:border-box;
+}
+
+/* Right cards row — 3 across */
+
+/* ══════════════════════════════════
+   CARDS
+══════════════════════════════════ */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:22px;padding:24px;
+  box-shadow:var(--shadow);margin-bottom:18px;
+  width:100%;box-sizing:border-box;
+}
+.card-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;padding-bottom:13px;
+  border-bottom:1px solid var(--borderl);
+}
+.card-ttl{
+  font-size:.68rem;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:7px;
+}
+.badge-g{background:var(--gxl);color:var(--g);font-size:.67rem;font-weight:700;padding:2px 9px;border-radius:20px;border:1px solid rgba(26,107,74,.15)}
+.badge-r{background:var(--redl);color:var(--red);font-size:.67rem;font-weight:700;padding:2px 9px;border-radius:20px;border:1px solid rgba(220,38,38,.15)}
+
+/* ── Details grid ── */
+.dg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.db{background:var(--gxxl);border-radius:10px;padding:10px 12px;border:1px solid transparent;transition:all .18s}
+.db:hover{background:var(--gxl);border-color:rgba(26,107,74,.1);transform:translateY(-1px)}
+.db-l{font-size:.57rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px;font-weight:700}
+.db-v{font-size:.86rem;font-weight:700;color:var(--ink)}
+
+/* ── Tags ── */
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.tag{font-size:.71rem;font-weight:600;padding:3px 11px;border-radius:20px}
+.t-a{background:var(--amberl);color:var(--amber);border:1px solid rgba(180,83,9,.15)}
+.t-r{background:var(--redl);color:var(--red);border:1px solid rgba(220,38,38,.15)}
+.t-g{background:var(--gxl);color:var(--g);border:1px solid rgba(26,107,74,.15)}
+
+/* ── Allergy banner ── */
+.allergy-banner{
+  background:linear-gradient(135deg,#fef2f2,#fee2e2);
+  border:1px solid rgba(220,38,38,.3);border-radius:14px;
+  padding:14px 16px;margin-bottom:18px;
+  display:flex;align-items:flex-start;gap:12px;
+  animation:alertGlow 3s ease-in-out infinite;
+}
+@keyframes alertGlow{
+  0%,100%{box-shadow:0 2px 12px rgba(220,38,38,.08)}
+  50%{box-shadow:0 4px 20px rgba(220,38,38,.18)}
+}
+.ab-ico{font-size:1.3rem;flex-shrink:0;margin-top:1px}
+.ab-ttl{font-size:.83rem;font-weight:700;color:var(--red);margin-bottom:3px}
+.ab-txt{font-size:.77rem;color:var(--red);opacity:.8;line-height:1.5}
+
+/* ── Visit timeline ── */
+.timeline{position:relative;padding-left:22px}
+.timeline::before{
+  content:'';position:absolute;left:7px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(180deg,var(--g),rgba(26,107,74,.25),transparent);
+  border-radius:2px;
+}
+.vi{position:relative;margin-bottom:14px}
+.vi::before{
+  content:'';position:absolute;left:-17px;top:16px;
+  width:11px;height:11px;border-radius:50%;
+  background:var(--g);border:3px solid var(--card);
+  box-shadow:0 0 0 2px var(--g);
+  transition:transform .2s;
+}
+.vi:hover::before{transform:scale(1.3)}
+.vi-c{
+  background:var(--gxxl);border:1px solid var(--borderl);
+  border-radius:14px;padding:16px;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.vi-c::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--g);opacity:0;transition:opacity .2s}
+.vi-c:hover{transform:translateX(5px);border-color:rgba(26,107,74,.2);background:var(--card);box-shadow:var(--shadow-md)}
+.vi-c:hover::before{opacity:1}
+.vi-top{display:flex;align-items:center;gap:7px;margin-bottom:9px;flex-wrap:wrap}
+.vtype{font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:6px}
+.vt-opd,.vt-OPD{background:var(--gxl);color:var(--g)}
+.vt-emergency,.vt-Emergency{background:var(--redl);color:var(--red)}
+.vt-followup,.vt-follow-up,.vt-Follow-up,.vt-Followup{background:var(--amberl);color:var(--amber)}
+.vt-inpatient,.vt-Inpatient{background:var(--bluel);color:var(--blue)}
+.vi-date{font-size:.69rem;color:var(--muted)}
+.vi-dr{font-size:.69rem;color:var(--muted);margin-left:auto}
+.vi-diag{font-size:.93rem;font-weight:700;color:var(--ink);margin-bottom:4px;line-height:1.4}
+.vi-hosp{font-size:.76rem;color:var(--muted)}
+.vi-rx{font-size:.79rem;color:var(--inkm);margin-top:10px;padding:9px 11px;border-radius:8px;background:rgba(26,107,74,.06);border-left:2px solid var(--g);line-height:1.6}
+.vi-notes{font-size:.76rem;color:var(--muted);margin-top:7px;padding:7px 11px;border-radius:8px;background:var(--gxxl);line-height:1.6}
+.no-v{text-align:center;padding:44px 20px;color:var(--muted)}
+
+/* ── Add visit ── */
+.add-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.full{grid-column:1/-1}
+.fl{font-size:.77rem;font-weight:600;color:var(--inkm);display:flex;align-items:center;justify-content:space-between}
+.fi,.fs,.fta{
+  padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--gxxl);font-family:'Sora',sans-serif;
+  font-size:.85rem;color:var(--ink);outline:none;
+  transition:border-color .2s,box-shadow .2s,background .2s;width:100%;
+}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(26,107,74,.1);background:var(--card)}
+.fta{resize:vertical;min-height:74px}
+.vtag{
+  padding:3px 10px;border-radius:7px;border:1px solid rgba(26,107,74,.2);
+  background:var(--gxl);color:var(--g);font-size:.69rem;cursor:pointer;
+  font-weight:600;transition:all .2s;font-family:'Sora',sans-serif;
+}
+.vtag:hover{background:rgba(26,107,74,.18);transform:translateY(-1px)}
+.v-status{
+  display:none;align-items:center;gap:8px;
+  background:var(--gxl);border:1px solid rgba(26,107,74,.2);
+  border-radius:10px;padding:9px 13px;font-size:.78rem;color:var(--g);
+  font-weight:500;margin-bottom:12px;
+}
+.v-status.show{display:flex}
+.vs-dot{width:8px;height:8px;background:var(--red);border-radius:50%;flex-shrink:0;animation:pulse 1s infinite}
+.save-btn{
+  padding:12px 26px;
+  background:linear-gradient(135deg,var(--g),var(--gl));
+  color:#fff;border:none;border-radius:10px;
+  font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;
+  box-shadow:0 4px 16px rgba(26,107,74,.3);margin-top:6px;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.save-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,107,74,.4)}
+
+/* ── Documents ── */
+.doc-up{
+  border:2px dashed var(--border);border-radius:12px;padding:16px;
+  text-align:center;cursor:pointer;transition:all .2s;
+  background:var(--gxxl);position:relative;margin-bottom:12px;
+  font-size:.82rem;color:var(--muted);
+}
+.doc-up:hover{border-color:var(--g);background:var(--gxl);color:var(--g)}
+.doc-up input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.doc-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--borderl);
+  text-decoration:none;border-radius:10px;transition:all .15s;
+}
+.doc-row:last-child{border-bottom:none}
+.doc-row:hover{background:var(--gxxl);padding:10px 8px;margin:0 -8px}
+.doc-ico{font-size:1.2rem;flex-shrink:0}
+.doc-nm{font-size:.81rem;font-weight:600;color:var(--ink);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-mt{font-size:.69rem;color:var(--muted)}
+.doc-ttag{font-size:.63rem;font-weight:600;padding:2px 6px;border-radius:6px;background:var(--gxl);color:var(--g)}
+.dact{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;font-family:'Sora',sans-serif;font-size:.71rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s;flex-shrink:0}
+.dact-v{background:var(--bluel);color:var(--blue)}.dact-v:hover{background:#dbeafe}
+.dact-d{background:var(--redl);color:var(--red)}.dact-d:hover{background:#fecaca}
+.up-form{background:var(--gxxl);border-radius:13px;padding:14px;margin-top:10px;display:none;border:1px solid var(--borderl)}
+.up-form.show{display:block;animation:slideIn .22s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.uf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.uf-i,.uf-s{padding:9px 11px;border-radius:9px;border:1px solid var(--border);font-family:'Sora',sans-serif;font-size:.8rem;color:var(--ink);width:100%;outline:none;background:var(--card)}
+.uf-i:focus,.uf-s:focus{border-color:var(--g)}
+
+.sec-ey{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.sec-ey::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--borderl),transparent)}
+
+/* ══════════════════════════════════
+   RIGHT COLUMN
+══════════════════════════════════ */
+.right-col{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:18px;
+  width:100%;
+  box-sizing:border-box;
+}
+
+/* Identity card */
+.id-card{text-align:center}
+.id-photo{
+  width:110px;height:110px;border-radius:50%;object-fit:cover;
+  border:4px solid var(--g);
+  box-shadow:0 6px 28px rgba(26,107,74,.22);
+  margin:0 auto 12px;display:block;
+  transition:transform .3s,box-shadow .3s;
+}
+.id-photo:hover{transform:scale(1.04);box-shadow:0 10px 36px rgba(26,107,74,.3)}
+.id-av{
+  width:110px;height:110px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gxl),var(--gxxl));
+  border:3px dashed var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.8rem;margin:0 auto 12px;
+}
+.id-nm{font-size:1rem;font-weight:800;color:var(--ink);margin-bottom:2px}
+.id-sub{font-size:.73rem;color:var(--muted);margin-bottom:14px}
+
+.cam-sec{padding-top:14px;border-top:1px solid var(--borderl)}
+.cam-ttl{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.cam-wrap{display:none;position:relative;border-radius:13px;overflow:hidden;background:#000;margin-bottom:10px}
+.cam-wrap.show{display:block}
+#miniVideo{width:100%;display:block}
+.cam-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;border:2px solid rgba(255,255,255,.5);pointer-events:none}
+canvas#miniCanvas{display:none}
+.cam-btns{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+.cbtn{display:inline-flex;align-items:center;gap:5px;padding:9px 14px;border-radius:9px;font-family:'Sora',sans-serif;font-size:.77rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.cb-g{background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;box-shadow:0 3px 12px rgba(26,107,74,.3)}
+.cb-g:hover{transform:translateY(-1px)}
+.cb-cap{background:var(--gxl);color:var(--g);border:1px solid rgba(26,107,74,.2)}
+.cb-cap:hover{background:rgba(26,107,74,.15)}
+.cb-can{background:var(--redl);color:var(--red);border:1px solid rgba(220,38,38,.15)}
+.cb-can:hover{background:#fecaca}
+
+/* QR card */
+.qr-sec{text-align:center}
+.pid-pill{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  background:var(--gxl);border:1px solid rgba(26,107,74,.2);
+  border-radius:11px;padding:10px 14px;margin-bottom:12px;
+}
+.pid-l{font-size:.58rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700;flex-shrink:0}
+.pid-v{font-size:.95rem;font-weight:800;color:var(--g);font-family:monospace;letter-spacing:.06em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qr-frame{
+  display:inline-block;background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:13px;margin-bottom:10px;
+  box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;
+}
+.qr-frame:hover{transform:scale(1.02);box-shadow:var(--shadow-md)}
+.qr-frame img{width:130px;height:130px;display:block;border-radius:4px}
+.dl-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  width:100%;padding:12px;border-radius:11px;
+  background:linear-gradient(135deg,var(--g),var(--gl));
+  color:#fff;text-decoration:none;font-size:.84rem;font-weight:700;
+  box-shadow:0 4px 16px rgba(26,107,74,.3);
+  transition:transform .2s,box-shadow .2s;
+}
+.dl-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,107,74,.4)}
+
+/* Quick info */
+.info-list{display:flex;flex-direction:column}
+.i-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--borderl);font-size:.81rem;
+  transition:all .15s;border-radius:7px;
+}
+.i-row:last-child{border-bottom:none}
+.i-row:hover{background:var(--gxxl);padding:9px 8px;margin:0 -8px}
+.i-lbl{color:var(--muted)}
+.i-val{font-weight:700;color:var(--ink);text-align:right;font-size:.8rem}
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media(max-width:900px){
+  .right-col{grid-template-columns:1fr 1fr}
+  .dg{grid-template-columns:1fr 1fr}
+  .stats-strip{grid-template-columns:1fr 1fr}
+  .ss:nth-child(2){border-right:none}
+  .add-form-grid{grid-template-columns:1fr}
+  .ph-right{display:none}
+}
+@media(max-width:600px){
+  .profile-page{padding:calc(var(--nav-h) + 56px) 4% 80px}
+  .patient-hero{padding:20px}
+  .ph-inner{flex-direction:column;align-items:flex-start;gap:14px}
+  .ph-avatar,.ph-photo{width:64px;height:64px;font-size:1.4rem}
+  .ph-name{font-size:1.3rem}
+  .dg{grid-template-columns:1fr 1fr}
+  .card{padding:18px}
+  .right-col{grid-template-columns:1fr}
+}
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+  <div class="profile-wrap">
+
+    <a href="{{ url_for('main.index') }}" class="back-link">← Back to home</a>
+
+    <!-- ── Hero ── -->
+    <div class="patient-hero">
+      <div class="ph-bg1"></div><div class="ph-bg2"></div>
+      <div class="ph-shimmer"></div>
+      <div class="ph-inner">
+        {% if patient.photo_path and patient.photo_path != 'None' %}
+          <img src="{{ url_for('static', filename=patient.photo_path) }}?v={{ patient.updated_at.timestamp()|int }}"
+               class="ph-photo" id="heroPhotoDisplay" alt="{{ patient.name }}"
+               onerror="this.style.display='none'">
+        {% else %}
+          <div class="ph-avatar" id="heroPhotoDisplay">
+            {{ patient.name[0] }}{{ patient.name.split()[-1][0] if patient.name.split()|length > 1 else '' }}
+          </div>
+        {% endif %}
+
+        <div class="ph-info">
+          <div class="ph-label"><div class="ph-lv"></div> Patient Record · Live</div>
+          <div class="ph-name">{{ patient.name }}</div>
+          <div class="ph-id">{{ patient.id }}{% if patient.village %} · {{ patient.village }}{% endif %}{% if patient.district %}, {{ patient.district }}{% endif %}</div>
+          <div class="ph-pills">
+            <span class="pp">{{ patient.age }} yrs</span>
+            {% if patient.gender %}<span class="pp">{{ patient.gender }}</span>{% endif %}
+            {% if patient.blood_group %}<span class="pp">🩸 {{ patient.blood_group }}</span>{% endif %}
+            {% for c in patient.conditions_list() %}<span class="pp pp-a">{{ c }}</span>{% endfor %}
+            {% for a in patient.allergies_list() %}<span class="pp pp-r">⚠ {{ a }}</span>{% endfor %}
+          </div>
+        </div>
+
+        <div class="ph-right">
+          <div class="ph-live-row"><div class="ph-live-dot"></div> Live</div>
+          <div class="ph-visit-num">{{ patient.visit_count() }}</div>
+          <div class="ph-visit-lbl">visit{{ 's' if patient.visit_count() != 1 }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Stats strip ── -->
+    <div class="stats-strip">
+      <div class="ss"><div class="ss-lbl">Blood Group</div><div class="ss-val ss-g">{{ patient.blood_group or '—' }}</div></div>
+      <div class="ss"><div class="ss-lbl">Total Visits</div><div class="ss-val">{{ patient.visit_count() }}</div></div>
+      <div class="ss"><div class="ss-lbl">Documents</div><div class="ss-val">{{ documents|length }}</div></div>
+      <div class="ss"><div class="ss-lbl">Registered</div><div class="ss-val" style="font-size:.76rem">{{ patient.created_at.strftime('%d %b %Y') }}</div></div>
+    </div>
+
+    <!-- ── Two column grid ── -->
+    <div class="profile-grid">
+
+      <!-- ═══ LEFT — full width ═══ -->
+      <div>
+
+        <!-- Allergy banner -->
+        {% set allgs = patient.allergies_list() %}
+        {% if allgs %}
+        <div class="allergy-banner">
+          <div class="ab-ico">⚠️</div>
+          <div>
+            <div class="ab-ttl">Allergy Alert — Read Before Prescribing</div>
+            <div class="ab-txt">{{ allgs | join(', ') }}</div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Patient details -->
+        <div class="card">
+          <div class="card-hd">
+            <span class="card-ttl">👤 Patient Details</span>
+          </div>
+          <div class="dg">
+            <div class="db"><div class="db-l">Age</div><div class="db-v">{{ patient.age }} yrs</div></div>
+            <div class="db"><div class="db-l">Gender</div><div class="db-v">{{ patient.gender or '—' }}</div></div>
+            <div class="db"><div class="db-l">Blood Group</div><div class="db-v">{{ patient.blood_group or '—' }}</div></div>
+            <div class="db"><div class="db-l">Phone</div><div class="db-v">{{ patient.phone or '—' }}</div></div>
+            <div class="db"><div class="db-l">Village</div><div class="db-v">{{ patient.village or '—' }}</div></div>
+            <div class="db"><div class="db-l">District</div><div class="db-v">{{ patient.district or '—' }}</div></div>
+            <div class="db"><div class="db-l">State</div><div class="db-v">{{ patient.state or '—' }}</div></div>
+            <div class="db"><div class="db-l">Emergency</div><div class="db-v">{{ patient.emergency_contact or '—' }}</div></div>
+          </div>
+          {% if patient.medications_list() %}
+          <div class="sec-ey">Current Medications</div>
+          <div class="tags">
+            {% for m in patient.medications_list() %}<span class="tag t-g">💊 {{ m }}</span>{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Visit history -->
+        <div class="card">
+          <div class="card-hd">
+            <span class="card-ttl">📋 Visit History <span class="badge-g">{{ visits|length }}</span></span>
+          </div>
+          {% if visits %}
+          <div class="timeline">
+            {% for v in visits %}
+            <div class="vi">
+              <div class="vi-c">
+                <div class="vi-top">
+                  <span class="vtype vt-{{ v.visit_type | replace('-','') | replace(' ','') }}">{{ v.visit_type }}</span>
+                  <span class="vi-date">{{ v.visited_at.strftime('%d %b %Y · %I:%M %p') }}</span>
+                  {% if v.doctor %}<span class="vi-dr">🩺 Dr. {{ v.doctor.name }}</span>{% endif %}
+                </div>
+                <div class="vi-diag">{{ v.diagnosis }}</div>
+                <div class="vi-hosp">🏥 {{ v.hospital or 'Hospital not specified' }}</div>
+                {% if v.prescription %}<div class="vi-rx">💊 <strong>Rx:</strong> {{ v.prescription }}</div>{% endif %}
+                {% if v.notes %}<div class="vi-notes">📝 {{ v.notes }}</div>{% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="no-v">
+            <div style="font-size:2rem;margin-bottom:10px">🏥</div>
+            <p style="font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:5px">No visits recorded yet</p>
+            <p style="font-size:.8rem">When a doctor scans the QR card and logs a visit, it appears here.</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Add visit (doctors) -->
+        {% if current_user.is_authenticated and (current_user.is_doctor() or current_user.is_admin()) %}
+        <div class="card">
+          <div class="card-hd">
+            <span class="card-ttl">➕ Add Today's Visit</span>
+            <span style="font-size:.7rem;color:var(--muted)">🎤 Voice-enabled</span>
+          </div>
+          <div class="v-status" id="visitVoiceStatus">
+            <div class="vs-dot"></div>
+            <span id="visitVsText">Listening... बोलें</span>
+          </div>
+          <form method="POST" action="{{ url_for('patient.add_visit', patient_id=patient.id) }}">
+            <div class="add-form-grid">
+              <div class="fg">
+                <label class="fl">Visit Type</label>
+                <select name="visit_type" class="fs">
+                  <option>OPD</option><option>Emergency</option><option>Follow-up</option><option>Inpatient</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label class="fl">Hospital</label>
+                <input type="text" name="hospital" class="fi" value="{{ current_user.hospital or '' }}" placeholder="Hospital name">
+              </div>
+              <div class="fg full">
+                <label class="fl">Diagnosis * <button type="button" class="vtag" onclick="visitVoice('v_diag')">🎤 Speak</button></label>
+                <input type="text" name="diagnosis" class="fi" id="v_diag" placeholder="Speak or type in Hindi / English" required>
+              </div>
+              <div class="fg full">
+                <label class="fl">Prescription <button type="button" class="vtag" onclick="visitVoice('v_presc')">🎤 Speak</button></label>
+                <textarea name="prescription" class="fta" id="v_presc" placeholder="Medications and dosage"></textarea>
+              </div>
+              <div class="fg full">
+                <label class="fl">Notes <button type="button" class="vtag" onclick="visitVoice('v_notes')">🎤 Speak</button></label>
+                <textarea name="notes" class="fta" id="v_notes" placeholder="Additional observations"></textarea>
+              </div>
+            </div>
+            <button type="submit" class="save-btn">Save Visit →</button>
+          </form>
+        </div>
+        {% endif %}
+
+        <!-- Documents -->
+        <div class="card">
+          <div class="card-hd">
+            <span class="card-ttl">📁 Medical Documents
+              <span class="{{ 'badge-g' if documents|length > 0 else 'badge-r' }}">
+                {{ documents|length }} file{{ 's' if documents|length != 1 }}
+              </span>
+            </span>
+          </div>
+          {% if documents %}
+            {% for doc in documents %}
+            <div class="doc-row">
+              <span class="doc-ico">{{ doc.icon() }}</span>
+              <div style="flex:1;min-width:0">
+                <div class="doc-nm">{{ doc.title }}</div>
+                <div class="doc-mt"><span class="doc-ttag">{{ doc.doc_type.title() }}</span>{% if doc.doc_date %} · {{ doc.doc_date.strftime('%d %b %Y') }}{% endif %}</div>
+              </div>
+              <div style="display:flex;gap:6px;flex-shrink:0">
+                <a href="{{ url_for('patient.view_doc', doc_id=doc.id) }}" target="_blank" class="dact dact-v">👁 View</a>
+                {% if current_user.is_authenticated %}
+                <form method="POST" action="{{ url_for('patient.delete_doc', doc_id=doc.id) }}" style="display:inline" onsubmit="return confirm('Delete this document?')">
+                  <button type="submit" class="dact dact-d">🗑</button>
+                </form>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div style="text-align:center;padding:22px;color:var(--muted);font-size:.875rem">No documents uploaded yet.</div>
+          {% endif %}
+          <button type="button" class="save-btn"
+                  style="margin-top:14px;background:var(--gxl);color:var(--g);border:1.5px solid rgba(26,107,74,.2);box-shadow:none;width:100%;justify-content:center"
+                  onclick="document.getElementById('uploadDocForm').classList.toggle('show')">
+            ➕ Upload Report / Document
+          </button>
+          <div class="up-form" id="uploadDocForm">
+            <form method="POST" action="{{ url_for('patient.upload_doc', patient_id=patient.id) }}" enctype="multipart/form-data">
+              <div class="doc-up">
+                <input type="file" name="doc_file" accept=".jpg,.jpeg,.png,.pdf" required>
+                📎 Tap to select (JPG, PNG, PDF — max 10MB)
+              </div>
+              <div class="uf-grid">
+                <input type="text" name="doc_title" class="uf-i" placeholder="Report title">
+                <select name="doc_type" class="uf-s">
+                  <option value="report">Lab Report</option>
+                  <option value="prescription">Prescription</option>
+                  <option value="xray">X-Ray</option>
+                  <option value="scan">Scan / Ultrasound</option>
+                  <option value="discharge">Discharge Summary</option>
+                  <option value="other">Other</option>
+                </select>
+                <input type="date" name="doc_date" class="uf-i" style="grid-column:1/-1">
+              </div>
+              <button type="submit" class="save-btn" style="width:100%;justify-content:center;margin-top:6px">Upload →</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+      <!-- END LEFT -->
+
+    </div><!-- end profile-grid -->
+
+    <!-- ═══ RIGHT CARDS — full width row of 3 ═══ -->
+    <div class="right-col">
+
+        <!-- Identity -->
+        <div class="card id-card">
+          <div class="card-hd" style="justify-content:center;margin-bottom:16px">
+            <span class="card-ttl">🪪 Patient Identity</span>
+          </div>
+          {% if patient.photo_path and patient.photo_path != 'None' %}
+            <img src="{{ url_for('static', filename=patient.photo_path) }}?v={{ patient.updated_at.timestamp()|int }}"
+                 class="id-photo" id="profilePhotoDisplay" alt="{{ patient.name }}"
+                 onerror="this.outerHTML='<div class=id-av id=profilePhotoDisplay>👤</div>'">
+          {% else %}
+            <div class="id-av" id="profilePhotoDisplay">
+              <svg width="50" height="50" viewBox="0 0 52 52" fill="none">
+                <circle cx="26" cy="20" r="10" fill="#1a6b4a" opacity=".4"/>
+                <ellipse cx="26" cy="42" rx="18" ry="10" fill="#1a6b4a" opacity=".25"/>
+              </svg>
+            </div>
+          {% endif %}
+          <div class="id-nm">{{ patient.name }}</div>
+          <div class="id-sub">{{ patient.id }} · {{ patient.blood_group or 'N/A' }}</div>
+
+          <div class="cam-sec">
+            <div class="cam-ttl">{% if patient.photo_path %}Update Photo{% else %}Add Live Photo{% endif %}</div>
+            <div class="cam-wrap" id="miniCamWrap">
+              <video id="miniVideo" autoplay playsinline muted></video>
+              <div class="cam-ring"></div>
+            </div>
+            <canvas id="miniCanvas"></canvas>
+            <form method="POST" action="{{ url_for('patient.upload_photo', patient_id=patient.id) }}" id="photoUploadForm" enctype="multipart/form-data">
+              <input type="hidden" name="photo_data" id="miniPhotoData">
+              <div class="cam-btns" id="btnIdle">
+                <button type="button" class="cbtn cb-g" onclick="openMiniCamera()">📷 Open Camera</button>
+              </div>
+              <div class="cam-btns" id="btnCamera" style="display:none">
+                <button type="button" class="cbtn cb-cap" onclick="captureMini()">🟢 Capture</button>
+                <button type="button" class="cbtn cb-can" onclick="closeMiniCamera()">✕ Cancel</button>
+              </div>
+              <div class="cam-btns" id="btnSave" style="display:none">
+                <button type="button" class="cbtn cb-g" onclick="submitPhoto()">✅ Save</button>
+                <button type="button" class="cbtn cb-can" onclick="retakeMini()">🔄 Retake</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- QR card -->
+        <div class="card qr-sec">
+          <div class="card-hd" style="justify-content:center;margin-bottom:14px">
+            <span class="card-ttl">🔲 QR Health Card</span>
+          </div>
+          <div class="pid-pill">
+            <span class="pid-l">ID</span>
+            <span class="pid-v">{{ patient.id }}</span>
+          </div>
+          {% if patient.qr_path %}
+          <div class="qr-frame">
+            <img src="{{ url_for('static', filename=patient.qr_path) }}" alt="QR Code">
+          </div>
+          {% else %}
+          <div class="qr-frame" style="width:130px;height:130px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.75rem">Generating...</div>
+          {% endif %}
+          <p style="font-size:.72rem;color:var(--muted);margin-bottom:12px;line-height:1.55;text-align:center">Any doctor scans on any phone — no app needed.</p>
+          {% if patient.card_path %}
+          <a href="{{ url_for('static', filename=patient.card_path) }}" download="{{ patient.name }}_HealthCard.pdf" class="dl-btn">
+            ⬇ Download PDF Card
+          </a>
+          {% endif %}
+        </div>
+
+        <!-- Quick info -->
+        <div class="card">
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:14px">ℹ️ Quick Info</div>
+          <div class="info-list">
+            <div class="i-row"><span class="i-lbl">Registered</span><span class="i-val">{{ patient.created_at.strftime('%d %b %Y') }}</span></div>
+            <div class="i-row"><span class="i-lbl">Total visits</span><span class="i-val">{{ patient.visit_count() }}</span></div>
+            {% if patient.last_visit() %}
+            <div class="i-row"><span class="i-lbl">Last visit</span><span class="i-val">{{ patient.last_visit().visited_at.strftime('%d %b') }}</span></div>
+            {% endif %}
+            <div class="i-row"><span class="i-lbl">Documents</span><span class="i-val">{{ documents|length }}</span></div>
+            <div class="i-row"><span class="i-lbl">Photo</span><span class="i-val">{{ '✅ Yes' if patient.photo_path else '❌ No' }}</span></div>
+            <div class="i-row"><span class="i-lbl">State</span><span class="i-val">{{ patient.state or '—' }}</span></div>
+          </div>
+        </div>
+
+      </div><!-- end right-col -->
+  </div><!-- end profile-wrap -->
+</div><!-- end profile-page -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let miniStream=null;
+async function openMiniCamera(){
+  try{
+    miniStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:480},height:{ideal:480}}});
+    document.getElementById('miniVideo').srcObject=miniStream;
+    document.getElementById('miniCamWrap').classList.add('show');
+    document.getElementById('btnIdle').style.display='none';
+    document.getElementById('btnCamera').style.display='flex';
+    document.getElementById('btnSave').style.display='none';
+    document.getElementById('miniPhotoData').value='';
+  }catch(e){alert('Camera access denied. Allow in browser settings.');}
+}
+function captureMini(){
+  const v=document.getElementById('miniVideo'),c=document.getElementById('miniCanvas'),S=400;
+  c.width=c.height=S;const ctx=c.getContext('2d');
+  ctx.save();ctx.beginPath();ctx.arc(S/2,S/2,S/2,0,Math.PI*2);ctx.clip();
+  const vW=v.videoWidth||480,vH=v.videoHeight||480,side=Math.min(vW,vH);
+  ctx.drawImage(v,(vW-side)/2,(vH-side)/2,side,side,0,0,S,S);ctx.restore();
+  const url=c.toDataURL('image/jpeg',.9);
+  document.getElementById('miniPhotoData').value=url;
+  updatePhoto(url);stopMiniStream();
+  document.getElementById('miniCamWrap').classList.remove('show');
+  document.getElementById('btnCamera').style.display='none';
+  document.getElementById('btnSave').style.display='flex';
+}
+function updatePhoto(url){
+  ['profilePhotoDisplay','heroPhotoDisplay'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    if(el.tagName==='IMG'){el.src=url;}
+    else{const img=document.createElement('img');img.src=url;img.className=id==='heroPhotoDisplay'?'ph-photo':'id-photo';img.id=id;el.parentNode.replaceChild(img,el);}
+  });
+}
+function submitPhoto(){
+  const d=document.getElementById('miniPhotoData').value;
+  if(!d||d.length<100){alert('No photo captured yet.');return;}
+  document.getElementById('photoUploadForm').submit();
+}
+function closeMiniCamera(k){
+  stopMiniStream();document.getElementById('miniCamWrap').classList.remove('show');
+  document.getElementById('btnCamera').style.display='none';
+  if(!k){document.getElementById('btnIdle').style.display='flex';document.getElementById('btnSave').style.display='none';document.getElementById('miniPhotoData').value='';}
+}
+function stopMiniStream(){if(miniStream){miniStream.getTracks().forEach(t=>t.stop());miniStream=null;}}
+function retakeMini(){document.getElementById('miniPhotoData').value='';document.getElementById('btnSave').style.display='none';openMiniCamera();}
+window.addEventListener('beforeunload',stopMiniStream);
+
+let visitRec=null;
+function visitVoice(fieldId){
+  const field=document.getElementById(fieldId);if(!field)return;
+  if(visitRec){try{visitRec.stop();}catch(e){}}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Voice not supported. Use Chrome or Edge.');return;}
+  visitRec=new SR();visitRec.lang='hi-IN';visitRec.continuous=false;visitRec.interimResults=true;
+  const se=document.getElementById('visitVoiceStatus'),st=document.getElementById('visitVsText');
+  visitRec.onstart=()=>{se.classList.add('show');st.textContent='Listening... बोलें';};
+  visitRec.onresult=(e)=>{
+    let t='';for(let i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;
+    st.textContent=t;
+    if(e.results[e.resultIndex].isFinal){const ex=field.value.trim();field.value=ex?ex+' '+t:t;st.textContent='✅ '+t;setTimeout(()=>se.classList.remove('show'),2500);}
+  };
+  visitRec.onerror=(e)=>{st.textContent='❌ '+(e.error==='not-allowed'?'Mic denied':e.error);setTimeout(()=>se.classList.remove('show'),2000);};
+  visitRec.onend=()=>{setTimeout(()=>se.classList.remove('show'),2000);visitRec=null;};
+  visitRec.start();
+}
+</script>
+{% endblock %}

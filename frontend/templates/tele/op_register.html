@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Join as Patient — Consult a Doctor{% endblock %}
+{% block extra_styles %}
+.auth-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl);display:flex;align-items:flex-start;justify-content:center}
+.auth-wrap{width:100%;max-width:580px}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:36px;box-shadow:var(--shadow-lg)}
+.auth-title{font-size:1.6rem;font-weight:800;color:var(--ink);margin-bottom:6px;letter-spacing:-.02em}
+.auth-sub{font-size:.9rem;color:var(--muted);margin-bottom:28px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fl{font-size:.8rem;font-weight:600;color:var(--inkm)}
+.fi,.fs{padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s,background .2s;width:100%}
+.fi:focus,.fs:focus{border-color:var(--g);background:var(--card);box-shadow:0 0 0 3px rgba(26,107,74,.1)}
+.fhint{font-size:.72rem;color:var(--muted);margin-top:3px}
+.section-title{font-size:.68rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g);margin:22px 0 14px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--borderl)}
+/* Photo capture */
+.photo-box{background:var(--gxxl);border:2px dashed var(--border);border-radius:14px;padding:20px;text-align:center;margin-bottom:16px;transition:border-color .2s}
+.photo-box.has-photo{border-style:solid;border-color:var(--g);background:var(--gxl)}
+.cam-wrap{display:none;border-radius:12px;overflow:hidden;background:#000;margin-bottom:10px;position:relative}
+.cam-wrap.show{display:block}
+#regVideo{width:100%;display:block}
+#regCanvas{display:none}
+.preview-img{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--g);margin:0 auto 10px;display:none}
+.preview-img.show{display:block}
+.cam-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+/* File upload */
+.file-up{border:2px dashed var(--border);border-radius:10px;padding:14px;text-align:center;position:relative;cursor:pointer;transition:all .2s;background:var(--gxxl);font-size:.82rem;color:var(--muted)}
+.file-up:hover{border-color:var(--g);background:var(--gxl);color:var(--g)}
+.file-up input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.submit-btn{width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;border:none;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(26,107,74,.3)}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,107,74,.4)}
+.cbtn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;font-family:'Sora',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.cb-g{background:linear-gradient(135deg,var(--g),var(--gl));color:#fff}.cb-c{background:var(--gxl);color:var(--g);border:1px solid rgba(26,107,74,.2)}.cb-r{background:var(--redl);color:var(--red)}
+.login-link{text-align:center;margin-top:18px;font-size:.85rem;color:var(--muted)}
+.login-link a{color:var(--g);font-weight:600;text-decoration:none}
+{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-title">Create your patient account</div>
+      <div class="auth-sub">Create your account and book video consultations with verified doctors instantly — no waiting for approval.</div>
+
+      <form method="POST" enctype="multipart/form-data" id="regForm">
+        <input type="hidden" name="photo_data" id="photoData">
+
+        <div class="section-title">📸 Live Photo (Required)</div>
+        <div class="photo-box" id="photoBox">
+          <img id="previewImg" class="preview-img" src="" alt="Your photo">
+          <div class="cam-wrap" id="camWrap">
+            <video id="regVideo" autoplay playsinline muted></video>
+          </div>
+          <canvas id="regCanvas"></canvas>
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px" id="photoInstr">Take a clear selfie — will be shown on your profile</div>
+          <div class="cam-btns" id="btnIdle"><button type="button" class="cbtn cb-g" onclick="openCam()">📷 Open Camera</button></div>
+          <div class="cam-btns" id="btnCam" style="display:none"><button type="button" class="cbtn cb-c" onclick="capture()">🟢 Capture</button><button type="button" class="cbtn cb-r" onclick="closeCam()">✕ Cancel</button></div>
+          <div class="cam-btns" id="btnDone" style="display:none"><button type="button" class="cbtn cb-g" onclick="openCam()">🔄 Retake</button></div>
+        </div>
+
+        <div class="section-title">👤 Personal Information</div>
+        <div class="fg2">
+          <div class="fg"><label class="fl">Full Name *</label><input type="text" name="name" class="fi" required placeholder="Your full name"></div>
+          <div class="fg"><label class="fl">Age *</label><input type="number" name="age" class="fi" required min="1" max="120" placeholder="25"></div>
+        </div>
+        <div class="fg2">
+          <div class="fg"><label class="fl">Gender</label><select name="gender" class="fs"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div class="fg"><label class="fl">Blood Group</label><select name="blood_group" class="fs"><option value="">Unknown</option>{% for bg in ['A+','A-','B+','B-','AB+','AB-','O+','O-'] %}<option>{{bg}}</option>{% endfor %}</select></div>
+        </div>
+        <div class="fg"><label class="fl">Phone Number *</label><input type="tel" name="phone" class="fi" required placeholder="9876543210"></div>
+        <div class="fg"><label class="fl">Address</label><input type="text" name="address" class="fi" placeholder="City, State"></div>
+        <div class="fg"><label class="fl">Aadhar Number</label><input type="text" name="aadhar_number" class="fi" placeholder="XXXX XXXX XXXX" maxlength="14"></div>
+
+        <div class="section-title">🔐 Account</div>
+        <div class="fg"><label class="fl">Email *</label><input type="email" name="email" class="fi" required placeholder="you@email.com"></div>
+        <div class="fg2">
+          <div class="fg"><label class="fl">Password *</label><input type="password" name="password" class="fi" required minlength="6" placeholder="Min 6 characters"></div>
+          <div class="fg"><label class="fl">Confirm Password *</label><input type="password" name="password2" class="fi" required placeholder="Repeat password"></div>
+        </div>
+
+        <div class="section-title">📁 Documents</div>
+        <div class="fg"><label class="fl">Aadhar Card (Photo/PDF) *</label><div class="file-up"><input type="file" name="aadhar_doc" accept=".jpg,.jpeg,.png,.pdf" required>📎 Upload Aadhar — JPG, PNG or PDF</div></div>
+        <div class="fg2">
+          <div class="fg"><label class="fl">Previous Report 1 <span style="color:var(--muted);font-weight:400">(optional)</span></label><div class="file-up"><input type="file" name="medical_doc1" accept=".jpg,.jpeg,.png,.pdf">📎 Lab report / X-ray</div></div>
+          <div class="fg"><label class="fl">Previous Report 2 <span style="color:var(--muted);font-weight:400">(optional)</span></label><div class="file-up"><input type="file" name="medical_doc2" accept=".jpg,.jpeg,.png,.pdf">📎 Prescription / Scan</div></div>
+        </div>
+
+        <button type="submit" class="submit-btn">Create Account →</button>
+      </form>
+      <div class="login-link">Already have an account? <a href="{{ url_for('tele.op_login') }}">Sign in</a></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+let camStream=null;
+async function openCam(){
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:480},height:{ideal:480}}});
+    document.getElementById('regVideo').srcObject=camStream;
+    document.getElementById('camWrap').classList.add('show');
+    document.getElementById('btnIdle').style.display='none';
+    document.getElementById('btnCam').style.display='flex';
+    document.getElementById('btnDone').style.display='none';
+    document.getElementById('previewImg').classList.remove('show');
+    document.getElementById('photoInstr').textContent='Position your face in the frame';
+  }catch(e){alert('Camera access denied. Please allow camera permission.');}
+}
+function capture(){
+  const v=document.getElementById('regVideo'),c=document.getElementById('regCanvas'),S=400;
+  c.width=c.height=S;const ctx=c.getContext('2d');
+  ctx.save();ctx.beginPath();ctx.arc(S/2,S/2,S/2,0,Math.PI*2);ctx.clip();
+  const vW=v.videoWidth||480,vH=v.videoHeight||480,side=Math.min(vW,vH);
+  ctx.drawImage(v,(vW-side)/2,(vH-side)/2,side,side,0,0,S,S);ctx.restore();
+  const url=c.toDataURL('image/jpeg',.9);
+  document.getElementById('photoData').value=url;
+  const img=document.getElementById('previewImg');img.src=url;img.classList.add('show');
+  document.getElementById('photoBox').classList.add('has-photo');
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  document.getElementById('camWrap').classList.remove('show');
+  document.getElementById('btnCam').style.display='none';
+  document.getElementById('btnDone').style.display='flex';
+  document.getElementById('photoInstr').textContent='✅ Photo captured successfully!';
+}
+function closeCam(){
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  document.getElementById('camWrap').classList.remove('show');
+  document.getElementById('btnCam').style.display='none';
+  document.getElementById('btnIdle').style.display='flex';
+  document.getElementById('photoInstr').textContent='Take a clear selfie — will be shown on your profile';
+}
+document.getElementById('regForm').addEventListener('submit',function(e){
+  if(!document.getElementById('photoData').value){
+    e.preventDefault();alert('Please take a photo before submitting.');return;
+  }
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());}
+});
+window.addEventListener('beforeunload',()=>{if(camStream)camStream.getTracks().forEach(t=>t.stop());});
+</script>
+{% endblock %}

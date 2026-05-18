@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Sign In{% endblock %}
+
+{% block extra_styles %}
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 56px) 5% 60px;background:linear-gradient(160deg,var(--white) 60%,var(--gxxl))}
+.auth-wrap{width:100%;max-width:440px}
+.auth-logo{text-align:center;margin-bottom:32px}
+.auth-logo a{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:1.3rem;color:var(--g)}
+.auth-logo-icon{width:44px;height:44px;border-radius:12px;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 4px 16px rgba(26,107,74,.3)}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px;box-shadow:0 8px 40px rgba(0,0,0,.08)}
+.auth-title{font-size:1.6rem;font-weight:800;color:var(--ink);margin-bottom:6px;text-align:center}
+.auth-sub{font-size:.9rem;color:var(--muted);text-align:center;margin-bottom:32px}
+.auth-sub a{color:var(--g);text-decoration:none;font-weight:600}
+.auth-sub a:hover{text-decoration:underline}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.form-label{font-size:.82rem;font-weight:600;color:var(--inkm)}
+.form-label span{color:var(--red);margin-left:2px}
+.form-input{padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-family:'Sora',sans-serif;font-size:.9rem;color:var(--ink);transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+.form-input:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(26,107,74,.1)}
+.form-input::placeholder{color:var(--muted);opacity:.7}
+.form-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.checkbox-row{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);cursor:pointer}
+.checkbox-row input{width:16px;height:16px;accent-color:var(--g)}
+.forgot-link{font-size:.82rem;color:var(--g);text-decoration:none;font-weight:500}
+.forgot-link:hover{text-decoration:underline}
+.submit-btn{width:100%;padding:14px;border-radius:12px;background:var(--g);color:#fff;border:none;cursor:pointer;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;box-shadow:0 4px 16px rgba(26,107,74,.3);transition:background .2s,transform .15s,box-shadow .2s}
+.submit-btn:hover{background:var(--gl);transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,107,74,.4)}
+.divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--muted);font-size:.8rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.role-info{background:var(--gxxl);border:1px solid rgba(26,107,74,.15);border-radius:12px;padding:14px 16px;font-size:.8rem;color:var(--inkm);line-height:1.6;margin-top:20px}
+.role-info strong{color:var(--g)}
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-wrap">
+    <div class="auth-logo reveal">
+      <a href="{{ url_for('main.index') }}">
+        <div class="auth-logo-icon">🌿</div>
+        AarogyaLink
+      </a>
+    </div>
+
+    <div class="auth-card reveal reveal-delay-1">
+      <h1 class="auth-title">Welcome back 👋</h1>
+      <p class="auth-sub">
+        Don't have an account?
+        <a href="{{ url_for('auth.register') }}">Sign up here</a>
+      </p>
+
+      <form method="POST" action="{{ url_for('auth.login') }}">
+        <div class="form-group">
+          <label class="form-label">Email address <span>*</span></label>
+          <input type="email" name="email" class="form-input"
+                 placeholder="you@example.com" required
+                 value="{{ request.form.get('email', '') }}">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password <span>*</span></label>
+          <input type="password" name="password" class="form-input"
+                 placeholder="Your password" required>
+        </div>
+
+        <div class="form-row">
+          <label class="checkbox-row">
+            <input type="checkbox" name="remember"> Remember me
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="submit-btn">Sign In →</button>
+      </form>
+
+      <div class="role-info">
+        <strong>ASHA Worker?</strong> Use the email and password given by your supervisor.<br>
+        <strong>Doctor?</strong> Use your registered email. New here? <a href="{{ url_for('auth.register') }}" style="color:var(--g);font-weight:600">Create account</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Patient Login — Consult a Doctor{% endblock %}
+{% block extra_styles %}
+.auth-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl);display:flex;align-items:center;justify-content:center}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px;box-shadow:var(--shadow-lg);width:100%;max-width:420px}
+.auth-logo{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--gd),var(--g));display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 20px}
+.auth-title{font-size:1.5rem;font-weight:800;color:var(--ink);text-align:center;margin-bottom:6px}
+.auth-sub{font-size:.85rem;color:var(--muted);text-align:center;margin-bottom:28px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fl{font-size:.8rem;font-weight:600;color:var(--inkm)}
+.fi{padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s,background .2s;width:100%}
+.fi:focus{border-color:var(--g);background:var(--card);box-shadow:0 0 0 3px rgba(26,107,74,.1)}
+.submit-btn{width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;border:none;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(26,107,74,.3)}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,107,74,.4)}
+.bottom-link{text-align:center;margin-top:18px;font-size:.85rem;color:var(--muted)}
+.bottom-link a{color:var(--g);font-weight:600;text-decoration:none}
+{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">🩺</div>
+    <div class="auth-title">Patient Sign In</div>
+    <div class="auth-sub">Sign in to book video consultations with doctors</div>
+    <form method="POST" action="{{ url_for('tele.op_login', next=request.args.get('next','')) }}">
+      <input type="hidden" name="next" value="{{ request.args.get('next','') }}">
+      <div class="fg"><label class="fl">Email</label><input type="email" name="email" class="fi" required placeholder="your@email.com" autofocus></div>
+      <div class="fg"><label class="fl">Password</label><input type="password" name="password" class="fi" required placeholder="Your password"></div>
+      <button type="submit" class="submit-btn">Sign In & Continue →</button>
+      <div style="text-align:center;margin-top:12px;font-size:.78rem;color:var(--muted)">New here? <a href="{{ url_for('tele.op_register', next=request.args.get('next','')) }}" style="color:var(--g);font-weight:600">Create free account →</a></div>
+    </form>
+
+    <div class="bottom-link" style="margin-top:8px"><a href="{{ url_for('tele.find_doctors') }}" style="color:var(--muted)">← Browse doctors without signing in</a></div>
+  </div>
+</div>
+{% endblock %}

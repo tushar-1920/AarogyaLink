@@ -1,0 +1,766 @@
+{% extends "base.html" %}
+{% block title %}Register Patient{% endblock %}
+
+{% block extra_styles %}
+.reg-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:linear-gradient(160deg,var(--white) 60%,var(--gxxl))}
+.reg-wrap{max-width:760px;margin:0 auto}
+.reg-header{text-align:center;margin-bottom:40px}
+.reg-header h1{font-size:2.4rem;font-weight:800;margin-bottom:10px;letter-spacing:-.02em}
+
+/* Progress */
+.prog-wrap{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:36px;flex-wrap:wrap;row-gap:8px}
+.ps{display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:600;color:var(--muted);padding:7px 13px;border-radius:20px;transition:all .3s;cursor:default}
+.ps.active{background:var(--gxl);color:var(--g)}
+.ps.done{color:var(--g)}
+.ps-num{width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--muted);transition:all .3s;flex-shrink:0}
+.ps.active .ps-num,.ps.done .ps-num{background:var(--g);color:#fff}
+.pl{width:24px;height:2px;background:var(--border);transition:background .3s}
+.pl.done{background:var(--g)}
+
+/* Form cards */
+.fcard{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:32px;box-shadow:0 4px 24px rgba(0,0,0,.06);margin-bottom:14px;transition:box-shadow .3s}
+.fcard:focus-within{box-shadow:0 8px 40px rgba(26,107,74,.1);border-color:rgba(26,107,74,.2)}
+.fcard-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg.full{grid-column:1/-1}
+.flbl{font-size:.82rem;font-weight:600;color:var(--inkm);display:flex;align-items:center;justify-content:space-between}
+.req{color:var(--red);margin-left:2px}
+.opt{color:var(--muted);font-weight:400;font-size:.72rem;margin-left:4px}
+
+/* Input with voice button */
+.input-voice-wrap{position:relative;display:flex;align-items:center;gap:0}
+.fi,.fs,.fta{padding:11px 44px 11px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-family:'Sora',sans-serif;font-size:.88rem;color:var(--ink);transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--g);box-shadow:0 0 0 3px rgba(26,107,74,.1)}
+.fi::placeholder,.fta::placeholder{color:var(--muted);opacity:.6}
+.fta{resize:vertical;min-height:85px;padding-right:44px}
+.fs{padding-right:14px}
+.voice-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s;flex-shrink:0;z-index:2}
+.voice-btn.idle{background:var(--gxl);color:var(--g)}
+.voice-btn.idle:hover{background:rgba(26,107,74,.2);transform:translateY(-50%) scale(1.05)}
+.voice-btn.listening{background:var(--red);color:#fff;animation:voicePulse 1s ease-in-out infinite}
+.voice-btn.processing{background:var(--amberl);color:var(--amber)}
+@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 rgba(220,38,38,.4)}50%{box-shadow:0 0 0 8px rgba(220,38,38,0)}}
+.fhint{font-size:.72rem;color:var(--muted);margin-top:3px}
+
+/* Voice status bar */
+.voice-status{display:none;align-items:center;gap:10px;background:var(--gxl);border:1px solid rgba(26,107,74,.2);border-radius:10px;padding:10px 14px;margin-top:6px;font-size:.8rem;color:var(--g);font-weight:500}
+.voice-status.show{display:flex}
+.vs-waves{display:flex;gap:3px;align-items:center}
+.vs-wave{width:3px;border-radius:3px;background:var(--g);animation:wave 1s ease-in-out infinite}
+.vs-wave:nth-child(1){height:10px;animation-delay:0s}
+.vs-wave:nth-child(2){height:18px;animation-delay:.15s}
+.vs-wave:nth-child(3){height:14px;animation-delay:.3s}
+.vs-wave:nth-child(4){height:20px;animation-delay:.45s}
+.vs-wave:nth-child(5){height:10px;animation-delay:.6s}
+@keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.6)}}
+
+/* Allergy alert */
+.allergy-alert{background:#fef2f2;border:1px solid rgba(220,38,38,.25);border-radius:10px;padding:10px 14px;margin-top:8px;font-size:.78rem;color:var(--red);display:none;align-items:flex-start;gap:8px;line-height:1.5}
+.allergy-alert.show{display:flex}
+
+/* ═══ Photo Section ═══ */
+.photo-section{background:var(--gxxl);border:2px dashed var(--border);border-radius:16px;padding:22px;text-align:center;transition:border-color .3s,background .3s}
+.photo-section.has-photo{border-style:solid;border-color:rgba(26,107,74,.3);background:var(--gxl)}
+.photo-preview-wrap{display:none;justify-content:center;margin-bottom:14px}
+.photo-preview-wrap.show{display:flex}
+.photo-preview{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--g);box-shadow:0 4px 16px rgba(26,107,74,.25)}
+.cam-wrap{position:relative;display:none;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#000}
+.cam-wrap.show{display:block}
+#camVideo{width:100%;display:block;border-radius:14px}
+.cam-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90px;height:90px;border-radius:50%;border:3px solid rgba(255,255,255,.6);pointer-events:none}
+canvas#capCanvas{display:none}
+.pbtn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.pbtn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.pbtn-open{background:var(--g);color:#fff;box-shadow:0 3px 12px rgba(26,107,74,.3)}
+.pbtn-open:hover{background:var(--gl);transform:translateY(-1px)}
+.pbtn-capture{background:#fff;color:var(--g);border:1.5px solid var(--g)}
+.pbtn-capture:hover{background:var(--gxl)}
+.pbtn-retake{background:rgba(220,38,38,.08);color:var(--red);border:1px solid rgba(220,38,38,.2)}
+.pbtn-retake:hover{background:rgba(220,38,38,.15)}
+.photo-skip-note{font-size:.72rem;color:var(--muted);margin-top:10px}
+.photo-skip-note.captured{color:var(--g);font-weight:500}
+
+/* ═══ Documents Section ═══ */
+.docs-section{background:var(--gxxl);border:2px dashed var(--border);border-radius:16px;padding:22px;transition:border-color .3s}
+.docs-section.has-docs{border-style:solid;border-color:rgba(26,107,74,.3)}
+.docs-subtitle{font-size:.82rem;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.doc-upload-area{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--white);margin-bottom:16px;position:relative}
+.doc-upload-area:hover,.doc-upload-area.dragover{border-color:var(--g);background:var(--gxl)}
+.doc-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.dua-icon{font-size:2rem;margin-bottom:8px}
+.dua-title{font-size:.88rem;font-weight:600;color:var(--ink);margin-bottom:4px}
+.dua-sub{font-size:.75rem;color:var(--muted)}
+.doc-list{display:flex;flex-direction:column;gap:10px}
+.doc-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+.di-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.di-icon{font-size:1.4rem;flex-shrink:0}
+.di-name{font-size:.82rem;font-weight:600;color:var(--ink);word-break:break-all}
+.di-size{font-size:.72rem;color:var(--muted)}
+.di-remove{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--red);font-size:.9rem;padding:4px 8px;border-radius:6px;transition:background .2s;flex-shrink:0}
+.di-remove:hover{background:var(--redl)}
+.di-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.di-input{padding:7px 10px;border-radius:8px;border:1px solid var(--border);font-family:'Sora',sans-serif;font-size:.78rem;color:var(--ink);width:100%;outline:none;background:var(--white)}
+.di-input:focus{border-color:var(--g)}
+.add-doc-hint{font-size:.75rem;color:var(--muted);text-align:center;margin-top:8px}
+
+/* Submit */
+.submit-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;flex-wrap:wrap;gap:14px}
+.submit-note{font-size:.77rem;color:var(--muted);line-height:1.6}
+.btn-submit{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;border-radius:12px;background:var(--g);color:#fff;border:none;cursor:pointer;font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;box-shadow:0 4px 16px rgba(26,107,74,.3);transition:background .2s,transform .15s,box-shadow .2s}
+.btn-submit:hover{background:var(--gl);transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,107,74,.4)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* Hindi helper tooltip */
+.hindi-hint{font-size:.7rem;color:var(--muted);font-style:italic}
+
+@media(max-width:640px){.fgrid{grid-template-columns:1fr}.fcard{padding:20px}.prog-wrap{gap:2px}.pl{display:none}}
+{% endblock %}
+
+{% block content %}
+<div class="reg-page">
+  <div class="reg-wrap">
+
+    <div class="reg-header reveal">
+      <div class="eyebrow" style="justify-content:center;margin-bottom:16px">
+        <span class="eyebrow-dot"></span> New Patient Registration
+      </div>
+      <h1>Register a <span class="serif">Patient</span></h1>
+      <p style="color:var(--muted);font-size:1rem;line-height:1.7">
+        Use the <strong>🎤 microphone</strong> button on each field to fill it by voice in Hindi or English.<br>
+        Upload previous medical reports, lab results, or X-rays from the patient.
+      </p>
+    </div>
+
+    <!-- Progress -->
+    <div class="prog-wrap reveal reveal-delay-1">
+      <div class="ps active" id="ps1"><div class="ps-num">1</div> Personal</div>
+      <div class="pl" id="pl1"></div>
+      <div class="ps" id="ps2"><div class="ps-num">2</div> Location</div>
+      <div class="pl" id="pl2"></div>
+      <div class="ps" id="ps3"><div class="ps-num">3</div> Medical</div>
+      <div class="pl" id="pl3"></div>
+      <div class="ps" id="ps4"><div class="ps-num">📷</div> Photo</div>
+      <div class="pl" id="pl4"></div>
+      <div class="ps" id="ps5"><div class="ps-num">📁</div> Reports</div>
+      <div class="pl" id="pl5"></div>
+      <div class="ps" id="ps6"><div class="ps-num">✓</div> Done!</div>
+    </div>
+
+    <!-- Global voice status -->
+    <div class="voice-status" id="globalVoiceStatus">
+      <div class="vs-waves"><div class="vs-wave"></div><div class="vs-wave"></div><div class="vs-wave"></div><div class="vs-wave"></div><div class="vs-wave"></div></div>
+      <span id="vsText">Listening... speak now</span>
+    </div>
+
+    <form method="POST" action="{{ url_for('patient.register') }}" id="regForm" enctype="multipart/form-data">
+      <input type="hidden" name="photo_data" id="photoData">
+
+      <!-- ═══ SECTION 1: Personal ═══ -->
+      <div class="fcard reveal reveal-delay-1" id="card1">
+        <div class="fcard-title">👤 Personal Information</div>
+        <div class="fgrid">
+
+          <div class="fg full">
+            <div class="flbl">Full Name <span class="req">*</span> <span class="hindi-hint">नाम</span></div>
+            <div class="input-voice-wrap">
+              <input type="text" name="name" class="fi" id="f_name" placeholder="e.g. Ramesh Kumar" required value="{{ request.form.get('name','') }}">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_name','name')" title="Speak name in Hindi or English">🎤</button>
+            </div>
+          </div>
+
+          <div class="fg">
+            <div class="flbl">Age <span class="req">*</span> <span class="hindi-hint">उम्र</span></div>
+            <div class="input-voice-wrap">
+              <input type="number" name="age" class="fi" id="f_age" placeholder="e.g. 45" min="0" max="120" required value="{{ request.form.get('age','') }}">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_age','age')" title="Speak age">🎤</button>
+            </div>
+          </div>
+
+          <div class="fg">
+            <div class="flbl">Gender <span class="hindi-hint">लिंग</span></div>
+            <div class="input-voice-wrap">
+              <select name="gender" class="fs" id="f_gender">
+                <option value="">Select gender</option>
+                <option {% if request.form.get('gender')=='Male' %}selected{% endif %}>Male</option>
+                <option {% if request.form.get('gender')=='Female' %}selected{% endif %}>Female</option>
+                <option {% if request.form.get('gender')=='Other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+            <span class="fhint">Or say: "male" / "female" / "पुरुष" / "महिला"</span>
+          </div>
+
+          <div class="fg">
+            <div class="flbl">Phone <span class="opt">(optional)</span> <span class="hindi-hint">फोन</span></div>
+            <div class="input-voice-wrap">
+              <input type="tel" name="phone" class="fi" id="f_phone" placeholder="e.g. 9876543210" value="{{ request.form.get('phone','') }}">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_phone','phone')" title="Speak phone number">🎤</button>
+            </div>
+          </div>
+
+          <div class="fg">
+            <div class="flbl">Blood Group <span class="hindi-hint">रक्त समूह</span></div>
+            <select name="blood_group" class="fs" id="f_blood">
+              <option value="">Select blood group</option>
+              {% for bg in ['A+','A-','B+','B-','AB+','AB-','O+','O-'] %}
+              <option {% if request.form.get('blood_group')==bg %}selected{% endif %}>{{ bg }}</option>
+              {% endfor %}
+            </select>
+            <span class="fhint">Or say: "A positive" / "B negative" etc.</span>
+          </div>
+
+          <div class="fg">
+            <div class="flbl">Emergency Contact <span class="hindi-hint">आपातकालीन संपर्क</span></div>
+            <div class="input-voice-wrap">
+              <input type="tel" name="emergency_contact" class="fi" id="f_emg" placeholder="Family member phone" value="{{ request.form.get('emergency_contact','') }}">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_emg','phone')" title="Speak emergency number">🎤</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 2: Location ═══ -->
+      <div class="fcard reveal reveal-delay-2" id="card2">
+        <div class="fcard-title">📍 Location</div>
+        <div class="fgrid">
+
+          <div class="fg">
+            <div class="flbl">Village / Town <span class="req">*</span> <span class="hindi-hint">गांव</span></div>
+            <div class="input-voice-wrap">
+              <input type="text" name="village" class="fi" id="f_village" placeholder="e.g. Sahnewal" required value="{{ request.form.get('village','') }}">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_village','text')" title="Speak village name">🎤</button>
+            </div>
+          </div>
+
+          <div class="fg">
+            <div class="flbl">District <span class="hindi-hint">जिला</span></div>
+            <div class="input-voice-wrap">
+              <input type="text" name="district" class="fi" id="f_district" placeholder="e.g. Ludhiana" value="{{ request.form.get('district','') }}">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_district','text')" title="Speak district name">🎤</button>
+            </div>
+          </div>
+
+          <div class="fg full">
+            <div class="flbl">State <span class="hindi-hint">राज्य</span></div>
+            <div class="input-voice-wrap">
+              <input type="text" name="state" class="fi" id="f_state" value="{{ request.form.get('state','Punjab') }}">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_state','text')" title="Speak state name">🎤</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 3: Medical ═══ -->
+      <div class="fcard reveal reveal-delay-3" id="card3">
+        <div class="fcard-title">🏥 Medical Information</div>
+        <div class="fgrid">
+
+          <div class="fg full">
+            <div class="flbl">Known Conditions <span class="opt">(comma-separated)</span> <span class="hindi-hint">बीमारियां</span></div>
+            <div class="input-voice-wrap" style="align-items:flex-start">
+              <input type="text" name="conditions" class="fi" id="f_conditions"
+                     placeholder="e.g. Diabetes, Hypertension — or say in Hindi"
+                     value="{{ request.form.get('conditions','') }}"
+                     style="padding-right:44px">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_conditions','text')" style="top:16px;transform:none" title="Speak conditions in Hindi">🎤</button>
+            </div>
+            <span class="fhint">Say: "diabetes, high blood pressure" or "शुगर, बीपी"</span>
+          </div>
+
+          <div class="fg full">
+            <div class="flbl">⚠️ Allergies <span class="hindi-hint">एलर्जी</span></div>
+            <div class="input-voice-wrap">
+              <input type="text" name="allergies" class="fi" id="f_allergies"
+                     placeholder="e.g. Penicillin — or say 'None' / 'कोई नहीं'"
+                     value="{{ request.form.get('allergies','') }}"
+                     oninput="checkAllergy(this.value)">
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_allergies','text')" title="Speak allergies">🎤</button>
+            </div>
+            <div class="allergy-alert" id="allergyAlert">⚠️ Allergy info is critical — shown in red on the health card. Double-check this.</div>
+          </div>
+
+          <div class="fg full">
+            <div class="flbl">Current Medications <span class="opt">(optional)</span> <span class="hindi-hint">दवाइयां</span></div>
+            <div class="input-voice-wrap" style="align-items:flex-start">
+              <textarea name="medications" class="fta" id="f_medications"
+                        placeholder="e.g. Metformin 500mg twice daily&#10;Or say in Hindi: 'मेटफॉर्मिन पांच सौ एमजी'" rows="3">{{ request.form.get('medications','') }}</textarea>
+              <button type="button" class="voice-btn idle" onclick="startVoice('f_medications','text')" style="top:16px;transform:none" title="Speak medications">🎤</button>
+            </div>
+            <span class="fhint">Say medicines, dose and frequency — voice works in Hindi too</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 4: Photo ═══ -->
+      <div class="fcard reveal reveal-delay-4" id="card4">
+        <div class="fcard-title">📷 Patient Photo <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(recommended)</span></div>
+        <div class="photo-section" id="photoSection">
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:16px;line-height:1.5">
+            Take a live photo of the patient's face. It appears on the printed health card for identity verification.
+          </div>
+          <div class="photo-preview-wrap" id="previewWrap">
+            <img id="photoPreviewImg" class="photo-preview" src="" alt="Patient photo">
+          </div>
+          <div class="cam-wrap" id="camWrap">
+            <video id="camVideo" autoplay playsinline muted></video>
+            <div class="cam-ring"></div>
+          </div>
+          <canvas id="capCanvas"></canvas>
+          <div class="pbtn-row" id="btnIdle">
+            <button type="button" class="pbtn pbtn-open" onclick="openCam()">📷 Open Camera</button>
+          </div>
+          <div class="pbtn-row" id="btnCam" style="display:none">
+            <button type="button" class="pbtn pbtn-capture" onclick="capturePic()">🟢 Capture Photo</button>
+            <button type="button" class="pbtn pbtn-retake" onclick="closeCam()">✕ Cancel</button>
+          </div>
+          <div class="pbtn-row" id="btnDone" style="display:none">
+            <button type="button" class="pbtn pbtn-open" onclick="openCam()">🔄 Retake Photo</button>
+          </div>
+          <p class="photo-skip-note" id="photoNote">Photo is optional — you can add it later from the patient profile.</p>
+        </div>
+      </div>
+
+      <!-- ═══ SECTION 5: Medical Reports Upload ═══ -->
+      <div class="fcard reveal" id="card5">
+        <div class="fcard-title">📁 Previous Medical Reports <span style="font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0">(optional)</span></div>
+
+        <div class="docs-section" id="docsSection">
+          <p class="docs-subtitle">
+            Upload any previous lab reports, prescriptions, X-rays, or scans the patient has brought.<br>
+            <strong>Take a photo</strong> of physical reports using your phone camera and upload here.
+            Accepts JPG, PNG, PDF. Multiple files allowed.
+          </p>
+
+          <div class="doc-upload-area" id="dropZone"
+               ondragover="event.preventDefault();this.classList.add('dragover')"
+               ondragleave="this.classList.remove('dragover')"
+               ondrop="handleDrop(event)">
+            <input type="file" id="docFileInput" multiple accept=".jpg,.jpeg,.png,.pdf"
+                   onchange="handleFiles(this.files)" style="z-index:3">
+            <div class="dua-icon">📂</div>
+            <div class="dua-title">Tap to select files or drag &amp; drop</div>
+            <div class="dua-sub">JPG, PNG, PDF — take photo of paper reports<br>Multiple files allowed</div>
+          </div>
+
+          <div class="doc-list" id="docList"></div>
+          <p class="add-doc-hint" id="addDocHint" style="display:none">
+            <a href="#" onclick="event.preventDefault();document.getElementById('docFileInput').click()" style="color:var(--g);font-weight:600">+ Add more files</a>
+          </p>
+        </div>
+
+        <!-- Submit -->
+        <div class="submit-row" style="margin-top:20px">
+          <div class="submit-note">
+            🔒 Data stored securely on your server.<br>
+            QR health card generated in seconds.
+          </div>
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span id="btnText">Generate QR Health Card</span>
+            <span id="btnArrow">→</span>
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* ═══════════════════════════════════════════════════
+   VOICE RECOGNITION ENGINE
+═══════════════════════════════════════════════════ */
+let recognition = null;
+let activeBtn   = null;
+let activeField = null;
+let activeType  = null;
+
+const voiceStatus = document.getElementById('globalVoiceStatus');
+const vsText      = document.getElementById('vsText');
+
+// Hindi number words → digits
+const HINDI_NUMS = {
+  'शून्य':0,'एक':1,'दो':2,'तीन':3,'चार':4,'पाँच':5,'पांच':5,
+  'छह':6,'छः':6,'सात':7,'आठ':8,'नौ':9,'दस':10,'ग्यारह':11,
+  'बारह':12,'तेरह':13,'चौदह':14,'पंद्रह':15,'सोलह':16,
+  'सत्रह':17,'अठारह':18,'उन्नीस':19,'बीस':20,'तीस':30,
+  'चालीस':40,'पचास':50,'साठ':60,'सत्तर':70,'अस्सी':80,'नब्बे':90,
+  'सौ':100,'हज़ार':1000,'हजार':1000,
+  'zero':0,'one':1,'two':2,'three':3,'four':4,'five':5,
+  'six':6,'seven':7,'eight':8,'nine':9,'ten':10
+};
+
+// Hindi gender words
+const HINDI_GENDER = {
+  'पुरुष':'Male','male':'Male','man':'Male','लड़का':'Male',
+  'महिला':'Female','female':'Female','woman':'Female','लड़की':'Female',
+  'अन्य':'Other','other':'Other'
+};
+
+// Hindi blood group words
+const BLOOD_MAP = {
+  'a positive':'A+','a negative':'A-','b positive':'B+','b negative':'B-',
+  'ab positive':'AB+','ab negative':'AB-','o positive':'O+','o negative':'O-',
+  'ए पॉजिटिव':'A+','बी पॉजिटिव':'B+','ओ पॉजिटिव':'O+','एबी पॉजिटिव':'AB+',
+};
+
+function initRecognition() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    return null;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const r  = new SR();
+  r.continuous      = false;
+  r.interimResults  = true;
+  r.maxAlternatives = 3;
+  r.lang            = 'hi-IN';  // Hindi primary, falls back to English
+
+  r.onstart = () => {
+    vsText.textContent = 'Listening... speak now / अभी बोलें';
+    voiceStatus.classList.add('show');
+    if (activeBtn) activeBtn.className = 'voice-btn listening';
+  };
+
+  r.onresult = (e) => {
+    let transcript = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      transcript += e.results[i][0].transcript;
+    }
+    vsText.textContent = transcript || 'Processing...';
+    if (e.results[e.resultIndex].isFinal) {
+      applyTranscript(transcript.trim());
+    }
+  };
+
+  r.onerror = (e) => {
+    console.warn('Voice error:', e.error);
+    if (e.error === 'no-speech') {
+      vsText.textContent = 'No speech detected. Try again.';
+    } else if (e.error === 'not-allowed') {
+      vsText.textContent = 'Microphone permission denied.';
+      alert('Please allow microphone access in your browser settings.');
+    }
+    resetVoiceBtn();
+    setTimeout(() => voiceStatus.classList.remove('show'), 2000);
+  };
+
+  r.onend = () => {
+    resetVoiceBtn();
+    setTimeout(() => voiceStatus.classList.remove('show'), 1500);
+  };
+
+  return r;
+}
+
+function startVoice(fieldId, type) {
+  const field = document.getElementById(fieldId);
+  if (!field) return;
+
+  // Stop any ongoing recognition
+  if (recognition) {
+    try { recognition.stop(); } catch(e) {}
+  }
+
+  recognition = initRecognition();
+  if (!recognition) {
+    alert('Voice input not supported in this browser. Please use Chrome or Edge on Android.');
+    return;
+  }
+
+  activeField = field;
+  activeType  = type;
+  activeBtn   = field.parentElement.querySelector('.voice-btn');
+
+  if (activeBtn) activeBtn.className = 'voice-btn processing';
+
+  // Small delay so user sees the button change before listening
+  setTimeout(() => {
+    try {
+      recognition.start();
+    } catch(e) {
+      resetVoiceBtn();
+      voiceStatus.classList.remove('show');
+    }
+  }, 200);
+}
+
+function applyTranscript(raw) {
+  if (!activeField || !raw) return;
+  const lower = raw.toLowerCase().trim();
+
+  if (activeType === 'age') {
+    // Extract number from speech
+    let num = extractNumber(lower);
+    if (num !== null) activeField.value = num;
+    else activeField.value = raw;
+
+  } else if (activeType === 'phone') {
+    // Extract digits only
+    const digits = raw.replace(/[^0-9]/g, '');
+    if (digits.length >= 10) activeField.value = digits;
+    else activeField.value = digits || raw;
+
+  } else if (activeType === 'name') {
+    // Capitalize properly
+    activeField.value = raw.replace(/\b\w/g, c => c.toUpperCase());
+
+  } else if (activeField.tagName === 'SELECT') {
+    // Gender or other select
+    const mapped = HINDI_GENDER[lower] || HINDI_GENDER[raw];
+    if (mapped) {
+      const opts = activeField.querySelectorAll('option');
+      opts.forEach(o => { if (o.value === mapped || o.text === mapped) o.selected = true; });
+    }
+  } else {
+    // General text — clean up Hindi common words, capitalize
+    activeField.value = raw;
+  }
+
+  // Trigger input events
+  activeField.dispatchEvent(new Event('input', {bubbles: true}));
+  activeField.dispatchEvent(new Event('change', {bubbles: true}));
+
+  // Check allergy
+  if (activeField.name === 'allergies') checkAllergy(activeField.value);
+
+  vsText.textContent = '✅ ' + (activeField.value || raw);
+}
+
+function extractNumber(text) {
+  // Try direct number first
+  const direct = parseInt(text.replace(/[^0-9]/g,''));
+  if (!isNaN(direct) && direct > 0) return direct;
+
+  // Try Hindi words
+  const words = text.split(/\s+/);
+  let total = 0, current = 0;
+  for (const w of words) {
+    const n = HINDI_NUMS[w];
+    if (n !== undefined) {
+      if (n === 100) { current = (current || 1) * 100; }
+      else if (n >= 1000) { total += (current || 1) * n; current = 0; }
+      else { current += n; }
+    }
+  }
+  total += current;
+  return total > 0 ? total : null;
+}
+
+function resetVoiceBtn() {
+  if (activeBtn) activeBtn.className = 'voice-btn idle';
+  activeBtn = null;
+}
+
+/* ═══════════════════════════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════════════════════════ */
+const progCards = [1,2,3,4,5].map(n => document.getElementById(`card${n}`));
+const progSteps = [1,2,3,4,5,6].map(n => document.getElementById(`ps${n}`));
+const progLines = [1,2,3,4,5].map(n => document.getElementById(`pl${n}`));
+
+const progObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = progCards.indexOf(e.target);
+      if (idx === -1) return;
+      progSteps.forEach((s,i) => { s.classList.toggle('active', i===idx); s.classList.toggle('done', i<idx); });
+      progLines.forEach((l,i) => { if(l) l.classList.toggle('done', i<idx); });
+    }
+  });
+}, {threshold: 0.5});
+progCards.forEach(c => { if(c) progObs.observe(c); });
+
+/* ═══════════════════════════════════════════════════
+   ALLERGY WARNING
+═══════════════════════════════════════════════════ */
+function checkAllergy(val) {
+  const skip = ['none','no','नहीं','कोई नहीं','nil','na','n/a'];
+  const show  = val.trim().length > 0 && !skip.includes(val.trim().toLowerCase());
+  document.getElementById('allergyAlert').classList.toggle('show', show);
+}
+checkAllergy(document.getElementById('f_allergies').value);
+
+/* ═══════════════════════════════════════════════════
+   CAMERA / PHOTO
+═══════════════════════════════════════════════════ */
+let camStream = null;
+
+async function openCam() {
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: {ideal:480}, height: {ideal:480} }
+    });
+    document.getElementById('camVideo').srcObject = camStream;
+    document.getElementById('camWrap').classList.add('show');
+    document.getElementById('btnIdle').style.display = 'none';
+    document.getElementById('btnCam').style.display  = 'flex';
+    document.getElementById('btnDone').style.display = 'none';
+    document.getElementById('previewWrap').classList.remove('show');
+  } catch(e) {
+    alert('Camera access denied. Please allow camera in your browser settings.');
+  }
+}
+
+function capturePic() {
+  const video  = document.getElementById('camVideo');
+  const canvas = document.getElementById('capCanvas');
+  const SIZE   = 400;
+  canvas.width = canvas.height = SIZE;
+  const ctx    = canvas.getContext('2d');
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(SIZE/2, SIZE/2, SIZE/2, 0, Math.PI*2);
+  ctx.clip();
+  const vW = video.videoWidth || 480, vH = video.videoHeight || 480;
+  const side = Math.min(vW, vH);
+  ctx.drawImage(video, (vW-side)/2, (vH-side)/2, side, side, 0, 0, SIZE, SIZE);
+  ctx.restore();
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  document.getElementById('photoData').value = dataUrl;
+  document.getElementById('photoPreviewImg').src = dataUrl;
+  document.getElementById('previewWrap').classList.add('show');
+  document.getElementById('photoSection').classList.add('has-photo');
+  closeCam(true);
+  document.getElementById('btnDone').style.display = 'flex';
+  const note = document.getElementById('photoNote');
+  note.textContent = '✅ Photo captured! It will appear on the health card.';
+  note.className   = 'photo-skip-note captured';
+}
+
+function closeCam(keep) {
+  if (camStream) { camStream.getTracks().forEach(t => t.stop()); camStream = null; }
+  document.getElementById('camWrap').classList.remove('show');
+  document.getElementById('btnCam').style.display = 'none';
+  if (!keep) { document.getElementById('btnIdle').style.display = 'flex'; }
+}
+
+window.addEventListener('beforeunload', () => { if(camStream) camStream.getTracks().forEach(t=>t.stop()); });
+
+/* ═══════════════════════════════════════════════════
+   DOCUMENT UPLOAD ENGINE
+═══════════════════════════════════════════════════ */
+let docFiles    = [];  // {file, title, type, date}
+const docList   = document.getElementById('docList');
+const addHint   = document.getElementById('addDocHint');
+const docsSection = document.getElementById('docsSection');
+
+const DOC_TYPES = [
+  {v:'report',     l:'Lab Report'},
+  {v:'prescription',l:'Prescription'},
+  {v:'xray',       l:'X-Ray'},
+  {v:'scan',       l:'Scan / Ultrasound'},
+  {v:'discharge',  l:'Discharge Summary'},
+  {v:'other',      l:'Other'},
+];
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.target.closest('.doc-upload-area').classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(fileList) {
+  Array.from(fileList).forEach(file => {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['jpg','jpeg','png','pdf'].includes(ext)) {
+      alert(`${file.name} is not supported. Only JPG, PNG, PDF allowed.`);
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert(`${file.name} is too large. Max 10MB per file.`);
+      return;
+    }
+    docFiles.push({ file, title: file.name.replace(/\.[^.]+$/,''), type: 'report', date: '' });
+    renderDocList();
+  });
+  docsSection.classList.add('has-docs');
+  addHint.style.display = 'block';
+}
+
+function renderDocList() {
+  docList.innerHTML = '';
+  docFiles.forEach((doc, i) => {
+    const ext    = doc.file.name.split('.').pop().toLowerCase();
+    const isImg  = ['jpg','jpeg','png'].includes(ext);
+    const icon   = isImg ? '🖼️' : '📄';
+    const sizeKB = Math.round(doc.file.size / 1024);
+
+    const div  = document.createElement('div');
+    div.className = 'doc-item';
+    div.innerHTML = `
+      <div class="di-top">
+        <span class="di-icon">${icon}</span>
+        <div>
+          <div class="di-name">${doc.file.name}</div>
+          <div class="di-size">${sizeKB} KB · ${ext.toUpperCase()}</div>
+        </div>
+        <button type="button" class="di-remove" onclick="removeDoc(${i})" title="Remove">✕</button>
+      </div>
+      <div class="di-fields">
+        <input type="text"  name="doc_titles" class="di-input" placeholder="Report title / description"
+               value="${doc.title}" oninput="docFiles[${i}].title=this.value">
+        <select name="doc_types" class="di-input" onchange="docFiles[${i}].type=this.value">
+          ${DOC_TYPES.map(t => `<option value="${t.v}" ${t.v===doc.type?'selected':''}>${t.l}</option>`).join('')}
+        </select>
+        <input type="date" name="doc_dates" class="di-input" placeholder="Date of report"
+               value="${doc.date}" oninput="docFiles[${i}].date=this.value"
+               style="grid-column:1/-1">
+        <input type="file" name="medical_docs" style="display:none" id="hiddenFile${i}">
+      </div>`;
+
+    // Inject the actual file into a hidden input
+    setTimeout(() => {
+      const dt  = new DataTransfer();
+      dt.items.add(doc.file);
+      const inp = div.querySelector(`#hiddenFile${i}`);
+      if (inp) inp.files = dt.files;
+    }, 0);
+
+    docList.appendChild(div);
+  });
+
+  // Sync all hidden file inputs with form
+  syncFileInputs();
+}
+
+function syncFileInputs() {
+  // Remove old injected inputs
+  document.querySelectorAll('.injected-file-input').forEach(el => el.remove());
+  docFiles.forEach((doc, i) => {
+    const inp = document.createElement('input');
+    inp.type  = 'file';
+    inp.name  = 'medical_docs';
+    inp.className = 'injected-file-input';
+    inp.style.display = 'none';
+    const dt = new DataTransfer();
+    dt.items.add(doc.file);
+    document.getElementById('regForm').appendChild(inp);
+    try { inp.files = dt.files; } catch(e) {}
+  });
+}
+
+function removeDoc(i) {
+  docFiles.splice(i, 1);
+  renderDocList();
+  if (docFiles.length === 0) {
+    docsSection.classList.remove('has-docs');
+    addHint.style.display = 'none';
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   SUBMIT
+═══════════════════════════════════════════════════ */
+document.getElementById('regForm').addEventListener('submit', () => {
+  if (camStream) camStream.getTracks().forEach(t => t.stop());
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  document.getElementById('btnText').textContent = 'Generating card...';
+  document.getElementById('btnArrow').textContent = '⏳';
+});
+</script>
+{% endblock %}

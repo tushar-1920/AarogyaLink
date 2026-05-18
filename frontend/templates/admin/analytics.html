@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Analytics — Admin{% endblock %}
+{% block extra_styles %}
+.admin-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.admin-wrap{max-width:1000px;margin:0 auto}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem;text-decoration:none;margin-bottom:14px;transition:color .2s}
+.back-link:hover{color:var(--g)}
+.page-title{font-size:1.6rem;font-weight:800;color:var(--ink);margin-bottom:24px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:var(--shadow)}
+.ctitle{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.bar-label{font-size:.8rem;color:var(--inkm);min-width:100px;font-weight:500}
+.bar-wrap{flex:1;background:var(--gxxl);border-radius:6px;height:22px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--gl));border-radius:6px;transition:width .5s ease;display:flex;align-items:center;padding-left:8px}
+.bar-count{font-size:.7rem;font-weight:700;color:#fff;white-space:nowrap}
+.vt-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.vt-row:last-child{border-bottom:none}
+.vt-type{font-size:.875rem;font-weight:600;color:var(--ink)}
+.vt-ct{font-size:.875rem;font-weight:700;color:var(--g)}
+.vt-badge{font-size:.72rem;padding:2px 10px;border-radius:20px;font-weight:600}
+.bt-opc{background:#eff6ff;color:#1d4ed8}.bt-em{background:var(--redl);color:var(--red)}.bt-fu{background:var(--amberl);color:var(--amber)}.bt-ip{background:var(--gxl);color:var(--g)}
+@media(max-width:640px){.g2{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+<div class="admin-page">
+  <div class="admin-wrap">
+    <a href="{{ url_for('admin.dashboard') }}" class="back-link">← Admin Dashboard</a>
+    <div class="page-title">📊 Health Analytics</div>
+    <div class="g2">
+      <div class="card reveal">
+        <div class="ctitle">Top Districts by Patient Count</div>
+        {% if district_counts %}
+          {% set max_count = district_counts[0][1] %}
+          {% for district, count in district_counts %}
+          <div class="bar-row">
+            <div class="bar-label">{{ district or 'Unknown' }}</div>
+            <div class="bar-wrap">
+              {% set pct = ((count / max_count) * 100) | round | int %}
+              <div class="bar-fill" style="width:{{ pct }}%">
+                <span class="bar-count">{{ count }}</span>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div style="text-align:center;color:var(--muted);padding:40px 0;font-size:.875rem">No data yet. Register patients to see analytics.</div>
+        {% endif %}
+      </div>
+      <div class="card reveal reveal-delay-1">
+        <div class="ctitle">Visits by Type</div>
+        {% for vtype, count in visit_by_type %}
+        <div class="vt-row">
+          <span class="vt-type">{{ vtype }}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="vt-badge {{ 'bt-opc' if vtype=='OPD' else ('bt-em' if vtype=='Emergency' else ('bt-fu' if vtype=='Follow-up' else 'bt-ip')) }}">{{ vtype }}</span>
+            <span class="vt-ct">{{ count }}</span>
+          </div>
+        </div>
+        {% else %}
+          <div style="text-align:center;color:var(--muted);padding:40px 0;font-size:.875rem">No visits recorded yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

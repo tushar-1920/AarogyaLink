@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}All Patients — Admin{% endblock %}
+{% block extra_styles %}
+.admin-page{min-height:100vh;padding:calc(var(--nav-h) + 56px) 5% 80px;background:var(--gxxl)}
+.admin-wrap{max-width:1000px;margin:0 auto}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem;text-decoration:none;margin-bottom:14px;transition:color .2s}
+.back-link:hover{color:var(--g)}
+.page-title{font-size:1.6rem;font-weight:800;color:var(--ink);margin-bottom:20px}
+.search-bar-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 18px;display:flex;gap:10px;margin-bottom:18px;box-shadow:var(--shadow)}
+.sb{flex:1;padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:'Sora',sans-serif;font-size:.9rem;color:var(--ink);outline:none;transition:border-color .2s}
+.sb:focus{border-color:var(--g)}
+.sbtn{padding:9px 20px;border-radius:8px;background:var(--g);color:#fff;border:none;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer}
+.rc{font-size:.82rem;color:var(--muted);margin-bottom:14px}
+.rc strong{color:var(--ink)}
+.ptable{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.pr{display:flex;align-items:center;gap:14px;padding:13px 20px;border-bottom:1px solid var(--border);text-decoration:none;transition:background .15s}
+.pr:last-child{border-bottom:none}
+.pr:hover{background:var(--gxxl)}
+.pr-av{width:38px;height:38px;border-radius:50%;background:var(--gxl);color:var(--g);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
+.pr-nm{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:2px}
+.pr-mt{font-size:.75rem;color:var(--muted)}
+.pr-id{font-family:monospace;font-size:.72rem;background:var(--gxl);color:var(--g);padding:2px 8px;border-radius:6px;margin-left:auto;white-space:nowrap}
+{% endblock %}
+{% block content %}
+<div class="admin-page">
+  <div class="admin-wrap">
+    <a href="{{ url_for('admin.dashboard') }}" class="back-link">← Admin Dashboard</a>
+    <div class="page-title">All Patients</div>
+    <form method="GET" action="{{ url_for('admin.patients') }}">
+      <div class="search-bar-wrap">
+        <input type="text" name="q" class="sb" placeholder="Search by name, ID, village, district..." value="{{ q }}">
+        <button type="submit" class="sbtn">Search</button>
+      </div>
+    </form>
+    <div class="rc"><strong>{{ patients|length }}</strong> patient{{ 's' if patients|length != 1 }}</div>
+    <div class="ptable">
+      {% for p in patients %}
+      <a href="{{ url_for('patient.profile', patient_id=p.id) }}" class="pr">
+        <div class="pr-av">{{ p.name[0] }}</div>
+        <div>
+          <div class="pr-nm">{{ p.name }}</div>
+          <div class="pr-mt">{{ p.age }} yrs · {{ p.gender or '' }} · {{ p.village or '—' }}, {{ p.district or '—' }} · {{ p.created_at.strftime('%d %b %Y') }}</div>
+        </div>
+        <span class="pr-id">{{ p.id }}</span>
+      </a>
+      {% else %}
+      <div style="text-align:center;padding:60px;color:var(--muted)">No patients found.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

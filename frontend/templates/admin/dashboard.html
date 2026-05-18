@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block extra_styles %}
+.admin-page{min-height:100vh;padding-top:calc(var(--nav-h) + 56px);padding-left:5%;padding-right:5%;padding-bottom:80px;background:var(--gxxl)}
+.admin-wrap{max-width:1100px;margin:0 auto}
+.admin-hdr{background:linear-gradient(135deg,var(--gd),var(--g));border-radius:20px;padding:28px 32px;color:#fff;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(26,107,74,.25)}
+.admin-hdr::after{content:'⚙️';position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:5rem;opacity:.1;pointer-events:none}
+.ah-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:6px}
+.ah-name{font-size:1.5rem;font-weight:800}
+.ah-sub{font-size:.85rem;color:rgba(255,255,255,.6);margin-top:4px}
+.ah-btns{display:flex;gap:10px;position:relative;z-index:1;flex-wrap:wrap}
+.ab{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:9px;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+.ab-white{background:#fff;color:var(--g)}.ab-white:hover{background:var(--gxl);transform:translateY(-1px)}
+.ab-ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}.ab-ghost:hover{background:rgba(255,255,255,.25);transform:translateY(-1px)}
+.ab-blue{background:rgba(59,130,246,.25);color:#93c5fd;border:1px solid rgba(147,197,253,.3)}.ab-blue:hover{background:rgba(59,130,246,.35);transform:translateY(-1px)}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.scard:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.08)}
+.scard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+.sc-g::before{background:var(--g)}.sc-b::before{background:#1d4ed8}.sc-a::before{background:var(--amber)}.sc-r::before{background:var(--red)}
+.sv{font-size:2rem;font-weight:800;color:var(--ink);margin-bottom:4px}
+.sl{font-size:.75rem;color:var(--muted)}
+.sbadge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:6px}
+.sbd-r{background:var(--redl);color:var(--red)}.sbd-g{background:var(--gxl);color:var(--g)}
+.pq{background:var(--card);border:1.5px solid rgba(220,38,38,.3);border-radius:20px;padding:24px;margin-bottom:20px}
+.pq-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.pq-title{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:8px}
+.pq-ct{background:var(--redl);color:var(--red);font-size:.72rem;font-weight:700;padding:2px 10px;border-radius:20px}
+.pi{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);text-decoration:none;transition:all .15s;border-radius:8px}
+.pi:last-child{border-bottom:none}
+.pi:hover{padding-left:8px;background:var(--gxxl);padding-right:8px}
+.pi-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;flex-shrink:0}
+.av-dr{background:#eff6ff;color:#1d4ed8}.av-as{background:var(--gxl);color:var(--g)}
+.pi-nm{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:2px}
+.pi-mt{font-size:.75rem;color:var(--muted)}
+.pi-dc{font-size:.72rem;font-weight:600;color:var(--amber);margin-left:auto;white-space:nowrap}
+.pi-ar{font-size:.9rem;color:var(--border)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px}
+.sc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sc-ttl{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sc-lk{font-size:.78rem;color:var(--g);text-decoration:none;font-weight:500}
+.sc-lk:hover{text-decoration:underline}
+.ur{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);text-decoration:none;border-radius:6px}
+.ur:last-child{border-bottom:none}
+.ur:hover{background:var(--gxxl);padding-left:6px;padding-right:6px;transition:all .15s}
+.ur-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
+.ur-nm{font-size:.85rem;font-weight:600;color:var(--ink)}
+.ur-mt{font-size:.72rem;color:var(--muted)}
+.ur-st{margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px}
+.st-p{background:var(--amberl);color:var(--amber)}.st-a{background:var(--gxl);color:var(--g)}.st-r{background:var(--redl);color:var(--red)}
+.pr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;border-radius:6px}
+.pr:last-child{border-bottom:none}
+.pr:hover{background:var(--gxxl);padding-left:6px;padding-right:6px;transition:all .15s}
+.pr-av{width:32px;height:32px;border-radius:50%;background:var(--gxl);color:var(--g);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0}
+.pr-nm{font-size:.85rem;font-weight:600;color:var(--ink)}
+.pr-mt{font-size:.72rem;color:var(--muted)}
+.pr-id{font-family:monospace;font-size:.68rem;background:var(--gxl);color:var(--g);padding:2px 7px;border-radius:4px;margin-left:auto}
+.qnav{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.qnav a{background:var(--card);color:var(--inkm);border:1px solid var(--border);padding:9px 18px;border-radius:9px;font-family:'Sora',sans-serif;font-size:.82rem;font-weight:600;text-decoration:none;transition:all .2s}
+.qnav a:hover{border-color:var(--g);color:var(--g);background:var(--gxl);transform:translateY(-1px)}
+@media(max-width:768px){.g2{grid-template-columns:1fr}.ah-btns{flex-wrap:wrap}.admin-page{padding-top:calc(var(--nav-h) + 36px)}}
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <div class="admin-wrap">
+
+    <div class="admin-hdr reveal">
+      <div>
+        <div class="ah-label">Admin Control Panel</div>
+        <div class="ah-name">Welcome, {{ current_user.name.split()[0] }} 👋</div>
+        <div class="ah-sub">Full control over AarogyaLink</div>
+      </div>
+      <div class="ah-btns">
+        <a href="{{ url_for('admin.users', status='pending') }}" class="ab ab-white">
+          ⏳ Pending ({{ stats.pending_doctors + stats.pending_asha }})
+        </a>
+        <a href="{{ url_for('tele.admin_online_patients') }}" class="ab ab-blue">
+          🧑‍💻 Online Patients
+        </a>
+        <a href="{{ url_for('admin.analytics') }}" class="ab ab-ghost">📊 Analytics</a>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="scard sc-g reveal"><div class="sv">{{ stats.total_patients }}</div><div class="sl">Total Patients</div></div>
+      <div class="scard sc-b reveal reveal-delay-1">
+        <div class="sv">{{ stats.total_doctors }}</div><div class="sl">Doctors</div>
+        {% if stats.pending_doctors %}<span class="sbadge sbd-r">{{ stats.pending_doctors }} pending</span>{% endif %}
+      </div>
+      <div class="scard sc-g reveal reveal-delay-2">
+        <div class="sv">{{ stats.total_asha }}</div><div class="sl">ASHA Workers</div>
+        {% if stats.pending_asha %}<span class="sbadge sbd-r">{{ stats.pending_asha }} pending</span>{% endif %}
+      </div>
+      <div class="scard sc-a reveal reveal-delay-3"><div class="sv">{{ stats.total_visits }}</div><div class="sl">Total Visits</div></div>
+    </div>
+
+    {% if pending_users %}
+    <div class="pq reveal">
+      <div class="pq-top">
+        <div class="pq-title">🔴 Verification Queue <span class="pq-ct">{{ pending_users|length }}</span></div>
+        <a href="{{ url_for('admin.users', status='pending') }}" class="sc-lk">View all →</a>
+      </div>
+      {% for u in pending_users[:6] %}
+      <a href="{{ url_for('admin.user_detail', user_id=u.id) }}" class="pi">
+        <div class="pi-av {{ 'av-dr' if u.is_doctor() else 'av-as' }}">{{ u.name[0] }}</div>
+        <div>
+          <div class="pi-nm">{{ u.name }}</div>
+          <div class="pi-mt">{{ '🩺 Doctor' if u.is_doctor() else '👩‍⚕️ ASHA' }} · {{ u.district or '—' }} · {{ u.created_at.strftime('%d %b') }}</div>
+        </div>
+        <div class="pi-dc">{{ u.docs_uploaded() }}/{{ 3 if u.is_doctor() else 1 }} docs</div>
+        <div class="pi-ar">→</div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div style="background:var(--gxl);border:1px solid rgba(26,107,74,.2);border-radius:16px;padding:24px;text-align:center;margin-bottom:20px">
+      <div style="font-size:1.8rem;margin-bottom:6px">✅</div>
+      <div style="font-weight:700;color:var(--g)">No pending verifications</div>
+    </div>
+    {% endif %}
+
+    <div class="g2">
+      <div class="sc reveal">
+        <div class="sc-hd"><span class="sc-ttl">👥 Recent Users</span><a href="{{ url_for('admin.users') }}" class="sc-lk">All →</a></div>
+        {% for u in recent_users %}
+        <a href="{{ url_for('admin.user_detail', user_id=u.id) }}" class="ur">
+          <div class="ur-av {{ 'av-dr' if u.is_doctor() else 'av-as' }}">{{ u.name[0] }}</div>
+          <div><div class="ur-nm">{{ u.name }}</div><div class="ur-mt">{{ u.role.title() }} · {{ u.district or '—' }}</div></div>
+          <span class="ur-st st-{{ u.verify_status[0] }}">{{ u.verify_status.title() }}</span>
+        </a>
+        {% endfor %}
+      </div>
+      <div class="sc reveal reveal-delay-1">
+        <div class="sc-hd"><span class="sc-ttl">🏥 Recent Patients</span><a href="{{ url_for('admin.patients') }}" class="sc-lk">All →</a></div>
+        {% for p in recent_patients %}
+        <a href="{{ url_for('patient.profile', patient_id=p.id) }}" class="pr">
+          <div class="pr-av">{{ p.name[0] }}</div>
+          <div><div class="pr-nm">{{ p.name }}</div><div class="pr-mt">{{ p.age }} yrs · {{ p.village or '—' }}</div></div>
+          <span class="pr-id">{{ p.id }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="qnav">
+      <a href="{{ url_for('admin.users', role='doctor') }}">🩺 Doctors</a>
+      <a href="{{ url_for('admin.users', role='asha') }}">👩‍⚕️ ASHA Workers</a>
+      <a href="{{ url_for('admin.patients') }}">👥 Patients</a>
+      <a href="{{ url_for('tele.admin_online_patients') }}">🧑‍💻 Online Patients</a>
+      <a href="{{ url_for('admin.analytics') }}">📊 Analytics</a>
+      <a href="{{ url_for('patient.register') }}">➕ Register Patient</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

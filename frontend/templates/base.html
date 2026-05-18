@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}AarogyaLink{% endblock %} — Rural Health Records</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root{
+      --g:#1a6b4a;--gl:#2d8f62;--gd:#0f4a32;--gdx:#082e1f;
+      --gxl:#e6f4ee;--gxxl:#f2faf6;--gxxxl:#f8fdf9;
+      --amber:#b45309;--amberl:#fef3c7;
+      --red:#dc2626;--redl:#fef2f2;
+      --blue:#1d4ed8;--bluel:#eff6ff;
+      --ink:#0a1510;--inkm:#1a2e22;--inkl:#2d4a38;
+      --muted:#5a7265;--mutedk:#7a9285;
+      --border:#cce4d6;--borderl:#e0f0e8;
+      --white:#f8fdf9;--card:#ffffff;
+      --nav-h:76px;
+      --shadow:0 2px 20px rgba(0,0,0,.06);
+      --shadow-md:0 4px 32px rgba(0,0,0,.09);
+      --shadow-lg:0 12px 60px rgba(0,0,0,.12);
+      --shadow-xl:0 24px 80px rgba(0,0,0,.15);
+      --ease:cubic-bezier(.4,0,.2,1);
+      --ease-spring:cubic-bezier(.175,.885,.32,1.275);
+    }
+
+    html{scroll-behavior:smooth;font-size:16px}
+    /* ── Global page wrapper — guarantees content never hides behind navbar ── */
+    .page-body{
+      min-height:100vh;
+      padding-top:calc(var(--nav-h) + 56px);
+      padding-left:5%;
+      padding-right:5%;
+      padding-bottom:80px;
+      background:var(--gxxl);
+    }
+    .page-body-white{background:var(--white)}
+    .page-body-dark{background:var(--ink)}
+
+    body{font-family:'Sora',sans-serif;background:var(--white);color:var(--ink);line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--g)}
+
+    /* ══════════════ NAVBAR ══════════════ */
+    .navbar{
+      position:fixed;top:0;left:0;right:0;z-index:200;
+      height:var(--nav-h);
+      min-height:var(--nav-h);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 5%;
+      background:transparent;
+      border-bottom:1px solid transparent;
+      transition:background .3s ease,border-color .3s ease,box-shadow .3s ease;
+    }
+    /* Solid on scroll */
+    .navbar.scrolled{
+      background:rgba(255,255,255,.97);
+      border-bottom:1px solid var(--border);
+      box-shadow:0 2px 20px rgba(0,0,0,.07);
+    }
+    /* Inner pages (dashboard, admin, profile) — always solid via body.nav-solid */
+    body.nav-solid .navbar{
+      background:rgba(255,255,255,.97) !important;
+      border-bottom:1px solid var(--border) !important;
+      box-shadow:0 2px 20px rgba(0,0,0,.07) !important;
+    }
+    /* Transparent state: white text for dark hero backgrounds */
+    .navbar:not(.scrolled) .nav-link{ color:rgba(255,255,255,.9); }
+    .navbar:not(.scrolled) .nav-link:hover{ background:rgba(255,255,255,.15); color:#fff; }
+    .navbar:not(.scrolled) .nav-link.active{ background:rgba(255,255,255,.2); color:#fff; }
+    .navbar:not(.scrolled) .nav-logo-text{ color:#fff; }
+    .navbar:not(.scrolled) .nav-logo-dot{ background:#fff; }
+    .navbar:not(.scrolled) .btn-ghost{ color:#fff; border-color:rgba(255,255,255,.4); }
+    .navbar:not(.scrolled) .btn-ghost:hover{ background:rgba(255,255,255,.15); }
+    .navbar:not(.scrolled) .nav-badge{ background:rgba(255,255,255,.15); color:#fff; border-color:rgba(255,255,255,.25); }
+    .navbar:not(.scrolled) .nav-hamburger span{ background:#fff; }
+    .navbar:not(.scrolled) .nav-pill{ background:rgba(255,255,255,.18); color:#fff; border-color:rgba(255,255,255,.3); }
+    .navbar:not(.scrolled) .nav-pill.amber{ background:rgba(255,255,255,.18); color:#fff; }
+    /* Solid state overrides */
+    body.nav-solid .navbar .nav-link,
+    .navbar.scrolled .nav-link{ color:var(--inkm); }
+    body.nav-solid .navbar .nav-link:hover,
+    .navbar.scrolled .nav-link:hover{ background:var(--gxl); color:var(--g); }
+    body.nav-solid .navbar .nav-link.active,
+    .navbar.scrolled .nav-link.active{ background:var(--gxl); color:var(--g); }
+    body.nav-solid .navbar .nav-logo-text,
+    .navbar.scrolled .nav-logo-text{ color:var(--g); }
+    body.nav-solid .navbar .nav-logo-dot,
+    .navbar.scrolled .nav-logo-dot{ background:var(--g); }
+    body.nav-solid .navbar .btn-ghost,
+    .navbar.scrolled .btn-ghost{ color:var(--g); border-color:rgba(26,107,74,.3); }
+    body.nav-solid .navbar .btn-ghost:hover,
+    .navbar.scrolled .btn-ghost:hover{ background:var(--gxl); border-color:var(--g); }
+    body.nav-solid .navbar .nav-badge{ background:var(--gxl); color:var(--g); border-color:rgba(26,107,74,.2); }
+    body.nav-solid .navbar .badge-doctor{ background:var(--bluel); color:var(--blue); border-color:rgba(29,78,216,.2); }
+    body.nav-solid .navbar .badge-admin{ background:var(--amberl); color:var(--amber); border-color:rgba(180,83,9,.2); }
+    body.nav-solid .navbar .nav-hamburger span,
+    .navbar.scrolled .nav-hamburger span{ background:var(--ink); }
+    body.nav-solid .navbar .nav-pill,
+    .navbar.scrolled .nav-pill{ background:var(--gxl); color:var(--g); border-color:rgba(26,107,74,.2); }
+    body.nav-solid .navbar .nav-pill.amber,
+    .navbar.scrolled .nav-pill.amber{ background:var(--amberl); color:var(--amber); }
+
+    /* Logo */
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:1.15rem;color:var(--ink);letter-spacing:-.02em}
+    .nav-logo-mark{
+      position:relative;width:38px;height:38px;border-radius:11px;
+      background:linear-gradient(135deg,var(--gd),var(--g));
+      display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+      box-shadow:0 4px 14px rgba(26,107,74,.35),inset 0 1px 0 rgba(255,255,255,.15);
+      transition:transform .3s var(--ease-spring),box-shadow .3s;
+      flex-shrink:0;
+    }
+    .nav-logo:hover .nav-logo-mark{transform:rotate(-8deg) scale(1.1);box-shadow:0 8px 24px rgba(26,107,74,.45)}
+    .nav-logo-text{color:var(--g)}
+    .nav-logo-dot{
+      width:7px;height:7px;background:var(--g);border-radius:50%;flex-shrink:0;
+      box-shadow:0 0 0 0 rgba(26,107,74,.5);
+      animation:pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,107,74,.5)}50%{box-shadow:0 0 0 8px rgba(26,107,74,0)}}
+
+    /* Nav links */
+    .nav-links{display:flex;align-items:center;gap:1px;list-style:none;flex-wrap:nowrap;overflow:hidden}
+    .nav-link{
+      text-decoration:none;font-size:.875rem;font-weight:500;color:var(--inkm);
+      padding:7px 14px;border-radius:9px;
+      transition:background .18s,color .18s;
+      position:relative;
+    }
+    .nav-link:hover{color:var(--g);background:var(--gxl)}
+    .nav-link.active{color:var(--g);background:var(--gxl);font-weight:600}
+
+    /* Scan pill */
+    .nav-pill{
+      display:inline-flex;align-items:center;gap:7px;
+      text-decoration:none;font-size:.82rem;font-weight:700;
+      color:var(--g);padding:7px 16px;border-radius:24px;
+      background:var(--gxl);border:1.5px solid rgba(26,107,74,.2);
+      transition:all .2s;white-space:nowrap;
+    }
+    .nav-pill:hover{background:rgba(26,107,74,.12);border-color:var(--g);transform:translateY(-1px)}
+    .nav-pill.active{background:var(--g);color:#fff;border-color:var(--g)}
+    .nav-pill.amber{background:var(--amberl);color:var(--amber);border-color:rgba(180,83,9,.2)}
+    .nav-pill.amber:hover{background:rgba(180,83,9,.12);border-color:var(--amber)}
+    .pill-dot{width:6px;height:6px;border-radius:50%;animation:pulse 1.8s infinite;flex-shrink:0}
+    .pill-dot.green{background:var(--g)}.nav-pill.active .pill-dot{background:#fff}
+    .pill-dot.amber{background:var(--amber)}
+
+    /* Role badge */
+    .nav-badge{
+      font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+      padding:4px 12px;border-radius:20px;border:1px solid;white-space:nowrap;
+    }
+    .badge-doctor{background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)}
+    .badge-asha{background:var(--gxl);color:var(--g);border-color:rgba(26,107,74,.2)}
+    .badge-admin{background:var(--amberl);color:var(--amber);border-color:rgba(180,83,9,.2)}
+
+    /* CTA */
+    .nav-cta{display:flex;align-items:center;gap:10px}
+    .btn-ghost{
+      text-decoration:none;font-size:.875rem;font-weight:600;
+      color:var(--g);padding:8px 18px;border-radius:9px;
+      border:1.5px solid rgba(26,107,74,.3);
+      transition:background .18s,border-color .18s;
+    }
+    .btn-ghost:hover{background:var(--gxl);border-color:var(--g)}
+
+    .btn-primary{
+      display:inline-flex;align-items:center;gap:7px;
+      text-decoration:none;font-size:.875rem;font-weight:700;
+      color:#fff;padding:9px 22px;border-radius:10px;
+      background:linear-gradient(135deg,var(--g),var(--gl));
+      border:none;cursor:pointer;
+      box-shadow:0 4px 16px rgba(26,107,74,.3),inset 0 1px 0 rgba(255,255,255,.1);
+      transition:transform .18s var(--ease-spring),box-shadow .18s;
+    }
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(26,107,74,.4),inset 0 1px 0 rgba(255,255,255,.1)}
+    .btn-primary:active{transform:translateY(0)}
+
+    /* Hamburger */
+    .nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:6px;z-index:201}
+    .nav-hamburger span{display:block;width:24px;height:2px;background:var(--ink);border-radius:2px;transition:transform .3s,opacity .3s,width .3s}
+    .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .nav-hamburger.open span:nth-child(2){opacity:0;width:0}
+    .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+    /* ══════════════ MOBILE MENU ══════════════ */
+    .mobile-menu{
+      position:fixed;top:var(--nav-h);left:0;right:0;z-index:199;
+      background:rgba(248,253,249,.97);backdrop-filter:blur(24px);
+      border-bottom:1px solid var(--border);
+      padding:16px 5% 24px;
+      display:flex;flex-direction:column;gap:3px;
+      transform:translateY(-110%);
+      transition:transform .35s var(--ease);
+      box-shadow:0 12px 40px rgba(0,0,0,.08);
+    }
+    .mobile-menu.open{transform:translateY(0)}
+    .mm-user{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:6px;background:var(--gxxl);border-radius:12px}
+    .mm-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gd),var(--g));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
+    .mm-name{font-size:.9rem;font-weight:600;color:var(--ink)}
+    .mm-role{font-size:.72rem;color:var(--muted)}
+    .mm-div{height:1px;background:var(--border);margin:6px 0}
+    .mobile-menu a{
+      text-decoration:none;color:var(--inkm);font-size:.95rem;font-weight:500;
+      padding:11px 14px;border-radius:10px;
+      display:flex;align-items:center;gap:10px;
+      transition:background .15s,color .15s;
+    }
+    .mobile-menu a:hover{background:var(--gxl);color:var(--g)}
+    .mobile-menu a.mm-scan{background:var(--gxl);color:var(--g);font-weight:700;border:1px solid rgba(26,107,74,.15)}
+    .mobile-menu a.mm-admin{background:var(--amberl);color:var(--amber);font-weight:700;border:1px solid rgba(180,83,9,.15)}
+    .mobile-menu a.mm-danger{color:var(--red)}
+    .mobile-menu a.mm-danger:hover{background:var(--redl)}
+
+    /* ══════════════ FLASH ══════════════ */
+    .flash-wrap{position:fixed;top:calc(var(--nav-h) + 14px);right:16px;z-index:300;display:flex;flex-direction:column;gap:8px;max-width:340px}
+    .flash{
+      padding:13px 18px;border-radius:12px;font-size:.875rem;font-weight:500;
+      display:flex;align-items:center;gap:10px;
+      animation:flashIn .3s var(--ease-spring),flashOut .3s ease 3.7s forwards;
+      box-shadow:0 8px 32px rgba(0,0,0,.12);border:1px solid;
+    }
+    @keyframes flashIn{from{opacity:0;transform:translateX(16px) scale(.96)}to{opacity:1;transform:none}}
+    @keyframes flashOut{to{opacity:0;transform:translateX(16px)}}
+    .flash-success{background:var(--gxl);color:var(--g);border-color:rgba(26,107,74,.2)}
+    .flash-error{background:var(--redl);color:var(--red);border-color:rgba(220,38,38,.2)}
+    .flash-info{background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)}
+
+    /* ══════════════ FOOTER ══════════════ */
+    footer{background:var(--ink);color:rgba(255,255,255,.5);padding:72px 5% 0;position:relative;overflow:hidden}
+    footer::before{content:'';position:absolute;top:-200px;right:-200px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(26,107,74,.08),transparent 70%);pointer-events:none}
+    .footer-inner{max-width:1140px;margin:0 auto}
+    .footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:56px;padding-bottom:52px;border-bottom:1px solid rgba(255,255,255,.07)}
+    .footer-brand p{font-size:.85rem;line-height:1.75;color:rgba(255,255,255,.38);max-width:240px;margin-top:16px}
+    .footer-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-weight:800;font-size:1.1rem;color:#fff;letter-spacing:-.01em}
+    .footer-logo-mark{width:36px;height:36px;border-radius:10px;background:rgba(26,107,74,.4);display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .footer-col h4{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:18px}
+    .footer-col a{display:block;text-decoration:none;font-size:.875rem;color:rgba(255,255,255,.45);margin-bottom:11px;transition:color .2s}
+    .footer-col a:hover{color:#fff}
+    .footer-bottom{display:flex;align-items:center;justify-content:space-between;padding:20px 0;font-size:.8rem;color:rgba(255,255,255,.18);flex-wrap:wrap;gap:10px}
+    .footer-heart{color:#f87171}
+
+    /* ══════════════ UTILITIES ══════════════ */
+    .container{max-width:1140px;margin:0 auto;padding:0 5%}
+    .serif{font-family:'Noto Serif',serif;font-style:italic}
+    .text-g{color:var(--g)}
+
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--g);background:var(--gxl);
+      padding:5px 14px;border-radius:20px;
+      border:1px solid rgba(26,107,74,.18);margin-bottom:24px;
+    }
+    .eyebrow-dot{width:6px;height:6px;background:var(--g);border-radius:50%;animation:pulse 2s infinite}
+
+    /* Reveal on scroll */
+    .reveal{opacity:0;transform:translateY(32px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+    .reveal.visible{opacity:1;transform:none}
+    .reveal-delay-1{transition-delay:.1s}
+    .reveal-delay-2{transition-delay:.2s}
+    .reveal-delay-3{transition-delay:.3s}
+    .reveal-delay-4{transition-delay:.4s}
+    .reveal-delay-5{transition-delay:.5s}
+
+    @media(max-width:900px){
+      .nav-links,.nav-cta{display:none}
+      .nav-hamburger{display:flex}
+    }
+    @media(max-width:640px){
+      .footer-top{grid-template-columns:1fr;gap:32px}
+    }
+
+    {% block extra_styles %}{% endblock %}
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ NAVBAR ══════════════ -->
+  <nav class="navbar" id="navbar">
+    <a href="{{ url_for('main.index') }}" class="nav-logo">
+      <div class="nav-logo-mark">🌿</div>
+      <span class="nav-logo-text">AarogyaLink</span>
+      <div class="nav-logo-dot"></div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint=='main.index' %}active{% endif %}">Home</a></li>
+
+      {% if current_user.is_authenticated %}
+        {% if current_user.is_asha() or current_user.is_admin() %}
+        <li><a href="{{ url_for('patient.register') }}" class="nav-link {% if request.endpoint=='patient.register' %}active{% endif %}">Register Patient</a></li>
+        {% endif %}
+        {% if current_user.is_doctor() or current_user.is_admin() %}
+        <li>
+          <a href="{{ url_for('scan.scan') }}" class="nav-pill {% if request.endpoint=='scan.scan' %}active{% endif %}">
+            <span class="pill-dot green"></span> Scan QR
+          </a>
+        </li>
+        {% endif %}
+        <li><a href="{{ url_for('dashboard.index') }}" class="nav-link {% if 'dashboard' in (request.endpoint or '') %}active{% endif %}">Dashboard</a></li>
+        {% if current_user.is_admin() %}
+        <li>
+          <a href="{{ url_for('admin.dashboard') }}" class="nav-pill amber {% if 'admin' in (request.endpoint or '') %}active{% endif %}">
+            <span class="pill-dot amber"></span> Admin
+          </a>
+        </li>
+        {% endif %}
+        {% if current_user.is_doctor() %}
+          {# Doctor online consult nav — always visible for doctors #}
+          <li>
+            <a href="{{ url_for('tele.doctor_slots') }}"
+               class="nav-link {% if request.endpoint=='tele.doctor_slots' %}active{% endif %}">
+              📅 My Slots
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('tele.doctor_appointments') }}"
+               class="nav-link {% if request.endpoint=='tele.doctor_appointments' %}active{% endif %}">
+              📋 Bookings
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('tele.doctor_payment_setup') }}"
+               class="nav-link {% if request.endpoint=='tele.doctor_payment_setup' %}active{% endif %}">
+              💳 Payment
+            </a>
+          </li>
+        {% endif %}
+        {# Consult only for NON-doctors (patients / ASHA / admin) #}
+        {% if not current_user.is_doctor() %}
+        <li>
+          <a href="{{ url_for('tele.find_doctors') }}"
+             class="nav-pill {% if 'tele' in (request.endpoint or '') %}active{% endif %}"
+             style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">
+            🩺 Consult
+          </a>
+        </li>
+        {% endif %}
+      {% elif session.get('op_id') %}
+        {# Online patient session — show patient nav #}
+        <li>
+          <a href="{{ url_for('tele.find_doctors') }}"
+             class="nav-pill {% if request.endpoint=='tele.find_doctors' %}active{% endif %}"
+             style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">
+            🩺 Consult
+          </a>
+        </li>
+        <li><a href="{{ url_for('tele.my_appointments') }}" class="nav-link {% if request.endpoint=='tele.my_appointments' %}active{% endif %}">📋 My Appointments</a></li>
+        <li><a href="{{ url_for('tele.patient_messages') }}" class="nav-link {% if request.endpoint=='tele.patient_messages' %}active{% endif %}">💬 Messages</a></li>
+      {% else %}
+        {# Not logged in — show Consult always #}
+        <li><a href="#how-it-works" class="nav-link">How it works</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li>
+          <a href="{{ url_for('tele.find_doctors') }}"
+             class="nav-pill {% if 'tele' in (request.endpoint or '') %}active{% endif %}"
+             style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">
+            🩺 Consult
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+
+    <div class="nav-cta">
+      {% if current_user.is_authenticated %}
+        {% if current_user.is_doctor() %}<span class="nav-badge badge-doctor">🩺 Doctor</span>
+        {% elif current_user.is_asha() %}<span class="nav-badge badge-asha">👩‍⚕️ ASHA</span>
+        {% elif current_user.is_admin() %}<span class="nav-badge badge-admin">⚙️ Admin</span>{% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="btn-ghost">Sign out</a>
+      {% elif session.get('op_id') %}
+        {# Online patient is signed in via session #}
+        <span class="nav-badge" style="background:#dbeafe;color:#1d4ed8;border:1px solid rgba(29,78,216,.15)">👤 Patient</span>
+        <a href="{{ url_for('tele.patient_messages') }}" class="btn-ghost" style="font-size:.8rem">💬 Messages</a>
+        <a href="{{ url_for('tele.my_appointments') }}" class="btn-ghost" style="font-size:.8rem">📋 Bookings</a>
+        <a href="{{ url_for('tele.op_logout') }}" class="btn-ghost">Sign out</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn-ghost" style="font-size:.8rem">Staff Login</a>
+        <a href="{{ url_for('tele.op_register') }}" class="btn-primary"><span>Consult a Doctor</span><span>→</span></a>
+      {% endif %}
+    </div>
+
+    <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ══════════════ MOBILE MENU ══════════════ -->
+  <div class="mobile-menu" id="mobileMenu">
+    {% if current_user.is_authenticated %}
+    <div class="mm-user">
+      <div class="mm-av">{{ current_user.name[0].upper() }}</div>
+      <div>
+        <div class="mm-name">{{ current_user.name }}</div>
+        <div class="mm-role">{% if current_user.is_doctor() %}🩺 Doctor{% elif current_user.is_asha() %}👩‍⚕️ ASHA Worker{% else %}⚙️ Admin{% endif %}</div>
+      </div>
+    </div>
+    <div class="mm-div"></div>
+    {% endif %}
+    {# No mm-user block for online patients — their name shows in nav badge #}
+
+    <a href="{{ url_for('main.index') }}">🏠 Home</a>
+    <a href="{{ url_for('patient.search') }}">🔍 Search Patient</a>
+    {% if not current_user.is_authenticated or not current_user.is_doctor() %}
+    <a href="{{ url_for('tele.find_doctors') }}" style="color:var(--blue);font-weight:600">🩺 Consult a Doctor</a>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+      {% if current_user.is_asha() or current_user.is_admin() %}<a href="{{ url_for('patient.register') }}">➕ Register Patient</a>{% endif %}
+      {% if current_user.is_doctor() or current_user.is_admin() %}<a href="{{ url_for('scan.scan') }}" class="mm-scan">📷 Scan QR Card</a>{% endif %}
+      <a href="{{ url_for('dashboard.index') }}">📊 Dashboard</a>
+      {% if current_user.is_doctor() %}
+      <div class="mm-div"></div>
+      <a href="{{ url_for('tele.doctor_slots') }}" style="color:var(--blue);font-weight:600">📅 My Slots</a>
+      <a href="{{ url_for('tele.doctor_appointments') }}" style="color:var(--blue);font-weight:600">📋 Online Bookings</a>
+      <a href="{{ url_for('tele.doctor_payment_setup') }}" style="color:var(--blue);font-weight:600">💳 Payment Setup</a>
+      {% endif %}
+      {% if current_user.is_admin() %}<a href="{{ url_for('admin.dashboard') }}" class="mm-admin">⚙️ Admin Panel</a>{% endif %}
+      <div class="mm-div"></div>
+      <a href="{{ url_for('auth.logout') }}" class="mm-danger">🚪 Sign out</a>
+    {% elif session.get('op_id') %}
+      <div class="mm-div"></div>
+      <a href="{{ url_for('tele.find_doctors') }}" style="color:var(--blue);font-weight:600">🩺 Consult a Doctor</a>
+      <a href="{{ url_for('tele.my_appointments') }}">📋 My Appointments</a>
+      <a href="{{ url_for('tele.patient_messages') }}">💬 Messages</a>
+      <div class="mm-div"></div>
+      <a href="{{ url_for('tele.op_logout') }}" class="mm-danger">🚪 Sign out</a>
+    {% else %}
+      <div class="mm-div"></div>
+      <a href="#how-it-works">⚙️ How it works</a>
+      <a href="#features">✨ Features</a>
+      <div class="mm-div"></div>
+      <a href="{{ url_for('auth.login') }}" style="color:var(--g);font-weight:700">🔑 Sign in (Staff)</a>
+      <a href="{{ url_for('tele.op_login') }}" style="color:var(--blue);font-weight:700">👤 Patient Sign in</a>
+      <a href="{{ url_for('tele.op_register') }}" style="background:var(--blue);color:#fff;font-weight:700;justify-content:center;margin-top:4px;border-radius:10px">Consult a Doctor →</a>
+    {% endif %}
+  </div>
+
+  <!-- ══════════════ FLASH ══════════════ -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-wrap">
+      {% for cat, msg in messages %}
+      <div class="flash flash-{{ cat }}">
+        {{ '✅' if cat=='success' else ('❌' if cat=='error' else 'ℹ️') }}
+        {{ msg }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <!-- ══════════════ FOOTER ══════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="{{ url_for('main.index') }}" class="footer-logo">
+            <div class="footer-logo-mark">🌿</div> AarogyaLink
+          </a>
+          <p>Giving every rural Indian a lifelong QR health record. One card. One scan. A lifetime of care.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#how-it-works">How it works</a>
+          <a href="#features">Features</a>
+          <a href="{{ url_for('patient.register') }}">Register Patient</a>
+          {% if current_user.is_authenticated and (current_user.is_doctor() or current_user.is_admin()) %}
+          <a href="{{ url_for('scan.scan') }}">Scan QR Card</a>{% endif %}
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="#">ASHA Worker Guide</a>
+          <a href="#">Documentation</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Contact Us</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="#">GitHub</a>
+          <a href="#">Twitter / X</a>
+          <a href="#">LinkedIn</a>
+          {% if current_user.is_authenticated %}
+          <a href="{{ url_for('dashboard.index') }}">My Dashboard</a>
+          {% else %}
+          <a href="{{ url_for('auth.login') }}">Sign in</a>{% endif %}
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 AarogyaLink · Built with <span class="footer-heart">♥</span> for Bharat</span>
+        <span>A BTech CSE student who gives a damn.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar: transparent on hero pages, solid on scroll + inner pages
+    const nav = document.getElementById('navbar');
+
+    // Pages with light/white backgrounds need solid dark navbar text
+    // Inner app pages: always solid
+    // Homepage (/): transparent with dark text (light background)
+    // Future dark hero pages: transparent with white text
+    const solidPages = [
+      '/dashboard', '/admin', '/patient/', '/auth/', '/scan'
+    ];
+    const isSolidPage = solidPages.some(p => window.location.pathname.startsWith(p));
+
+    // Homepage has white background — keep nav-solid so text stays dark
+    const isHomepage = window.location.pathname === '/';
+
+    if (isSolidPage || isHomepage) {
+      document.body.classList.add('nav-solid');
+    }
+
+    // Scroll: add scrolled class after 10px
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    }, {passive: true});
+
+    // Hamburger
+    const hb = document.getElementById('hamburger');
+    const mm = document.getElementById('mobileMenu');
+    hb?.addEventListener('click',()=>{
+      hb.classList.toggle('open');
+      mm.classList.toggle('open');
+      document.body.style.overflow = mm.classList.contains('open')?'hidden':'';
+    });
+    mm?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+      hb.classList.remove('open');mm.classList.remove('open');document.body.style.overflow='';
+    }));
+
+    // Smooth scroll anchors
+    document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
+      const t=document.querySelector(a.getAttribute('href'));
+      if(t){e.preventDefault();window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});}
+    }));
+
+    // Scroll reveal
+    const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}}),{threshold:.1});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+    // Flash dismiss
+    document.querySelectorAll('.flash').forEach(el=>setTimeout(()=>el.remove(),4000));
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
