@@ -1,11 +1,8 @@
-"""
-Render / Gunicorn entry point.
-This file lives at the project root.
-"""
 import sys, os
 
-# Make sure backend/ is on the path so imports work
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
+# Add backend/ to Python path so 'app', 'models', 'config' etc. are importable
+backend_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backend')
+sys.path.insert(0, backend_dir)
 
 from app import create_app, socketio
 
