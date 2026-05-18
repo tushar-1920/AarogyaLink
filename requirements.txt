@@ -6,6 +6,7 @@ python-dotenv
 qrcode[pil]
 Pillow
 reportlab
-eventlet
 gunicorn
 greenlet
+gevent
+gevent-websocket
