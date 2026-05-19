@@ -7,6 +7,3 @@ qrcode[pil]
 Pillow
 reportlab
 gunicorn
-greenlet
-gevent
-gevent-websocket
