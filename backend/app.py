@@ -18,7 +18,7 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     login_manager.init_app(app)
-    socketio.init_app(app, async_mode='eventlet', cors_allowed_origins='*')
+    socketio.init_app(app, async_mode='threading', cors_allowed_origins='*')
 
     from routes.main      import main_bp
     from routes.patient   import patient_bp
@@ -271,4 +271,4 @@ if __name__ == '__main__':
     print('  ╚══════════════════════════════════════════╝')
     print()
 
-    socketio.run(app, debug=True, host='0.0.0.0', port=PORT)
+    app.run(host='0.0.0.0', port=PORT, debug=False)
