@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask
 from config import Config
-from extensions import db, login_manager, socketio
+from extensions import db, login_manager
 
 def create_app(config_class=Config):
     app = Flask(
@@ -18,7 +18,6 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     login_manager.init_app(app)
-    socketio.init_app(app, async_mode='threading', cors_allowed_origins='*')
 
     from routes.main      import main_bp
     from routes.patient   import patient_bp
