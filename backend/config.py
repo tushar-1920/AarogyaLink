@@ -14,14 +14,9 @@ class Config:
     if _db_url.startswith('postgres://'):
         _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
 
-    # On Render use /tmp for SQLite, locally use database/ folder
-    _is_render = os.environ.get('RENDER', False)
-    _local_db  = os.path.join(ROOT_DIR, 'database', 'aarogyalink.db')
-    _render_db = '/tmp/aarogyalink.db'
-
+    # Always use /tmp for SQLite - works on Render and locally
     SQLALCHEMY_DATABASE_URI = (
-        _db_url or
-        f"sqlite:///{_render_db if _is_render else _local_db}"
+        _db_url or "sqlite:////tmp/aarogyalink.db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
