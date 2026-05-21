@@ -9,6 +9,8 @@ services:
         generateValue: true
       - key: FLASK_DEBUG
         value: "false"
+      - key: RENDER
+        value: "true"
       - key: ADMIN_EMAIL
         value: admin@aarogyalink.in
       - key: ADMIN_PASSWORD
