@@ -1,256 +1,282 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Home — AarogyaLink{% endblock %}
 
 {% block extra_styles %}
 
-/* ══════════════════════════════════════════════
-   HERO
-══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   HERO — DARK FULL SCREEN
+═══════════════════════════════════════════════ */
 .hero{
   min-height:100vh;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:calc(var(--nav-h)+80px) 5% 80px;
+  padding:calc(var(--nav-h) + 90px) 5% 90px;
   position:relative;overflow:hidden;
-  background:var(--white);
+  background:linear-gradient(155deg,#030d07 0%,#071a0f 30%,#0c2b1a 60%,#082012 100%);
 }
 
-/* Layered background */
-.hero-canvas{position:absolute;inset:0;z-index:0}
-.hc-grid{
+/* ── Animated background layers ── */
+.hbg{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hbg-grid{
   position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(26,107,74,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(26,107,74,.04) 1px,transparent 1px);
-  background-size:52px 52px;
-  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 30%,transparent 75%);
+    linear-gradient(rgba(74,222,128,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(74,222,128,.07) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 20%,transparent 70%);
 }
-.hc-glow{
-  position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;
-  animation:blobMove 10s ease-in-out infinite;
+.hbg-blob{
+  position:absolute;border-radius:50%;
+  filter:blur(100px);pointer-events:none;
+  animation:blobDrift 12s ease-in-out infinite;
 }
-.hc-glow-1{width:700px;height:700px;background:rgba(26,107,74,.07);top:-200px;right:-150px}
-.hc-glow-2{width:500px;height:500px;background:rgba(26,107,74,.05);bottom:-150px;left:-100px;animation-delay:-5s}
-.hc-glow-3{width:300px;height:300px;background:rgba(180,83,9,.04);top:40%;left:40%;animation-delay:-3s}
-@keyframes blobMove{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,25px) scale(.97)}}
+.hbg-b1{width:820px;height:820px;background:rgba(26,107,74,.14);top:-320px;right:-220px}
+.hbg-b2{width:620px;height:620px;background:rgba(26,107,74,.1);bottom:-220px;left:-160px;animation-delay:-6s}
+.hbg-b3{width:420px;height:420px;background:rgba(74,222,128,.07);top:40%;left:38%;animation-delay:-3s}
+.hbg-b4{width:280px;height:280px;background:rgba(16,185,129,.06);top:15%;left:12%;animation-delay:-5s}
+@keyframes blobDrift{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(45px,-35px) scale(1.06)}
+  66%{transform:translate(-28px,40px) scale(.96)}
+}
+.hbg-noise{
+  position:absolute;inset:0;opacity:.02;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-/* Hero content */
+/* ── Hero inner grid ── */
 .hero-inner{
-  max-width:1140px;width:100%;
-  display:grid;grid-template-columns:1fr 1.05fr;
+  max-width:1120px;width:100%;
+  display:grid;grid-template-columns:1fr 1.08fr;
   gap:72px;align-items:center;
   position:relative;z-index:1;
 }
 
-/* Left */
-.hero-left{}
-.hero-badge{
+/* ── Left: copy ── */
+.h-eyebrow{
   display:inline-flex;align-items:center;gap:9px;
-  background:var(--gxl);border:1px solid rgba(26,107,74,.2);
-  border-radius:24px;padding:6px 16px 6px 10px;
-  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--g);margin-bottom:28px;
-  animation:fadeUp .6s var(--ease) both;
+  background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.22);
+  border-radius:30px;padding:6px 18px 6px 10px;
+  font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:#4ade80;margin-bottom:28px;
+  animation:fadeUp .5s ease both;
 }
-.hero-badge-icon{
-  width:22px;height:22px;border-radius:50%;
-  background:var(--g);display:flex;align-items:center;justify-content:center;
-  font-size:.65rem;color:#fff;flex-shrink:0;
-}
-.hero-badge-dot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:pulse 2s infinite}
+.h-ey-ico{width:24px;height:24px;border-radius:50%;background:rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;font-size:.65rem;flex-shrink:0}
+.h-ey-dot{width:5px;height:5px;background:#4ade80;border-radius:50%;animation:hpulse 2s infinite;flex-shrink:0}
+@keyframes hpulse{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.5)}50%{box-shadow:0 0 0 8px rgba(74,222,128,0)}}
 
 .hero-h1{
-  font-size:clamp(2.4rem,4.8vw,3.8rem);
-  font-weight:800;line-height:1.08;letter-spacing:-.03em;
-  color:var(--ink);margin-bottom:22px;
-  animation:fadeUp .65s .08s var(--ease) both;
+  font-size:clamp(2.4rem,4.8vw,4rem);
+  font-weight:800;line-height:1.06;letter-spacing:-.035em;
+  color:#fff;margin-bottom:22px;
+  animation:fadeUp .55s .07s ease both;
 }
-.hero-h1 .line2{display:block;color:var(--g);font-family:'Noto Serif',serif;font-style:italic}
-.hero-h1 .accent{
-  position:relative;display:inline-block;
+.h1-green{
+  display:block;
+  background:linear-gradient(135deg,#4ade80 0%,#22c55e 50%,#16a34a 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  font-family:'Noto Serif',serif;font-style:italic;
 }
-.hero-h1 .accent::after{
-  content:'';position:absolute;left:0;right:0;bottom:-4px;height:3px;
-  background:linear-gradient(90deg,var(--g),var(--gl));border-radius:3px;
+.h1-line{position:relative;display:inline-block;white-space:nowrap}
+.h1-line::after{
+  content:'';position:absolute;left:0;right:0;bottom:-5px;height:3px;
+  background:linear-gradient(90deg,#4ade80,#22c55e);border-radius:3px;
+  animation:lineGrow .9s .7s ease both;transform-origin:left;transform:scaleX(0);
 }
+@keyframes lineGrow{to{transform:scaleX(1)}}
 
 .hero-p{
-  font-size:1.05rem;color:var(--muted);line-height:1.8;
-  max-width:460px;margin-bottom:38px;
-  animation:fadeUp .65s .16s var(--ease) both;
+  font-size:1.04rem;color:rgba(255,255,255,.55);line-height:1.82;
+  max-width:480px;margin-bottom:36px;
+  animation:fadeUp .55s .15s ease both;
 }
-.hero-p strong{color:var(--ink);font-weight:600}
+.hero-p strong{color:rgba(255,255,255,.88);font-weight:600}
 
-.hero-actions{
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  margin-bottom:48px;
-  animation:fadeUp .65s .24s var(--ease) both;
+.hero-btns{
+  display:flex;align-items:center;gap:13px;flex-wrap:wrap;
+  margin-bottom:42px;
+  animation:fadeUp .55s .22s ease both;
 }
-.btn-primary-lg{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:14px 28px;border-radius:12px;
-  background:linear-gradient(135deg,var(--gd),var(--g));
-  color:#fff;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;
+.btn-hero-primary{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:15px 28px;border-radius:13px;
+  background:linear-gradient(135deg,#15803d,#22c55e);
+  color:#fff;font-family:'Sora',sans-serif;font-size:.97rem;font-weight:700;
   text-decoration:none;border:none;cursor:pointer;
-  box-shadow:0 6px 24px rgba(26,107,74,.35),inset 0 1px 0 rgba(255,255,255,.12);
-  transition:transform .2s var(--ease-spring),box-shadow .2s;
+  box-shadow:0 6px 28px rgba(34,197,94,.38),inset 0 1px 0 rgba(255,255,255,.18);
+  transition:transform .22s var(--ease-spring),box-shadow .22s;
 }
-.btn-primary-lg:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(26,107,74,.45),inset 0 1px 0 rgba(255,255,255,.12)}
-.btn-outline-lg{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:13px 24px;border-radius:12px;
-  background:var(--card);color:var(--inkm);
-  border:1.5px solid var(--border);
-  font-family:'Sora',sans-serif;font-size:.95rem;font-weight:600;
-  text-decoration:none;transition:border-color .2s,background .2s,transform .2s;
+.btn-hero-primary:hover{transform:translateY(-3px);box-shadow:0 14px 44px rgba(34,197,94,.52)}
+.btn-hero-ghost{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:14px 22px;border-radius:13px;
+  background:rgba(255,255,255,.07);color:rgba(255,255,255,.72);
+  border:1px solid rgba(255,255,255,.15);
+  font-family:'Sora',sans-serif;font-size:.93rem;font-weight:600;
+  text-decoration:none;
+  transition:background .2s,border-color .2s,transform .2s;
 }
-.btn-outline-lg:hover{border-color:var(--g);background:var(--gxl);transform:translateY(-2px)}
+.btn-hero-ghost:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);transform:translateY(-2px)}
 
-/* Trust pills */
-.trust-strip{
-  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
-  animation:fadeUp .65s .32s var(--ease) both;
-}
-.trust-pill{
+/* ── Trust chips ── */
+.h-trust{display:flex;align-items:center;gap:7px;flex-wrap:wrap;animation:fadeUp .55s .29s ease both}
+.htc{
   display:flex;align-items:center;gap:6px;
-  font-size:.78rem;color:var(--muted);font-weight:500;
-  padding:5px 12px;border-radius:20px;
-  background:rgba(255,255,255,.7);border:1px solid var(--borderl);
+  font-size:.75rem;color:rgba(255,255,255,.38);font-weight:500;
+  padding:5px 11px;border-radius:20px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
 }
-.trust-pill span:first-child{font-size:.9rem}
-.trust-sep{width:4px;height:4px;background:var(--border);border-radius:50%;flex-shrink:0}
+.htc span:first-child{font-size:.88rem}
+.htc-sep{width:3px;height:3px;background:rgba(255,255,255,.15);border-radius:50%;flex-shrink:0}
 
-/* ── HERO RIGHT: Health card ── */
-.hero-right{
-  position:relative;
-  animation:fadeUp .8s .1s var(--ease) both;
+/* ── Right: Health Card ── */
+.hero-card-wrap{position:relative;animation:fadeUp .78s .1s ease both}
+
+.card-aura{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:460px;height:460px;border-radius:50%;
+  background:radial-gradient(circle,rgba(34,197,94,.18),transparent 65%);
+  filter:blur(50px);pointer-events:none;z-index:0;
 }
+.card-orbit{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0}
+.co{position:absolute;border-radius:50%;border:1px solid rgba(74,222,128,.1);transform:translate(-50%,-50%)}
+.co-1{width:380px;height:380px;animation:orbPulse 5s ease-in-out infinite}
+.co-2{width:510px;height:510px;animation:orbPulse 5s 1.5s ease-in-out infinite}
+.co-3{width:640px;height:640px;animation:orbPulse 5s 3s ease-in-out infinite}
+@keyframes orbPulse{0%,100%{opacity:.35}50%{opacity:.85;transform:translate(-50%,-50%) scale(1.025)}}
 
-/* Decorative rings */
-.card-rings{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:0}
-.ring{position:absolute;border-radius:50%;border:1px solid rgba(26,107,74,.08);transform:translate(-50%,-50%)}
-.ring-1{width:340px;height:340px;animation:ringPulse 4s ease-in-out infinite}
-.ring-2{width:460px;height:460px;animation:ringPulse 4s 1s ease-in-out infinite}
-.ring-3{width:580px;height:580px;animation:ringPulse 4s 2s ease-in-out infinite}
-@keyframes ringPulse{0%,100%{opacity:.5}50%{opacity:1;transform:translate(-50%,-50%) scale(1.02)}}
-
-/* The card */
 .hcard{
-  position:relative;z-index:1;
-  background:var(--card);
-  border:1px solid rgba(204,228,214,.8);
-  border-radius:28px;padding:28px;
-  box-shadow:0 32px 80px rgba(0,0,0,.1),0 0 0 1px rgba(26,107,74,.05),inset 0 1px 0 rgba(255,255,255,.9);
-  animation:cardFloat 6s ease-in-out infinite;
-  transform-origin:center center;
+  position:relative;z-index:2;
+  background:#fff;border-radius:26px;padding:26px;
+  box-shadow:0 48px 120px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.12),inset 0 1px 0 rgba(255,255,255,.95);
+  animation:cardFloat 7s ease-in-out infinite;
 }
-@keyframes cardFloat{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-8px) rotate(.3deg)}75%{transform:translateY(4px) rotate(-.2deg)}}
+@keyframes cardFloat{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  28%{transform:translateY(-10px) rotate(.35deg)}
+  72%{transform:translateY(5px) rotate(-.25deg)}
+}
 
-.hcard-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:22px;padding-bottom:18px;
-  border-bottom:1px solid var(--borderl);
-}
-.hcard-brand{
-  display:flex;align-items:center;gap:8px;
-  font-size:.78rem;font-weight:700;color:var(--g);
-}
-.hcard-brand-icon{width:26px;height:26px;border-radius:7px;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:.7rem}
-.hcard-live{display:flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;color:var(--g)}
-.live-pulse{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:pulse 1.8s infinite}
+/* Card internals */
+.hc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #e0f0e8}
+.hc-brand{display:flex;align-items:center;gap:8px;font-size:.76rem;font-weight:700;color:#1a6b4a}
+.hc-brand-mark{width:24px;height:24px;border-radius:7px;background:#1a6b4a;display:flex;align-items:center;justify-content:center;font-size:.65rem}
+.hc-live{display:flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;color:#1a6b4a}
+.hc-livepulse{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:hpulse 1.8s infinite}
 
-.hcard-patient{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-.hcard-photo{
-  width:52px;height:52px;border-radius:50%;
-  background:linear-gradient(135deg,var(--gxl),var(--gxxl));
+.hc-patient{display:flex;align-items:center;gap:13px;margin-bottom:18px}
+.hc-av{
+  width:50px;height:50px;border-radius:50%;
+  background:linear-gradient(135deg,#e6f4ee,#f2faf6);
   border:2px solid rgba(26,107,74,.15);
   display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:1.1rem;color:var(--g);flex-shrink:0;
+  font-weight:800;font-size:1.1rem;color:#1a6b4a;flex-shrink:0;
   position:relative;
 }
-.hcard-photo::after{
+.hc-av::after{
   content:'';position:absolute;inset:-3px;border-radius:50%;
-  background:conic-gradient(var(--g) 0deg 250deg,var(--borderl) 250deg 360deg);
-  z-index:-1;border-radius:50%;
-  animation:photoRing 4s linear infinite;
+  background:conic-gradient(#1a6b4a 0deg 245deg,#e0f0e8 245deg 360deg);
+  z-index:-1;animation:spin 4s linear infinite;
 }
-@keyframes photoRing{to{transform:rotate(360deg)}}
-.hcard-name{font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:2px}
-.hcard-id{font-size:.7rem;color:var(--muted);font-family:monospace;letter-spacing:.04em}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hc-nm{font-size:1.05rem;font-weight:800;color:#0a1510;margin-bottom:2px}
+.hc-id{font-size:.68rem;color:#5a7265;font-family:monospace;letter-spacing:.04em}
 
-.hcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.hcard-stat{background:var(--gxxl);border-radius:10px;padding:10px 13px}
-.hcs-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px;font-weight:600}
-.hcs-val{font-size:.9rem;font-weight:700;color:var(--ink)}
+.hc-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+.hc-box{background:#f2faf6;border-radius:9px;padding:9px 12px}
+.hcb-l{font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;color:#5a7265;margin-bottom:2px;font-weight:600}
+.hcb-v{font-size:.88rem;font-weight:700;color:#0a1510}
 
-.hcard-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
-.htag{font-size:.7rem;font-weight:600;padding:4px 10px;border-radius:20px}
-.htag-amber{background:var(--amberl);color:var(--amber)}
-.htag-red{background:var(--redl);color:var(--red)}
-.htag-green{background:var(--gxl);color:var(--g)}
+.hc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+.ht{font-size:.69rem;font-weight:600;padding:3px 9px;border-radius:20px}
+.ht-a{background:#fef3c7;color:#b45309}
+.ht-r{background:#fef2f2;color:#dc2626}
+.ht-g{background:#e6f4ee;color:#1a6b4a}
 
-.hcard-qr{
-  display:flex;align-items:center;gap:14px;
-  background:linear-gradient(135deg,var(--gxxl),var(--gxl));
-  border-radius:14px;padding:14px;
-  border:1px solid rgba(26,107,74,.12);
-}
-.hcard-qr svg{flex-shrink:0}
-.hcard-qr-txt h4{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:3px}
-.hcard-qr-txt p{font-size:.72rem;color:var(--muted);line-height:1.5;margin:0}
+.hc-qr{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#f2faf6,#e6f4ee);border-radius:13px;padding:12px;border:1px solid rgba(26,107,74,.1)}
+.hc-qr-t h4{font-size:.8rem;font-weight:700;color:#0a1510;margin-bottom:2px}
+.hc-qr-t p{font-size:.7rem;color:#5a7265;line-height:1.45;margin:0}
 
 /* Floating badges */
-.float-badge{
-  position:absolute;background:var(--card);
-  border:1px solid var(--border);border-radius:12px;
-  padding:9px 14px;box-shadow:0 8px 32px rgba(0,0,0,.1);
-  font-size:.75rem;font-weight:600;color:var(--ink);
-  display:flex;align-items:center;gap:7px;white-space:nowrap;z-index:2;
+.flt-badge{
+  position:absolute;background:rgba(255,255,255,.92);
+  border:1px solid rgba(255,255,255,.3);border-radius:12px;
+  padding:9px 13px;
+  box-shadow:0 8px 32px rgba(0,0,0,.32),0 0 0 1px rgba(255,255,255,.15);
+  font-size:.73rem;font-weight:600;color:#0a1510;
+  display:flex;align-items:center;gap:7px;white-space:nowrap;z-index:3;
+  backdrop-filter:blur(12px);
 }
-.fb-1{top:-16px;right:-16px;animation:fb1 4s ease-in-out infinite}
-.fb-2{bottom:-14px;left:-16px;animation:fb2 4s ease-in-out infinite}
-.fb-3{top:40%;right:-24px;animation:fb1 5s 1s ease-in-out infinite}
-@keyframes fb1{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-@keyframes fb2{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
-.fb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.fb-dot-green{background:#22c55e}.fb-dot-amber{background:#f59e0b}.fb-dot-blue{background:#3b82f6}
+.fb1{top:-18px;right:-18px;animation:fbA 4s ease-in-out infinite}
+.fb2{bottom:-16px;left:-18px;animation:fbB 4s ease-in-out infinite}
+.fb3{top:42%;right:-26px;animation:fbA 5s 1s ease-in-out infinite}
+@keyframes fbA{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes fbB{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.fbd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fbd-g{background:#22c55e}.fbd-b{background:#3b82f6}.fbd-a{background:#f59e0b}
 
-/* ── STATS BAR ── */
+/* ── Stats bar ── */
 .stats-bar{
   position:relative;z-index:1;
-  max-width:1140px;width:100%;
-  margin-top:72px;
-  background:var(--card);
-  border:1px solid var(--border);border-radius:24px;
-  padding:36px 48px;
-  box-shadow:0 8px 48px rgba(0,0,0,.07);
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:0;
+  max-width:1120px;width:100%;margin-top:80px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:24px;padding:34px 48px;
+  backdrop-filter:blur(20px);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;
 }
-.stat-col{text-align:center;padding:0 20px;position:relative}
-.stat-col+.stat-col::before{content:'';position:absolute;left:0;top:10%;bottom:10%;width:1px;background:var(--borderl)}
-.stat-number{
-  font-size:2.2rem;font-weight:800;color:var(--g);
-  font-family:'Noto Serif',serif;line-height:1;margin-bottom:6px;
-}
-.stat-label{font-size:.78rem;color:var(--muted);line-height:1.5}
+.sbc{text-align:center;padding:0 20px;position:relative}
+.sbc+.sbc::before{content:'';position:absolute;left:0;top:10%;bottom:10%;width:1px;background:rgba(255,255,255,.09)}
+.sbn{font-size:2.3rem;font-weight:800;color:#4ade80;font-family:'Noto Serif',serif;line-height:1;margin-bottom:6px}
+.sbl{font-size:.76rem;color:rgba(255,255,255,.38);line-height:1.5}
 
-/* ══════════════════════════════════════════════
-   HOW IT WORKS
-══════════════════════════════════════════════ */
-.section{padding:110px 5%}
-.section-dark{background:var(--gxxl)}
-.section-ink{background:var(--ink);color:#fff}
-.section-wrap{max-width:1140px;margin:0 auto}
-.section-center{text-align:center}
+/* ═══════════════════════════════════════════════
+   SHARED SECTION STYLES
+═══════════════════════════════════════════════ */
+.section{padding:112px 5%}
+.sec-soft{background:var(--gxxl)}
+.sec-white{background:var(--white)}
+.sec-ink{background:var(--ink);color:#fff}
+.sw{max-width:1120px;margin:0 auto}
+.sc{text-align:center}
 
-.s-eyebrow{
-  display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--g);margin-bottom:14px;
+.s-tag{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 14px;border-radius:20px;margin-bottom:14px;
 }
-.s-title{font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
+.st-g{color:var(--g);background:var(--gxl);border:1px solid rgba(26,107,74,.15)}
+.st-d{color:#4ade80;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2)}
+.stag-dot{width:5px;height:5px;border-radius:50%;animation:hpulse 2s infinite;flex-shrink:0}
+.std-g{background:var(--g)}.std-d{background:#4ade80}
+
+.s-title{font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:800;line-height:1.15;letter-spacing:-.025em;margin-bottom:14px}
 .s-sub{font-size:1rem;color:var(--muted);line-height:1.75;max-width:520px;margin:0 auto 64px}
+.sec-ink .s-sub,.sec-ink .s-title{color:rgba(255,255,255,.42) }
+.sec-ink .s-title{color:#fff}
 
-/* Timeline steps */
+/* ═══════════════════════════════════════════════
+   MARQUEE
+═══════════════════════════════════════════════ */
+.mq-outer{
+  overflow:hidden;background:var(--gxxl);
+  padding:14px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.mq-track{display:flex;animation:mqScroll 30s linear infinite;width:max-content}
+.mq-track:hover{animation-play-state:paused}
+@keyframes mqScroll{to{transform:translateX(-50%)}}
+.mq-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 26px;white-space:nowrap;
+  font-size:.83rem;font-weight:600;color:var(--inkm);
+}
+.mq-dot{width:4px;height:4px;background:var(--g);border-radius:50%;opacity:.45;flex-shrink:0}
+
+/* ═══════════════════════════════════════════════
+   HOW IT WORKS — TIMELINE STEPS
+═══════════════════════════════════════════════ */
 .steps-timeline{
   position:relative;
   display:grid;grid-template-columns:repeat(5,1fr);
@@ -258,65 +284,77 @@
 }
 .steps-timeline::before{
   content:'';position:absolute;
-  top:36px;left:calc(10% + 20px);right:calc(10% + 20px);
+  top:35px;
+  left:calc(10% + 18px);right:calc(10% + 18px);
   height:2px;
   background:linear-gradient(90deg,var(--g) 0%,var(--gxl) 100%);
   z-index:0;
 }
-.step{text-align:center;padding:0 14px;position:relative;z-index:1}
+.step-item{text-align:center;padding:0 12px;position:relative;z-index:1}
 .step-icon{
   width:72px;height:72px;border-radius:50%;
-  margin:0 auto 18px;
+  margin:0 auto 16px;
   display:flex;align-items:center;justify-content:center;font-size:1.6rem;
   border:3px solid var(--white);
-  box-shadow:0 0 0 2px var(--border),0 4px 20px rgba(0,0,0,.07);
+  box-shadow:0 0 0 2px var(--border),var(--shadow);
   transition:transform .3s var(--ease-spring),box-shadow .3s;
 }
-.step:hover .step-icon{transform:scale(1.12) translateY(-5px);box-shadow:0 0 0 2px var(--g),0 12px 32px rgba(26,107,74,.2)}
-.si-blue{background:#e0f2fe}.si-green{background:var(--gxl)}.si-amber{background:var(--amberl)}.si-purple{background:#ede9fe}.si-teal{background:#e0fdf4}
-.step-num{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:7px}
-.step-title{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:6px}
-.step-desc{font-size:.78rem;color:var(--muted);line-height:1.65}
+.step-item:hover .step-icon{
+  transform:scale(1.12) translateY(-6px);
+  box-shadow:0 0 0 2px var(--g),0 12px 30px rgba(26,107,74,.22);
+}
+.si-blue{background:#e0f2fe}
+.si-green{background:var(--gxl)}
+.si-amber{background:var(--amberl)}
+.si-purple{background:#ede9fe}
+.si-teal{background:#e0fdf4}
+.step-num{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:6px}
+.step-name{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:6px}
+.step-desc{font-size:.77rem;color:var(--muted);line-height:1.65}
 
-/* ══════════════════════════════════════════════
-   FEATURES
-══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   FEATURES GRID
+═══════════════════════════════════════════════ */
 .features-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
-  max-width:1140px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:20px;max-width:1120px;margin:0 auto;
 }
 .feat-card{
-  background:var(--card);border:1px solid var(--border);border-radius:20px;
-  padding:30px;box-shadow:var(--shadow);
-  transition:transform .25s var(--ease),box-shadow .25s,border-color .25s;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:30px;box-shadow:var(--shadow);
   position:relative;overflow:hidden;
+  transition:transform .25s var(--ease),box-shadow .25s,border-color .25s;
 }
 .feat-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
   background:linear-gradient(90deg,var(--g),var(--gl));
-  transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease);
+  transform:scaleX(0);transform-origin:left;transition:transform .3s;
 }
-.feat-card:hover{transform:translateY(-6px);box-shadow:0 16px 48px rgba(0,0,0,.1);border-color:rgba(26,107,74,.2)}
+.feat-card:hover{transform:translateY(-6px);box-shadow:0 16px 48px rgba(0,0,0,.1);border-color:rgba(26,107,74,.22)}
 .feat-card:hover::before{transform:scaleX(1)}
 .feat-icon{
   width:50px;height:50px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;font-size:1.4rem;
   margin-bottom:18px;
 }
-.fi-green{background:var(--gxl)}.fi-amber{background:var(--amberl)}.fi-blue{background:var(--bluel)}
+.fi-g{background:var(--gxl)}
+.fi-a{background:var(--amberl)}
+.fi-b{background:var(--bluel)}
+.fi-p{background:#ede9fe}
 .feat-card h3{font-size:.97rem;font-weight:700;color:var(--ink);margin-bottom:9px}
-.feat-card p{font-size:.85rem;color:var(--muted);line-height:1.75;margin:0}
+.feat-card p{font-size:.84rem;color:var(--muted);line-height:1.75;margin:0}
 
-/* ══════════════════════════════════════════════
-   ROLES
-══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   ROLES GRID
+═══════════════════════════════════════════════ */
 .roles-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
-  max-width:1140px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:24px;max-width:1120px;margin:0 auto;
 }
 .role-card{
-  background:var(--card);border:1px solid var(--border);border-radius:22px;
-  padding:36px 30px;box-shadow:var(--shadow);text-align:center;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:22px;padding:36px 30px;box-shadow:var(--shadow);
+  text-align:center;
   transition:transform .25s var(--ease),box-shadow .25s;
   position:relative;overflow:hidden;
 }
@@ -327,150 +365,243 @@
 }
 .role-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}
 .role-card:hover::after{transform:scaleX(1)}
-.role-emoji{font-size:3rem;margin-bottom:16px;display:block}
+.role-emoji{font-size:2.9rem;margin-bottom:14px;display:block}
 .role-name{font-size:1.1rem;font-weight:800;color:var(--ink);margin-bottom:4px}
-.role-sub{font-size:.8rem;color:var(--muted);font-style:italic;margin-bottom:20px}
+.role-sub{font-size:.78rem;color:var(--muted);font-style:italic;margin-bottom:20px}
 .role-list{list-style:none;text-align:left;display:flex;flex-direction:column;gap:10px}
-.role-list li{font-size:.84rem;color:var(--inkm);display:flex;align-items:flex-start;gap:9px;line-height:1.45}
-.role-check{width:18px;height:18px;border-radius:50%;background:var(--gxl);color:var(--g);font-size:.7rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-weight:700}
-
-/* ══════════════════════════════════════════════
-   SOCIAL PROOF MARQUEE
-══════════════════════════════════════════════ */
-.marquee-section{padding:48px 0;background:var(--gxxl);overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.marquee-track{display:flex;gap:0;animation:marquee 25s linear infinite;width:max-content}
-.marquee-track:hover{animation-play-state:paused}
-@keyframes marquee{to{transform:translateX(-50%)}}
-.marquee-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 32px;white-space:nowrap;
-  font-size:.85rem;font-weight:600;color:var(--inkm);
+.role-list li{font-size:.83rem;color:var(--inkm);display:flex;align-items:flex-start;gap:8px;line-height:1.45}
+.role-check{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--gxl);color:var(--g);
+  font-size:.68rem;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;font-weight:700;
 }
-.marquee-dot{width:5px;height:5px;background:var(--g);border-radius:50%;opacity:.5;margin:0 6px}
 
-/* ══════════════════════════════════════════════
-   TESTIMONIAL / IMPACT
-══════════════════════════════════════════════ */
-.impact-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:24px;
-  max-width:1140px;margin:0 auto;
-}
-.impact-card{
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:20px;padding:32px;
-  transition:background .2s,border-color .2s;
-}
-.impact-card:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
-.impact-quote{font-size:1rem;color:rgba(255,255,255,.8);line-height:1.75;margin-bottom:20px;font-style:italic}
-.impact-author{display:flex;align-items:center;gap:12px}
-.impact-av{width:40px;height:40px;border-radius:50%;background:rgba(26,107,74,.3);color:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0}
-.impact-name{font-size:.88rem;font-weight:600;color:#fff}
-.impact-role{font-size:.75rem;color:rgba(255,255,255,.45)}
-
-/* Large numbers section */
+/* ═══════════════════════════════════════════════
+   IMPACT — DARK SECTION
+═══════════════════════════════════════════════ */
 .numbers-row{
   display:grid;grid-template-columns:repeat(3,1fr);gap:0;
-  max-width:1140px;margin:0 auto 72px;
-  border:1px solid rgba(255,255,255,.1);border-radius:20px;overflow:hidden;
+  max-width:1120px;margin:0 auto 72px;
+  border:1px solid rgba(255,255,255,.09);border-radius:20px;overflow:hidden;
 }
 .num-cell{
-  padding:40px 32px;text-align:center;
-  border-right:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.03);
+  padding:42px 28px;text-align:center;
+  border-right:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.025);
 }
 .num-cell:last-child{border-right:none}
-.num-big{font-size:3rem;font-weight:800;color:#fff;font-family:'Noto Serif',serif;line-height:1;margin-bottom:8px}
-.num-label{font-size:.82rem;color:rgba(255,255,255,.45)}
+.num-big{font-size:3rem;font-weight:800;color:#4ade80;font-family:'Noto Serif',serif;line-height:1;margin-bottom:9px}
+.num-label{font-size:.8rem;color:rgba(255,255,255,.4)}
 
-/* ══════════════════════════════════════════════
+.impact-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:22px;
+  max-width:1120px;margin:0 auto;
+}
+.impact-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;padding:30px;
+  transition:background .2s,border-color .2s;
+}
+.impact-card:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15)}
+.impact-quote{font-size:.96rem;color:rgba(255,255,255,.7);line-height:1.78;margin-bottom:20px;font-style:italic}
+.impact-author{display:flex;align-items:center;gap:12px}
+.impact-av{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(74,222,128,.15);color:rgba(255,255,255,.8);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.88rem;flex-shrink:0;
+  border:1px solid rgba(74,222,128,.2);
+}
+.impact-name{font-size:.87rem;font-weight:600;color:#fff}
+.impact-role{font-size:.73rem;color:rgba(255,255,255,.4)}
+
+/* ═══════════════════════════════════════════════
+   WHY AAROGYALINK — NEW SECTION
+═══════════════════════════════════════════════ */
+.why-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:64px;align-items:center;max-width:1120px;margin:0 auto;
+}
+.why-visual{
+  background:linear-gradient(135deg,var(--gd),var(--g));
+  border-radius:24px;padding:36px;color:#fff;position:relative;overflow:hidden;
+}
+.why-visual::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:rgba(255,255,255,.05);border-radius:50%}
+.why-visual::after{content:'';position:absolute;bottom:-80px;right:80px;width:150px;height:150px;background:rgba(255,255,255,.04);border-radius:50%}
+.why-stat-big{font-size:4rem;font-weight:900;color:#fff;line-height:1;margin-bottom:8px;font-family:'Noto Serif',serif}
+.why-stat-lbl{font-size:.95rem;color:rgba(255,255,255,.7);margin-bottom:24px;line-height:1.6}
+.why-pills-row{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.why-pill-item{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  border-radius:12px;padding:12px 16px;
+}
+.wpi-ico{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.wpi-txt{font-size:.84rem;font-weight:600;color:#fff;line-height:1.4}
+.wpi-sub{font-size:.72rem;color:rgba(255,255,255,.55)}
+
+.why-content{}
+.why-points{display:flex;flex-direction:column;gap:22px;margin-top:36px}
+.why-point{display:flex;align-items:flex-start;gap:16px}
+.wp-ico{width:44px;height:44px;border-radius:12px;background:var(--gxl);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.wp-title{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.wp-desc{font-size:.82rem;color:var(--muted);line-height:1.65}
+
+/* ═══════════════════════════════════════════════
+   CONSULT TELEMEDICINE SECTION — NEW
+═══════════════════════════════════════════════ */
+.consult-section{
+  background:linear-gradient(135deg,#0c4a6e 0%,#075985 50%,#0369a1 100%);
+  padding:100px 5%;position:relative;overflow:hidden;
+}
+.consult-section::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.consult-blob{position:absolute;top:-200px;right:-150px;width:500px;height:500px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none}
+.consult-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;position:relative;z-index:1}
+.consult-left{}
+.consult-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:20px}
+.consult-h2{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:16px;letter-spacing:-.02em}
+.consult-p{font-size:.95rem;color:rgba(255,255,255,.6);line-height:1.8;margin-bottom:32px}
+.consult-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
+.cs-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px}
+.cs-num{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cs-txt{font-size:.85rem;color:rgba(255,255,255,.8);font-weight:500}
+.btn-consult{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border-radius:12px;background:#fff;color:#0369a1;font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,.2);transition:transform .2s,box-shadow .2s}
+.btn-consult:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.3)}
+.consult-right{}
+.consult-cards{display:flex;flex-direction:column;gap:14px}
+.cc-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;transition:background .2s}
+.cc-card:hover{background:rgba(255,255,255,.13)}
+.cc-ico{width:50px;height:50px;border-radius:13px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.cc-title{font-size:.9rem;font-weight:700;color:#fff;margin-bottom:4px}
+.cc-desc{font-size:.78rem;color:rgba(255,255,255,.55);line-height:1.5}
+.cc-badge{margin-left:auto;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(74,222,128,.2);color:#4ade80;border:1px solid rgba(74,222,128,.25);flex-shrink:0}
+
+/* ═══════════════════════════════════════════════
    CTA SECTION
-══════════════════════════════════════════════ */
+═══════════════════════════════════════════════ */
 .cta-section{
-  background:linear-gradient(160deg,var(--gd) 0%,var(--g) 60%,#1f8a5e 100%);
-  padding:110px 5%;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(150deg,#030d07 0%,#071a0f 45%,#0d3320 100%);
+  padding:112px 5%;text-align:center;position:relative;overflow:hidden;
 }
 .cta-section::before{
   content:'';position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
-  background-size:44px 44px;
+    linear-gradient(rgba(74,222,128,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(74,222,128,.04) 1px,transparent 1px);
+  background-size:48px 48px;
 }
 .cta-glow{
-  position:absolute;top:-200px;left:50%;transform:translateX(-50%);
-  width:600px;height:600px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.08),transparent 60%);
-  pointer-events:none;
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:700px;height:700px;border-radius:50%;
+  background:radial-gradient(circle,rgba(34,197,94,.1),transparent 58%);
+  filter:blur(50px);pointer-events:none;
 }
-.cta-inner{max-width:620px;margin:0 auto;position:relative;z-index:1}
-.cta-inner h2{font-size:clamp(2rem,3.5vw,2.8rem);font-weight:800;color:#fff;line-height:1.15;margin-bottom:16px}
-.cta-inner h2 em{font-family:'Noto Serif',serif;font-style:italic;color:rgba(255,255,255,.65)}
-.cta-inner p{font-size:1rem;color:rgba(255,255,255,.6);margin-bottom:36px;line-height:1.75}
-.btn-cta{
+.cta-inner{max-width:640px;margin:0 auto;position:relative;z-index:1}
+.cta-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.22);border-radius:20px;padding:5px 16px;font-size:.69rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#4ade80;margin-bottom:22px}
+.cta-tag-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:hpulse 2s infinite}
+.cta-inner h2{font-size:clamp(2rem,3.8vw,3rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:16px;letter-spacing:-.025em}
+.cta-inner h2 em{font-family:'Noto Serif',serif;font-style:italic;background:linear-gradient(135deg,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cta-inner p{font-size:.98rem;color:rgba(255,255,255,.45);margin-bottom:36px;line-height:1.75}
+.btn-cta-main{
   display:inline-flex;align-items:center;gap:9px;
-  background:#fff;color:var(--g);
-  padding:16px 36px;border-radius:14px;
+  background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;
+  padding:16px 34px;border-radius:14px;
   font-family:'Sora',sans-serif;font-size:1rem;font-weight:800;
   text-decoration:none;
-  box-shadow:0 8px 36px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.5);
-  transition:transform .2s var(--ease-spring),box-shadow .2s;
+  box-shadow:0 8px 36px rgba(34,197,94,.38),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:transform .22s var(--ease-spring),box-shadow .22s;
 }
-.btn-cta:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,.25)}
-.cta-note{margin-top:20px;font-size:.8rem;color:rgba(255,255,255,.35)}
+.btn-cta-main:hover{transform:translateY(-4px);box-shadow:0 16px 52px rgba(34,197,94,.5)}
+.cta-note{margin-top:18px;font-size:.78rem;color:rgba(255,255,255,.22)}
+.cta-features{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:28px}
+.cta-feat{display:flex;align-items:center;gap:5px;font-size:.75rem;color:rgba(255,255,255,.35);font-weight:500}
+.cta-feat-sep{width:3px;height:3px;background:rgba(255,255,255,.15);border-radius:50%}
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    ANIMATIONS
-══════════════════════════════════════════════ */
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+═══════════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 
-/* ══════════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — TABLET
+═══════════════════════════════════════════════ */
 @media(max-width:960px){
-  .hero-inner{grid-template-columns:1fr;gap:56px}
-  .hcard{max-width:480px;margin:0 auto}.card-rings,.fb-3{display:none}
+  .hero-inner{grid-template-columns:1fr;gap:52px;text-align:left}
+  .hcard{max-width:460px}.card-orbit,.fb3,.card-aura{display:none}
   .steps-timeline{grid-template-columns:1fr 1fr;gap:28px}.steps-timeline::before{display:none}
   .features-grid,.roles-grid{grid-template-columns:1fr 1fr}
   .impact-grid,.numbers-row{grid-template-columns:1fr}
-  .num-cell{border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
-  .stats-bar{grid-template-columns:1fr 1fr;gap:24px;padding:28px}
-  .stat-col+.stat-col::before{display:none}
+  .num-cell{border-right:none;border-bottom:1px solid rgba(255,255,255,.07)}
+  .stats-bar{grid-template-columns:1fr 1fr;gap:20px;padding:24px 28px}
+  .sbc+.sbc::before{display:none}
+  .why-grid,.consult-inner{grid-template-columns:1fr;gap:40px}
 }
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — MOBILE
+═══════════════════════════════════════════════ */
 @media(max-width:640px){
-  .hero-h1{font-size:2.2rem}
+  .hero{padding:calc(var(--nav-h) + 60px) 4% 60px}
+  .hero-h1{font-size:2.1rem}
+  .hero-inner{gap:40px}
+  .hcard{max-width:100%}
+  .fb1,.fb2{display:none}
+  .hero-btns{flex-direction:column;align-items:stretch;gap:10px}
+  .btn-hero-primary,.btn-hero-ghost{width:100%;justify-content:center;max-width:100%}
+  .h-trust{gap:5px}
+  .stats-bar{grid-template-columns:1fr 1fr;padding:16px 16px;gap:14px;margin-top:48px}
+  .sbn{font-size:1.7rem}
+  .sbl{font-size:.65rem}
+  .section{padding:72px 4%}
+  .cta-section{padding:72px 4%}
+  .consult-section{padding:72px 4%}
   .features-grid,.roles-grid{grid-template-columns:1fr}
-  .steps-timeline{grid-template-columns:1fr}
-  .stats-bar{grid-template-columns:1fr 1fr}
-  .hero-actions{flex-direction:column;align-items:flex-start}
-  .btn-primary-lg,.btn-outline-lg{width:100%;justify-content:center}
-  .section{padding:72px 5%}
-  .fb-1,.fb-2{display:none}
+  .steps-timeline{grid-template-columns:1fr;gap:20px}
+  .impact-grid{grid-template-columns:1fr}
+  .s-sub{margin-bottom:40px}
+  .why-visual{padding:24px}
+  .why-stat-big{font-size:3rem}
+  .consult-inner{gap:32px}
+}
+@media(max-width:400px){
+  .hero-h1{font-size:1.9rem}
+  .stats-bar{padding:14px 12px}
+  .sbn{font-size:1.5rem}
 }
 {% endblock %}
 
 {% block content %}
 
-<!-- ══════════════ HERO ══════════════ -->
+<!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero">
-  <div class="hero-canvas">
-    <div class="hc-grid"></div>
-    <div class="hc-glow hc-glow-1"></div>
-    <div class="hc-glow hc-glow-2"></div>
-    <div class="hc-glow hc-glow-3"></div>
+  <div class="hbg">
+    <div class="hbg-grid"></div>
+    <div class="hbg-blob hbg-b1"></div>
+    <div class="hbg-blob hbg-b2"></div>
+    <div class="hbg-blob hbg-b3"></div>
+    <div class="hbg-blob hbg-b4"></div>
+    <div class="hbg-noise"></div>
   </div>
 
   <div class="hero-inner">
-    <!-- LEFT -->
-    <div class="hero-left">
-      <div class="hero-badge">
-        <div class="hero-badge-icon">🌿</div>
+    <!-- LEFT COPY -->
+    <div>
+      <div class="h-eyebrow">
+        <div class="h-ey-ico">🌿</div>
         Rural Health Infrastructure · Bharat
-        <div class="hero-badge-dot"></div>
+        <div class="h-ey-dot"></div>
       </div>
 
       <h1 class="hero-h1">
-        Every patient's story,
-        <span class="line2">always <span class="accent">with them.</span></span>
+        Every patient's story,<br>
+        <span class="h1-green">always <span class="h1-line">with them.</span></span>
       </h1>
 
       <p class="hero-p">
@@ -479,69 +610,68 @@
         <strong>instantly</strong>. No paperwork. No guesswork. No lives lost.
       </p>
 
-      <div class="hero-actions">
-        <a href="{{ url_for('patient.register') }}" class="btn-primary-lg">
-          📋 Register a Patient <span>→</span>
+      <div class="hero-btns">
+        <a href="{{ url_for('patient.register') }}" class="btn-hero-primary">
+          📋 Register a Patient →
         </a>
-        <a href="#how-it-works" class="btn-outline-lg">
+        <a href="#how-it-works" class="btn-hero-ghost">
           See how it works ↓
         </a>
       </div>
 
-      <div class="trust-strip">
-        <div class="trust-pill"><span>🏥</span><span>Works at any PHC</span></div>
-        <div class="trust-sep"></div>
-        <div class="trust-pill"><span>📵</span><span>Offline-first</span></div>
-        <div class="trust-sep"></div>
-        <div class="trust-pill"><span>🆓</span><span>Free for patients</span></div>
-        <div class="trust-sep"></div>
-        <div class="trust-pill"><span>🔒</span><span>Secure & private</span></div>
+      <div class="h-trust">
+        <div class="htc"><span>🏥</span><span>Works at any PHC</span></div>
+        <div class="htc-sep"></div>
+        <div class="htc"><span>📵</span><span>Offline-first</span></div>
+        <div class="htc-sep"></div>
+        <div class="htc"><span>🆓</span><span>Free forever</span></div>
+        <div class="htc-sep"></div>
+        <div class="htc"><span>🔒</span><span>Secure</span></div>
       </div>
     </div>
 
-    <!-- RIGHT — Health Card mockup -->
-    <div class="hero-right">
-      <div class="card-rings">
-        <div class="ring ring-1"></div>
-        <div class="ring ring-2"></div>
-        <div class="ring ring-3"></div>
+    <!-- RIGHT: HEALTH CARD -->
+    <div class="hero-card-wrap">
+      <div class="card-aura"></div>
+      <div class="card-orbit">
+        <div class="co co-1"></div>
+        <div class="co co-2"></div>
+        <div class="co co-3"></div>
       </div>
 
       <div class="hcard" id="heroCard">
-        <div class="hcard-header">
-          <div class="hcard-brand">
-            <div class="hcard-brand-icon">🌿</div>
+        <div class="hc-top">
+          <div class="hc-brand">
+            <div class="hc-brand-mark">🌿</div>
             AarogyaLink Health Card
           </div>
-          <div class="hcard-live">
-            <div class="live-pulse"></div> Live record
-          </div>
+          <div class="hc-live"><div class="hc-livepulse"></div> Live record</div>
         </div>
 
-        <div class="hcard-patient">
-          <div class="hcard-photo">RK</div>
+        <div class="hc-patient">
+          <div class="hc-av">RK</div>
           <div>
-            <div class="hcard-name">Ramesh Kumar</div>
-            <div class="hcard-id">ID: RH-A4F21 · Ludhiana, Punjab</div>
+            <div class="hc-nm">Ramesh Kumar</div>
+            <div class="hc-id">ID: RH-A4F21 · Ludhiana, Punjab</div>
           </div>
         </div>
 
-        <div class="hcard-grid">
-          <div class="hcard-stat"><div class="hcs-label">Age</div><div class="hcs-val">52 yrs</div></div>
-          <div class="hcard-stat"><div class="hcs-label">Blood Group</div><div class="hcs-val">B+</div></div>
-          <div class="hcard-stat"><div class="hcs-label">Village</div><div class="hcs-val">Sahnewal</div></div>
-          <div class="hcard-stat"><div class="hcs-label">Total Visits</div><div class="hcs-val">7 visits</div></div>
+        <div class="hc-grid">
+          <div class="hc-box"><div class="hcb-l">Age</div><div class="hcb-v">52 yrs</div></div>
+          <div class="hc-box"><div class="hcb-l">Blood Group</div><div class="hcb-v">B+</div></div>
+          <div class="hc-box"><div class="hcb-l">Village</div><div class="hcb-v">Sahnewal</div></div>
+          <div class="hc-box"><div class="hcb-l">Total Visits</div><div class="hcb-v">7 visits</div></div>
         </div>
 
-        <div class="hcard-tags">
-          <span class="htag htag-amber">Diabetes Type 2</span>
-          <span class="htag htag-amber">Hypertension</span>
-          <span class="htag htag-red">⚠ Penicillin allergy</span>
-          <span class="htag htag-green">✓ Vaccinated</span>
+        <div class="hc-tags">
+          <span class="ht ht-a">Diabetes Type 2</span>
+          <span class="ht ht-a">Hypertension</span>
+          <span class="ht ht-r">⚠ Penicillin allergy</span>
+          <span class="ht ht-g">✓ Vaccinated</span>
         </div>
 
-        <div class="hcard-qr">
-          <svg width="58" height="58" viewBox="0 0 60 60" fill="none">
+        <div class="hc-qr">
+          <svg width="54" height="54" viewBox="0 0 60 60" fill="none" style="flex-shrink:0">
             <rect x="2" y="2" width="24" height="24" rx="3" fill="none" stroke="#1a6b4a" stroke-width="2"/>
             <rect x="8" y="8" width="12" height="12" rx="1" fill="#1a6b4a" opacity=".7"/>
             <rect x="34" y="2" width="24" height="24" rx="3" fill="none" stroke="#1a6b4a" stroke-width="2"/>
@@ -556,138 +686,200 @@
             <rect x="34" y="50" width="6" height="8" rx="1" fill="#1a6b4a" opacity=".5"/>
             <rect x="42" y="50" width="16" height="8" rx="1" fill="#1a6b4a" opacity=".5"/>
           </svg>
-          <div class="hcard-qr-txt">
+          <div class="hc-qr-t">
             <h4>Scan for full medical history</h4>
-            <p>Works on any phone · No app · Instant access</p>
+            <p>Any phone · No app · Instant access</p>
           </div>
         </div>
       </div>
 
-      <!-- Floating badges -->
-      <div class="float-badge fb-1"><div class="fb-dot fb-dot-green"></div> Updated 2 hrs ago</div>
-      <div class="float-badge fb-2"><div class="fb-dot fb-dot-blue"></div> 7 hospitals accessed</div>
-      <div class="float-badge fb-3"><div class="fb-dot fb-dot-amber"></div> ⚠ Allergy alert on</div>
+      <div class="flt-badge fb1"><div class="fbd fbd-g"></div> Updated 2 hrs ago</div>
+      <div class="flt-badge fb2"><div class="fbd fbd-b"></div> 7 hospitals accessed</div>
+      <div class="flt-badge fb3"><div class="fbd fbd-a"></div> ⚠ Allergy alert on</div>
     </div>
   </div>
 
-  <!-- Stats bar -->
+  <!-- STATS BAR -->
   <div class="stats-bar reveal">
-    <div class="stat-col">
-      <div class="stat-number" data-target="900" data-suffix="M+">0</div>
-      <div class="stat-label">Indians with zero<br>health records</div>
+    <div class="sbc">
+      <div class="sbn" data-target="900" data-suffix="M+">0</div>
+      <div class="sbl">Indians with zero<br>health records</div>
     </div>
-    <div class="stat-col">
-      <div class="stat-number" data-target="1.05" data-suffix="M" data-decimal="2">0</div>
-      <div class="stat-label">ASHA workers<br>ready on the ground</div>
+    <div class="sbc">
+      <div class="sbn" data-target="1.05" data-suffix="M" data-decimal="2">0</div>
+      <div class="sbl">ASHA workers<br>on the ground</div>
     </div>
-    <div class="stat-col">
-      <div class="stat-number">₹0</div>
-      <div class="stat-label">Cost to patients —<br>free forever</div>
+    <div class="sbc">
+      <div class="sbn">₹0</div>
+      <div class="sbl">Cost to patients —<br>free forever</div>
     </div>
-    <div class="stat-col">
-      <div class="stat-number" data-target="30" data-suffix="K+">0</div>
-      <div class="stat-label">Primary Health Centres<br>across India</div>
+    <div class="sbc">
+      <div class="sbn" data-target="30" data-suffix="K+">0</div>
+      <div class="sbl">Primary Health Centres<br>across India</div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════ MARQUEE ══════════════ -->
-<div class="marquee-section">
-  <div class="marquee-track" id="marqueeTrack">
-    {% set items = ['🌿 Zero paperwork','📱 Works on ₹2,000 phones','🔒 DPDPA compliant','📵 Offline mode','🗣️ Hindi & Punjabi UI','🤖 AI symptom checker','🔲 QR in 30 seconds','🏥 PHC to AIIMS','📋 Voice registration','⚡ Instant history','🎤 Speak in Hindi','📁 Upload old reports','🛡️ Doctor verified','💊 Drug interaction alerts','🌐 ABHA compatible','📊 Health analytics'] %}
-    {% for item in items %}<div class="marquee-item">{{ item }}<div class="marquee-dot"></div></div>{% endfor %}
-    {% for item in items %}<div class="marquee-item">{{ item }}<div class="marquee-dot"></div></div>{% endfor %}
+<!-- ═══════════════ MARQUEE ═══════════════ -->
+<div class="mq-outer">
+  <div class="mq-track">
+    {% set items=['🌿 Zero paperwork','📱 Works on ₹2,000 phones','🔒 DPDPA compliant','📵 Offline mode','🗣️ Hindi & Punjabi UI','🤖 AI symptom checker','🔲 QR in 30 seconds','🏥 PHC to AIIMS','📋 Voice registration','⚡ Instant history','🎤 Speak in Hindi','📁 Upload old reports','🛡️ Doctor verified','💊 Drug interaction alerts','🌐 ABHA compatible','📊 Health analytics','🩺 Video consultations','🔔 Medication reminders','👶 Child growth tracker','🤰 Maternal health'] %}
+    {% for i in items %}<div class="mq-item">{{ i }}<div class="mq-dot"></div></div>{% endfor %}
+    {% for i in items %}<div class="mq-item">{{ i }}<div class="mq-dot"></div></div>{% endfor %}
   </div>
 </div>
 
-<!-- ══════════════ HOW IT WORKS ══════════════ -->
-<section class="section section-dark section-center" id="how-it-works">
-  <div class="section-wrap">
-    <div class="s-eyebrow reveal">Simple by design</div>
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section class="section sec-soft sc" id="how-it-works">
+  <div class="sw">
+    <div class="s-tag st-g reveal"><div class="stag-dot std-g"></div> Simple by design</div>
     <h2 class="s-title reveal reveal-delay-1">How AarogyaLink works</h2>
     <p class="s-sub reveal reveal-delay-2">Five steps. No smartphone needed at village level. Works offline. Lives saved.</p>
 
     <div class="steps-timeline">
-      <div class="step reveal">
+      <div class="step-item reveal">
         <div class="step-icon si-blue">📋</div>
         <div class="step-num">Step 01</div>
-        <div class="step-title">ASHA registers patient</div>
-        <p class="step-desc">Voice input in Hindi. Simple form. Works offline. 2 minutes on any phone.</p>
+        <div class="step-name">ASHA registers</div>
+        <p class="step-desc">Voice input in Hindi. Works offline. 2 minutes on any phone.</p>
       </div>
-      <div class="step reveal reveal-delay-1">
+      <div class="step-item reveal reveal-delay-1">
         <div class="step-icon si-green">⚙️</div>
         <div class="step-num">Step 02</div>
-        <div class="step-title">Record is created</div>
-        <p class="step-desc">Unique ID, QR code, and PDF health card generated in seconds automatically.</p>
+        <div class="step-name">Record created</div>
+        <p class="step-desc">Unique ID, QR code and PDF card generated in seconds.</p>
       </div>
-      <div class="step reveal reveal-delay-2">
+      <div class="step-item reveal reveal-delay-2">
         <div class="step-icon si-amber">🖨️</div>
         <div class="step-num">Step 03</div>
-        <div class="step-title">Patient gets QR card</div>
-        <p class="step-desc">Printed for ₹3, laminated, carried forever. Never needs reprinting.</p>
+        <div class="step-name">Patient gets card</div>
+        <p class="step-desc">Printed for ₹3, laminated, carried forever. Never reprinted.</p>
       </div>
-      <div class="step reveal reveal-delay-3">
+      <div class="step-item reveal reveal-delay-3">
         <div class="step-icon si-purple">🔍</div>
         <div class="step-num">Step 04</div>
-        <div class="step-title">Doctor scans QR</div>
-        <p class="step-desc">Any phone browser. Full history, allergies, medications. No app install.</p>
+        <div class="step-name">Doctor scans QR</div>
+        <p class="step-desc">Any phone browser. Full history instantly. No app needed.</p>
       </div>
-      <div class="step reveal reveal-delay-4">
+      <div class="step-item reveal reveal-delay-4">
         <div class="step-icon si-teal">✏️</div>
         <div class="step-num">Step 05</div>
-        <div class="step-title">Record grows forever</div>
-        <p class="step-desc">Each visit adds to the permanent record. The card never changes.</p>
+        <div class="step-name">Record grows forever</div>
+        <p class="step-desc">Each visit adds permanently. The card never changes.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════ FEATURES ══════════════ -->
-<section class="section section-center" id="features">
-  <div class="section-wrap">
-    <div class="s-eyebrow reveal">Built for real India</div>
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section class="section sec-white sc" id="features">
+  <div class="sw">
+    <div class="s-tag st-g reveal"><div class="stag-dot std-g"></div> Built for real India</div>
     <h2 class="s-title reveal reveal-delay-1">Designed for ground reality</h2>
     <p class="s-sub reveal reveal-delay-2">Not built in an AC office. Built for the PHC doctor, the ASHA didi, and the farmer with a ₹2,000 phone.</p>
 
     <div class="features-grid">
       <div class="feat-card reveal">
-        <div class="feat-icon fi-green">🎤</div>
+        <div class="feat-icon fi-g">🎤</div>
         <h3>Hindi voice registration</h3>
-        <p>ASHA workers speak patient details in Hindi — name, age, village, conditions — and the form fills itself. Zero typing friction.</p>
+        <p>ASHA workers speak patient details in Hindi — name, age, village, conditions — and the form fills itself. Zero typing friction, zero literacy barrier.</p>
       </div>
       <div class="feat-card reveal reveal-delay-1">
-        <div class="feat-icon fi-amber">📁</div>
+        <div class="feat-icon fi-a">📁</div>
         <h3>Upload previous reports</h3>
-        <p>Attach old lab reports, X-rays, prescriptions by taking a photo. Everything lives in one place permanently.</p>
+        <p>Attach old lab reports, X-rays, prescriptions by taking a photo. Everything lives permanently in one place, accessible anywhere in India.</p>
       </div>
       <div class="feat-card reveal reveal-delay-2">
-        <div class="feat-icon fi-blue">🤖</div>
+        <div class="feat-icon fi-b">🤖</div>
         <h3>AI symptom checker</h3>
-        <p>Claude AI reads patient history and current symptoms, flags drug interactions, and gives triage notes before the doctor visit.</p>
+        <p>AI reads patient history and current symptoms, flags dangerous drug interactions, and gives triage guidance before the doctor visit begins.</p>
       </div>
       <div class="feat-card reveal">
-        <div class="feat-icon fi-green">📵</div>
+        <div class="feat-icon fi-g">📵</div>
         <h3>Offline-first PWA</h3>
-        <p>Installs on phone home screen. Works without internet. Syncs automatically when connected. Rural coverage = 100%.</p>
+        <p>Installs on any Android phone home screen. Works completely without internet. Syncs automatically when connected. Rural coverage = 100%.</p>
       </div>
       <div class="feat-card reveal reveal-delay-1">
-        <div class="feat-icon fi-amber">🔲</div>
+        <div class="feat-icon fi-a">🔲</div>
         <h3>QR card in 30 seconds</h3>
-        <p>Patient registered → QR generated → PDF card ready to print. The entire flow takes under a minute.</p>
+        <p>Register patient → QR generated → PDF health card ready to print. The entire flow takes under a minute from start to card in hand.</p>
       </div>
       <div class="feat-card reveal reveal-delay-2">
-        <div class="feat-icon fi-blue">🛡️</div>
+        <div class="feat-icon fi-b">🛡️</div>
         <h3>Verified doctor access</h3>
-        <p>Admin approves each doctor with document verification. Only verified professionals can write to patient records.</p>
+        <p>Admin approves each doctor with document verification — Aadhar, degree, and medical certificate. Only verified professionals write to patient records.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon fi-p">🎥</div>
+        <h3>Video consultations</h3>
+        <p>Patients book online video appointments with verified doctors. Pay via UPI. Doctor verifies payment. Jitsi-powered video call — no app needed.</p>
+      </div>
+      <div class="feat-card reveal reveal-delay-1">
+        <div class="feat-icon fi-g">🩸</div>
+        <h3>Emergency QR view</h3>
+        <p>Unconscious patient scanned in emergency — blood group, allergies, and emergency contact shown instantly. No login required. Lives saved.</p>
+      </div>
+      <div class="feat-card reveal reveal-delay-2">
+        <div class="feat-icon fi-a">📅</div>
+        <h3>Follow-up reminders</h3>
+        <p>Doctor sets follow-up date → patient gets SMS reminder automatically. Medication reminders sent daily at the right time. Compliance improves.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════ ROLES ══════════════ -->
-<section class="section section-dark section-center">
-  <div class="section-wrap">
-    <div class="s-eyebrow reveal">Three users. One record.</div>
+<!-- ═══════════════ WHY AAROGYALINK ═══════════════ -->
+<section class="section sec-soft">
+  <div class="sw">
+    <div class="why-grid">
+      <div class="why-visual reveal">
+        <div class="why-stat-big">900M+</div>
+        <div class="why-stat-lbl">Indians have no structured health records.<br>When they visit a new doctor — everything starts from zero.</div>
+        <div class="why-pills-row">
+          <div class="why-pill-item">
+            <div class="wpi-ico">⚠️</div>
+            <div><div class="wpi-txt">No allergy records = wrong prescription</div><div class="wpi-sub">Preventable deaths every day across India</div></div>
+          </div>
+          <div class="why-pill-item">
+            <div class="wpi-ico">📋</div>
+            <div><div class="wpi-txt">Paper records lost, damaged, forgotten</div><div class="wpi-sub">Patients repeat expensive tests endlessly</div></div>
+          </div>
+          <div class="why-pill-item">
+            <div class="wpi-ico">🏥</div>
+            <div><div class="wpi-txt">No continuity of care in rural India</div><div class="wpi-sub">Each PHC visit starts from scratch</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="why-content reveal reveal-delay-1">
+        <div class="s-tag st-g"><div class="stag-dot std-g"></div> The problem we solve</div>
+        <h2 class="s-title" style="margin-bottom:0">Why AarogyaLink<br>changes everything</h2>
+        <div class="why-points">
+          <div class="why-point">
+            <div class="wp-ico">🔲</div>
+            <div><div class="wp-title">One card. Lifetime. Anywhere.</div><div class="wp-desc">A ₹3 laminated QR card replaces a lifetime of paper records. Scan it at any hospital, any PHC, anywhere in India.</div></div>
+          </div>
+          <div class="why-point">
+            <div class="wp-ico">👩‍⚕️</div>
+            <div><div class="wp-title">ASHA workers are the distribution network</div><div class="wp-desc">India already has 1.05 million ASHA workers in every village. We give them a digital tool that takes 2 minutes and requires zero training.</div></div>
+          </div>
+          <div class="why-point">
+            <div class="wp-ico">🔒</div>
+            <div><div class="wp-title">Patient controls their own data</div><div class="wp-desc">DPDPA compliant. Patient consents to every data use. Data is anonymous for research. Medical records stay private.</div></div>
+          </div>
+          <div class="why-point">
+            <div class="wp-ico">💰</div>
+            <div><div class="wp-title">Free for patients. Forever.</div><div class="wp-desc">The patient pays nothing. The system is funded by hospitals, government contracts, and institutional partnerships.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ROLES ═══════════════ -->
+<section class="section sec-white sc">
+  <div class="sw">
+    <div class="s-tag st-g reveal"><div class="stag-dot std-g"></div> Three users. One record.</div>
     <h2 class="s-title reveal reveal-delay-1">Everyone plays their part</h2>
     <p class="s-sub reveal reveal-delay-2">The ASHA registers. The patient carries. The doctor reads and updates. Simple as that.</p>
 
@@ -702,6 +894,7 @@
           <li><div class="role-check">✓</div>Upload previous reports</li>
           <li><div class="role-check">✓</div>Print and distribute QR cards</li>
           <li><div class="role-check">✓</div>No technical training needed</li>
+          <li><div class="role-check">✓</div>Daily activity log replaces paper diary</li>
         </ul>
       </div>
       <div class="role-card reveal reveal-delay-1">
@@ -713,7 +906,8 @@
           <li><div class="role-check">✓</div>See allergies and drug warnings</li>
           <li><div class="role-check">✓</div>Voice dictate diagnosis and notes</li>
           <li><div class="role-check">✓</div>Works on any phone browser</li>
-          <li><div class="role-check">✓</div>No app install ever needed</li>
+          <li><div class="role-check">✓</div>Generate online video slots</li>
+          <li><div class="role-check">✓</div>Send post-call prescriptions</li>
         </ul>
       </div>
       <div class="role-card reveal reveal-delay-2">
@@ -725,16 +919,60 @@
           <li><div class="role-check">✓</div>Show at any hospital in India</li>
           <li><div class="role-check">✓</div>Costs absolutely nothing</li>
           <li><div class="role-check">✓</div>Card works anywhere, forever</li>
-          <li><div class="role-check">✓</div>Family can use it in emergency</li>
+          <li><div class="role-check">✓</div>Book video consult from home</li>
+          <li><div class="role-check">✓</div>Receive prescriptions digitally</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════ IMPACT (dark) ══════════════ -->
-<section class="section section-ink">
-  <div class="section-wrap">
+<!-- ═══════════════ ONLINE CONSULT SECTION ═══════════════ -->
+<section class="consult-section">
+  <div class="consult-blob"></div>
+  <div class="consult-inner">
+    <div class="consult-left reveal">
+      <div class="consult-tag">🎥 New Feature</div>
+      <h2 class="consult-h2">Video Consultations<br>from Anywhere</h2>
+      <p class="consult-p">Can't reach a PHC? Book a video appointment with a verified doctor online. Pay via UPI. Join from your phone. Get prescription instantly.</p>
+      <div class="consult-steps">
+        <div class="cs-item"><div class="cs-num">1</div><div class="cs-txt">Create your patient account and get instantly verified</div></div>
+        <div class="cs-item"><div class="cs-num">2</div><div class="cs-txt">Browse verified doctors and select an available time slot</div></div>
+        <div class="cs-item"><div class="cs-num">3</div><div class="cs-txt">Pay via UPI, upload screenshot — doctor confirms your booking</div></div>
+        <div class="cs-item"><div class="cs-num">4</div><div class="cs-txt">Join video call at appointment time — get prescription digitally</div></div>
+      </div>
+      <a href="{{ url_for('tele.find_doctors') }}" class="btn-consult">🩺 Browse Doctors →</a>
+    </div>
+    <div class="consult-right reveal reveal-delay-1">
+      <div class="consult-cards">
+        <div class="cc-card">
+          <div class="cc-ico">🔒</div>
+          <div><div class="cc-title">Verified Doctors Only</div><div class="cc-desc">Every doctor verified by admin with Aadhar, degree and medical certificate before listing.</div></div>
+          <div class="cc-badge">✅ Safe</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-ico">📱</div>
+          <div><div class="cc-title">Works on Any Phone</div><div class="cc-desc">No app download needed. Video calls via browser. Works on ₹5,000 Android phones.</div></div>
+          <div class="cc-badge">📵 Simple</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-ico">💊</div>
+          <div><div class="cc-title">Digital Prescription</div><div class="cc-desc">Doctor sends prescription and clinical notes directly to your AarogyaLink messages after the call.</div></div>
+          <div class="cc-badge">⚡ Instant</div>
+        </div>
+        <div class="cc-card">
+          <div class="cc-ico">💳</div>
+          <div><div class="cc-title">Pay via UPI</div><div class="cc-desc">Scan doctor's QR, pay via Google Pay / PhonePe / Paytm. Upload screenshot to confirm.</div></div>
+          <div class="cc-badge">🔐 Secure</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ IMPACT DARK ═══════════════ -->
+<section class="section sec-ink">
+  <div class="sw">
     <div class="numbers-row">
       <div class="num-cell reveal">
         <div class="num-big" data-target="900" data-suffix="M+">0</div>
@@ -775,16 +1013,26 @@
   </div>
 </section>
 
-<!-- ══════════════ CTA ══════════════ -->
+<!-- ═══════════════ CTA ═══════════════ -->
 <section class="cta-section">
   <div class="cta-glow"></div>
   <div class="cta-inner">
-    <h2 class="reveal">Ready to give a patient<br><em>their health history back?</em></h2>
-    <p class="reveal reveal-delay-1">It takes 2 minutes to register a patient. Their QR card is ready instantly. No cost. No friction. No excuses.</p>
-    <a href="{{ url_for('patient.register') }}" class="btn-cta reveal reveal-delay-2">
+    <div class="cta-tag reveal"><div class="cta-tag-dot"></div> Start free · No setup needed</div>
+    <h2 class="reveal reveal-delay-1">Ready to give a patient<br><em>their health history back?</em></h2>
+    <p class="reveal reveal-delay-2">2 minutes to register. QR card ready instantly. No cost. No friction. No excuses.</p>
+    <a href="{{ url_for('patient.register') }}" class="btn-cta-main reveal reveal-delay-3">
       📋 Register First Patient →
     </a>
-    <p class="cta-note reveal reveal-delay-3">Free forever · Works on any phone · No app needed · Hindi supported</p>
+    <p class="cta-note reveal reveal-delay-4">Free forever · Any phone · No app needed · Hindi supported</p>
+    <div class="cta-features reveal">
+      <div class="cta-feat"><span>✅</span><span>DPDPA compliant</span></div>
+      <div class="cta-feat-sep"></div>
+      <div class="cta-feat"><span>✅</span><span>Offline-first</span></div>
+      <div class="cta-feat-sep"></div>
+      <div class="cta-feat"><span>✅</span><span>Voice in Hindi</span></div>
+      <div class="cta-feat-sep"></div>
+      <div class="cta-feat"><span>✅</span><span>Zero cost to patients</span></div>
+    </div>
   </div>
 </section>
 
@@ -793,54 +1041,42 @@
 {% block extra_js %}
 <script>
 /* ── Animated counters ── */
-function animCount(el) {
-  const target  = parseFloat(el.dataset.target);
-  if (!target) return;
-  const decimal = parseInt(el.dataset.decimal || '0');
-  const suffix  = el.dataset.suffix || '';
-  const dur     = 2200, step = 16;
-  let cur       = 0;
-  const inc     = target / (dur / step);
-  const timer   = setInterval(() => {
-    cur += inc;
-    if (cur >= target) { cur = target; clearInterval(timer); }
-    el.textContent = (decimal ? cur.toFixed(decimal) : Math.floor(cur)) + suffix;
-  }, step);
+function animCount(el){
+  const t=parseFloat(el.dataset.target);
+  if(!t)return;
+  const dec=parseInt(el.dataset.decimal||0),suf=el.dataset.suffix||'';
+  let cur=0;const inc=t/(2200/16);
+  const tm=setInterval(()=>{
+    cur+=inc;
+    if(cur>=t){cur=t;clearInterval(tm);}
+    el.textContent=(dec?cur.toFixed(dec):Math.floor(cur))+suf;
+  },16);
 }
-
-const counterObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.querySelectorAll('[data-target]').forEach(animCount);
-      counterObs.unobserve(e.target);
-    }
-  });
-}, {threshold:.3});
-document.querySelectorAll('.stats-bar,.numbers-row').forEach(el => counterObs.observe(el));
+const cobs=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.querySelectorAll('[data-target]').forEach(animCount);cobs.unobserve(e.target);}
+}),{threshold:.3});
+document.querySelectorAll('.stats-bar,.numbers-row').forEach(el=>cobs.observe(el));
 
 /* ── Card 3D tilt ── */
-const heroCard = document.getElementById('heroCard');
-const heroRight = heroCard?.closest('.hero-right');
-if (heroCard && heroRight) {
-  heroRight.addEventListener('mousemove', e => {
-    const r = heroRight.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width  - .5;
-    const y = (e.clientY - r.top)  / r.height - .5;
-    heroCard.style.transform = `perspective(900px) rotateY(${x*10}deg) rotateX(${-y*10}deg) translateY(-6px)`;
-    heroCard.style.animation = 'none';
+const hc=document.getElementById('heroCard');
+const hw=hc?.closest('.hero-card-wrap');
+if(hc&&hw){
+  hw.addEventListener('mousemove',e=>{
+    const r=hw.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    hc.style.transform=`perspective(900px) rotateY(${x*10}deg) rotateX(${-y*10}deg) translateY(-8px)`;
+    hc.style.animation='none';
   });
-  heroRight.addEventListener('mouseleave', () => {
-    heroCard.style.transform = '';
-    heroCard.style.animation = '';
-  });
+  hw.addEventListener('mouseleave',()=>{hc.style.transform='';hc.style.animation='';});
 }
 
-/* ── Scroll parallax for hero glows ── */
-window.addEventListener('scroll', () => {
-  const sy = window.scrollY;
-  document.querySelectorAll('.hc-glow').forEach((g,i) => {
-    g.style.transform = `translateY(${sy * (.06 + i*.025)}px)`;
+/* ── Parallax hero blobs ── */
+window.addEventListener('scroll',()=>{
+  const sy=window.scrollY;
+  document.querySelectorAll('.hbg-blob').forEach((g,i)=>{
+    g.style.transform=`translateY(${sy*(.05+i*.02)}px)`;
   });
-}, {passive:true});
+},{passive:true});
 </script>
 {% endblock %}
