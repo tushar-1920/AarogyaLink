@@ -16,3 +16,30 @@ def index():
 @main_bp.route('/about')
 def about():
     return render_template('about.html')
+
+# ── Static pages Blueprint ────────────────────────
+pages_bp = Blueprint('pages', __name__)
+
+@pages_bp.route('/how-it-works')
+def how_it_works():
+    return render_template('pages/how_it_works.html')
+
+@pages_bp.route('/features')
+def features():
+    return render_template('pages/features.html')
+
+@pages_bp.route('/asha-guide')
+def asha_guide():
+    return render_template('pages/asha_guide.html')
+
+@pages_bp.route('/documentation')
+def documentation():
+    return render_template('pages/documentation.html')
+
+@pages_bp.route('/privacy')
+def privacy():
+    return render_template('pages/privacy.html')
+
+@pages_bp.route('/contact')
+def contact():
+    return render_template('pages/contact.html')

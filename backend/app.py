@@ -13,13 +13,19 @@ def create_app(config_class=Config):
     )
     app.config.from_object(config_class)
 
+    # Create database directory if using local SQLite
+    db_uri = app.config.get('SQLALCHEMY_DATABASE_URI','')
+    if 'sqlite' in db_uri and '///' in db_uri:
+        db_path = db_uri.split('///')[1]
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+
     os.makedirs(app.config['QR_OUTPUT_DIR'],   exist_ok=True)
     os.makedirs(app.config['CARD_OUTPUT_DIR'], exist_ok=True)
 
     db.init_app(app)
     login_manager.init_app(app)
 
-    from routes.main      import main_bp
+    from routes.main      import main_bp, pages_bp
     from routes.patient   import patient_bp
     from routes.auth      import auth_bp
     from routes.dashboard import dashboard_bp
@@ -28,6 +34,7 @@ def create_app(config_class=Config):
     from routes.telemedicine import tele_bp
 
     app.register_blueprint(main_bp)
+    app.register_blueprint(pages_bp)
     app.register_blueprint(patient_bp,   url_prefix='/patient')
     app.register_blueprint(auth_bp,      url_prefix='/auth')
     app.register_blueprint(dashboard_bp)

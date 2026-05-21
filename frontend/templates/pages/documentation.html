@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Documentation — AarogyaLink{% endblock %}
+{% block extra_styles %}
+.page-hero{min-height:40vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h)+72px) 5% 72px;background:linear-gradient(155deg,#030d07,#071a0f 40%,#0c2b1a);text-align:center;position:relative;overflow:hidden}
+.ph-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(74,222,128,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.05) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent 70%)}
+.ph-inner{position:relative;z-index:1;max-width:700px}
+.ph-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:5px 16px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4ade80;margin-bottom:20px}
+.ph-h1{font-size:clamp(2rem,3.8vw,3rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:14px}
+.ph-p{font-size:.95rem;color:rgba(255,255,255,.5);line-height:1.7}
+.doc-layout{display:grid;grid-template-columns:240px 1fr;gap:48px;max-width:1100px;margin:0 auto;padding:72px 5% 96px;align-items:start}
+.doc-sidebar{position:sticky;top:calc(var(--nav-h) + 24px)}
+.ds-section{margin-bottom:24px}
+.ds-title{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;padding:0 12px}
+.ds-link{display:block;padding:8px 12px;border-radius:8px;font-size:.84rem;color:var(--inkm);text-decoration:none;font-weight:500;transition:all .15s}
+.ds-link:hover,.ds-link.active{background:var(--gxl);color:var(--g);font-weight:600}
+.doc-content{}
+.doc-section{margin-bottom:64px;scroll-margin-top:calc(var(--nav-h) + 32px)}
+.ds-h2{font-size:1.5rem;font-weight:800;color:var(--ink);margin-bottom:8px;padding-bottom:12px;border-bottom:2px solid var(--gxl)}
+.ds-h3{font-size:1rem;font-weight:700;color:var(--ink);margin:20px 0 10px}
+.ds-p{font-size:.88rem;color:var(--muted);line-height:1.82;margin-bottom:14px}
+.ds-p strong{color:var(--ink);font-weight:600}
+.code-block{background:var(--ink);color:#4ade80;border-radius:12px;padding:18px 20px;font-family:monospace;font-size:.85rem;line-height:1.7;margin:14px 0;overflow-x:auto}
+.code-block .comment{color:rgba(255,255,255,.35)}
+.info-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);margin:16px 0}
+.info-table th{background:var(--gxl);padding:12px 16px;font-size:.78rem;font-weight:700;color:var(--g);text-align:left}
+.info-table td{padding:11px 16px;font-size:.84rem;color:var(--inkm);border-bottom:1px solid var(--borderl);vertical-align:top}
+.info-table tr:last-child td{border-bottom:none}
+.info-table code{background:var(--gxxl);padding:2px 7px;border-radius:4px;font-size:.8rem;color:var(--g)}
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--g);color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0}
+.api-endpoint{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin:12px 0}
+.ae-method{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.72rem;font-weight:700;margin-right:8px}
+.ae-get{background:#dbeafe;color:#1d4ed8}
+.ae-post{background:var(--gxl);color:var(--g)}
+.ae-url{font-family:monospace;font-size:.86rem;color:var(--ink);font-weight:600}
+.ae-desc{font-size:.82rem;color:var(--muted);margin-top:6px}
+@media(max-width:900px){.doc-layout{grid-template-columns:1fr;padding:48px 4% 72px}.doc-sidebar{display:none}}
+{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="ph-bg"></div>
+  <div class="ph-inner">
+    <div class="ph-tag">📚 Documentation</div>
+    <h1 class="ph-h1">AarogyaLink Documentation</h1>
+    <p class="ph-p">Technical reference for developers, system administrators, and hospital IT teams integrating with AarogyaLink.</p>
+  </div>
+</div>
+
+<div class="doc-layout">
+  <div class="doc-sidebar">
+    <div class="ds-section">
+      <div class="ds-title">Getting Started</div>
+      <a href="#overview" class="ds-link active">Overview</a>
+      <a href="#architecture" class="ds-link">Architecture</a>
+      <a href="#install" class="ds-link">Local Installation</a>
+    </div>
+    <div class="ds-section">
+      <div class="ds-title">User Roles</div>
+      <a href="#admin-role" class="ds-link">Admin Setup</a>
+      <a href="#doctor-role" class="ds-link">Doctor Onboarding</a>
+      <a href="#asha-role" class="ds-link">ASHA Setup</a>
+    </div>
+    <div class="ds-section">
+      <div class="ds-title">API Reference</div>
+      <a href="#api-routes" class="ds-link">All Routes</a>
+      <a href="#api-patient" class="ds-link">Patient API</a>
+      <a href="#api-tele" class="ds-link">Telemedicine API</a>
+    </div>
+    <div class="ds-section">
+      <div class="ds-title">Deployment</div>
+      <a href="#deploy-render" class="ds-link">Render Deployment</a>
+      <a href="#env-vars" class="ds-link">Environment Variables</a>
+    </div>
+  </div>
+
+  <div class="doc-content">
+    <div class="doc-section" id="overview">
+      <div class="ds-h2">Overview</div>
+      <p class="ds-p">AarogyaLink is a Flask-based rural health records platform. It provides QR-code-linked patient health records, doctor visit management, ASHA worker registration tools, and a Jitsi-powered telemedicine system.</p>
+      <div class="ds-h3">Tech Stack</div>
+      <table class="info-table">
+        <tr><th>Component</th><th>Technology</th></tr>
+        <tr><td>Backend Framework</td><td>Flask 3.1 + SQLAlchemy + Flask-Login</td></tr>
+        <tr><td>Database</td><td>SQLite (dev) / PostgreSQL (production)</td></tr>
+        <tr><td>Frontend</td><td>Jinja2 templates + vanilla CSS + vanilla JS</td></tr>
+        <tr><td>QR Generation</td><td>qrcode[pil] library</td></tr>
+        <tr><td>PDF Generation</td><td>ReportLab</td></tr>
+        <tr><td>Video Calls</td><td>Jitsi Meet (embedded iframe)</td></tr>
+        <tr><td>Hosting</td><td>Render.com (Web Service)</td></tr>
+        <tr><td>File Storage</td><td>Local disk (Render Persistent Disk)</td></tr>
+      </table>
+    </div>
+
+    <div class="doc-section" id="architecture">
+      <div class="ds-h2">Architecture</div>
+      <p class="ds-p">The project follows a flat monolithic Flask architecture with Blueprint-based route separation.</p>
+      <div class="code-block"><span class="comment"># Project structure</span>
+AarogyaLink/
+├── server.py              <span class="comment"># Gunicorn entry point</span>
+├── requirements.txt
+├── Procfile
+├── backend/
+│   ├── app.py             <span class="comment"># Flask factory function</span>
+│   ├── config.py          <span class="comment"># Configuration class</span>
+│   ├── extensions.py      <span class="comment"># db, login_manager</span>
+│   ├── models.py          <span class="comment"># SQLAlchemy models</span>
+│   └── routes/
+│       ├── main.py        <span class="comment"># Homepage, static pages</span>
+│       ├── auth.py        <span class="comment"># Login, register, logout</span>
+│       ├── patient.py     <span class="comment"># Patient CRUD</span>
+│       ├── dashboard.py   <span class="comment"># Role dashboards</span>
+│       ├── scan.py        <span class="comment"># QR scanner page</span>
+│       ├── admin.py       <span class="comment"># Admin panel</span>
+│       └── telemedicine.py <span class="comment"># Online consultations</span>
+└── frontend/
+    ├── templates/         <span class="comment"># Jinja2 HTML templates</span>
+    └── static/            <span class="comment"># CSS, JS, uploads, QR codes</span></div>
+    </div>
+
+    <div class="doc-section" id="install">
+      <div class="ds-h2">Local Installation</div>
+      <div class="ds-h3">Prerequisites</div>
+      <p class="ds-p">Python 3.11+, Git, a terminal. Works on Windows, Mac, and Linux.</p>
+      <div class="code-block"><span class="comment"># Clone and setup</span>
+git clone https://github.com/tushar-1920/AarogyaLink
+cd AarogyaLink
+pip install -r requirements.txt
+
+<span class="comment"># Run locally</span>
+cd backend
+python app.py
+
+<span class="comment"># Visit</span>
+http://localhost:5000
+
+<span class="comment"># Default admin credentials</span>
+Email:    admin@aarogyalink.in
+Password: Admin@2025#Secure</div>
+      <div class="ds-h3">Database</div>
+      <p class="ds-p">On first run, the app auto-creates all tables and seeds the admin account. No manual migration commands needed. SQLite database is created at <code>/tmp/aarogyalink.db</code> on Render or in <code>database/aarogyalink.db</code> locally.</p>
+    </div>
+
+    <div class="doc-section" id="admin-role">
+      <div class="ds-h2">Admin Setup</div>
+      <p class="ds-p">The admin account is auto-seeded on first startup. Admin can:</p>
+      <table class="info-table">
+        <tr><th>Action</th><th>URL</th></tr>
+        <tr><td>Admin Dashboard</td><td><code>/admin/</code></td></tr>
+        <tr><td>Manage Users</td><td><code>/admin/users</code></td></tr>
+        <tr><td>Verify Doctor</td><td><code>/admin/user/&lt;id&gt;</code></td></tr>
+        <tr><td>Online Patients</td><td><code>/admin/online-patients</code></td></tr>
+        <tr><td>View Analytics</td><td><code>/admin/analytics</code></td></tr>
+        <tr><td>View All Patients</td><td><code>/admin/patients</code></td></tr>
+      </table>
+    </div>
+
+    <div class="doc-section" id="api-routes">
+      <div class="ds-h2">All Routes</div>
+      <div class="ds-h3">Authentication</div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/auth/login</span><div class="ae-desc">Login page for doctors, ASHA workers, and admins</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-post">POST</span><span class="ae-url">/auth/login</span><div class="ae-desc">Authenticate user. Redirects to role-specific dashboard on success.</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/auth/register</span><div class="ae-desc">Registration page for doctors and ASHA workers</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/auth/logout</span><div class="ae-desc">Logout and clear session</div></div>
+
+      <div class="ds-h3">Patient Management</div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/patient/register</span><div class="ae-desc">Patient registration form with voice input and camera</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-post">POST</span><span class="ae-url">/patient/register</span><div class="ae-desc">Create new patient. Generates QR code and PDF card. Accepts multipart form data with photo_data (base64) and doc files.</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/patient/&lt;id&gt;</span><div class="ae-desc">Patient profile page. Shows full history, QR, documents, visit timeline.</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-post">POST</span><span class="ae-url">/patient/&lt;id&gt;/add-visit</span><div class="ae-desc">Add a visit record. Requires doctor login. Fields: visit_type, hospital, diagnosis, prescription, notes.</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/patient/search</span><div class="ae-desc">Search patients by name, ID, village, or phone. Returns paginated results.</div></div>
+
+      <div class="ds-h3">Telemedicine</div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/consult</span><div class="ae-desc">Browse verified doctors. Filter by name, speciality. Shows availability.</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/consult/doctor/&lt;id&gt;</span><div class="ae-desc">Doctor public profile with available slots for next 14 days.</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/consult/book/&lt;slot_id&gt;</span><div class="ae-desc">Booking form. Step 1: symptoms and report. Step 2: payment screenshot upload.</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/consult/video/&lt;appt_id&gt;</span><div class="ae-desc">Jitsi video call page for confirmed appointments (patient view).</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/consult/doctor/slots</span><div class="ae-desc">Doctor slot management. Generate, toggle, and delete time slots.</div></div>
+      <div class="api-endpoint"><span class="ae-method ae-get">GET</span><span class="ae-url">/consult/doctor/appointments</span><div class="ae-desc">Doctor's appointment list with payment verification controls.</div></div>
+    </div>
+
+    <div class="doc-section" id="env-vars">
+      <div class="ds-h2">Environment Variables</div>
+      <p class="ds-p">Set these in your Render dashboard under Environment Variables:</p>
+      <table class="info-table">
+        <tr><th>Variable</th><th>Description</th><th>Default</th></tr>
+        <tr><td><code>SECRET_KEY</code></td><td>Flask session secret key. Use Render's "Generate" button.</td><td>Change this!</td></tr>
+        <tr><td><code>FLASK_DEBUG</code></td><td>Set to "false" in production always.</td><td>false</td></tr>
+        <tr><td><code>ADMIN_EMAIL</code></td><td>Email for the auto-seeded admin account.</td><td>admin@aarogyalink.in</td></tr>
+        <tr><td><code>ADMIN_PASSWORD</code></td><td>Password for admin account. Change on first login.</td><td>Admin@2025#Secure</td></tr>
+        <tr><td><code>DATABASE_URL</code></td><td>PostgreSQL URL. If not set, uses SQLite at /tmp/.</td><td>None (SQLite)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

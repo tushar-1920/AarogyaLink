@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Features — AarogyaLink{% endblock %}
+{% block extra_styles %}
+.page-hero{min-height:50vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h)+80px) 5% 80px;background:linear-gradient(155deg,#030d07,#071a0f 40%,#0c2b1a);position:relative;overflow:hidden;text-align:center}
+.ph-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(74,222,128,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.06) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent 70%)}
+.ph-blob{position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(26,107,74,.12);top:-200px;left:50%;transform:translateX(-50%);filter:blur(80px);pointer-events:none}
+.ph-inner{position:relative;z-index:1;max-width:720px}
+.ph-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:5px 16px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4ade80;margin-bottom:20px}
+.ph-h1{font-size:clamp(2.2rem,4vw,3.4rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:16px}
+.ph-h1 span{background:linear-gradient(135deg,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ph-p{font-size:1rem;color:rgba(255,255,255,.5);line-height:1.75;max-width:560px;margin:0 auto}
+.sec{padding:96px 5%}
+.sec-alt{background:var(--gxxl)}
+.sw{max-width:1100px;margin:0 auto}
+.sc{text-align:center}
+.stag{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:10px;display:block}
+.sh{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:var(--ink);margin-bottom:12px}
+.sp{font-size:.97rem;color:var(--muted);line-height:1.75;max-width:540px;margin:0 auto 48px}
+/* Feature categories */
+.feat-cat{margin-bottom:72px}
+.feat-cat-title{font-size:1rem;font-weight:700;color:var(--g);margin-bottom:20px;display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:2px solid var(--gxl)}
+.feat-cat-title span{font-size:1.4rem}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:26px;box-shadow:var(--shadow);transition:transform .22s,box-shadow .22s,border-color .22s;position:relative;overflow:hidden}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--g),var(--gl));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.feat-card:hover{transform:translateY(-5px);box-shadow:0 14px 40px rgba(0,0,0,.1);border-color:rgba(26,107,74,.2)}
+.feat-card:hover::before{transform:scaleX(1)}
+.feat-ico{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:14px}
+.fi-g{background:var(--gxl)}.fi-a{background:var(--amberl)}.fi-b{background:var(--bluel)}.fi-p{background:#ede9fe}.fi-r{background:var(--redl)}
+.feat-card h3{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:7px}
+.feat-card p{font-size:.82rem;color:var(--muted);line-height:1.75;margin:0}
+.feat-badge{display:inline-block;font-size:.64rem;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--gxl);color:var(--g);margin-top:10px}
+.feat-badge-new{background:#ede9fe;color:#7c3aed}
+/* Comparison table */
+.cmp-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);margin-top:32px}
+.cmp-table th{background:linear-gradient(135deg,var(--gd),var(--g));color:#fff;padding:16px 20px;font-size:.82rem;font-weight:700;text-align:left}
+.cmp-table th:first-child{border-radius:18px 0 0 0}
+.cmp-table th:last-child{border-radius:0 18px 0 0;text-align:center}
+.cmp-table td{padding:14px 20px;font-size:.84rem;color:var(--inkm);border-bottom:1px solid var(--borderl)}
+.cmp-table tr:last-child td{border-bottom:none}
+.cmp-table tr:hover td{background:var(--gxxl)}
+.cmp-yes{color:#22c55e;font-weight:700;text-align:center;font-size:1.1rem}
+.cmp-no{color:var(--red);font-weight:700;text-align:center;font-size:1.1rem}
+/* Page CTA */
+.page-cta{background:linear-gradient(135deg,var(--gd),var(--g));padding:72px 5%;text-align:center;color:#fff}
+.pc-h2{font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800;margin-bottom:12px}
+.pc-p{font-size:.97rem;color:rgba(255,255,255,.65);margin-bottom:28px}
+.pc-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--g);padding:14px 30px;border-radius:12px;font-family:'Sora',sans-serif;font-size:.95rem;font-weight:800;text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,.2);transition:transform .2s}
+.pc-btn:hover{transform:translateY(-3px)}
+@media(max-width:900px){.feat-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:580px){.feat-grid{grid-template-columns:1fr}.sec{padding:64px 4%}.cmp-table{font-size:.78rem}}
+{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="ph-bg"></div><div class="ph-blob"></div>
+  <div class="ph-inner">
+    <div class="ph-tag">✨ Full Feature List</div>
+    <h1 class="ph-h1">Everything <span>AarogyaLink</span><br>Can Do</h1>
+    <p class="ph-p">A complete platform for rural health records, telemedicine, ASHA worker management, and government-ready analytics. All in one QR code.</p>
+  </div>
+</div>
+
+<section class="sec">
+  <div class="sw">
+    <div class="feat-cat">
+      <div class="feat-cat-title"><span>📋</span> Patient Registration & Records</div>
+      <div class="feat-grid">
+        <div class="feat-card reveal"><div class="feat-ico fi-g">🎤</div><h3>Voice Registration in Hindi</h3><p>Speak patient details in Hindi or English. The form fills automatically using the Web Speech API. Works on Chrome and Edge browsers.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-a">📸</div><h3>Live Photo Capture</h3><p>Camera opens in the browser. Circular crop applied. Photo stored on the server and displayed on the patient's health card and profile.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-b">🔲</div><h3>QR Code Generation</h3><p>Unique QR code generated in under 1 second. Links to the patient's profile URL. Scannable on any phone without any app installation.</p></div>
+        <div class="feat-card reveal"><div class="feat-ico fi-g">📄</div><h3>PDF Health Card</h3><p>A printable PDF with patient photo, QR code, blood group, and critical conditions. Print at any local shop for ₹3. Laminate for lifetime use.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-a">📁</div><h3>Document Upload</h3><p>Upload previous lab reports, X-rays, prescriptions, scans, or discharge summaries. View, download, or delete from the patient profile.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-b">🔍</div><h3>Advanced Patient Search</h3><p>Search by name, patient ID, phone number, village, or district. Filter by blood group, condition, or last visit date.</p></div>
+      </div>
+    </div>
+    <div class="feat-cat">
+      <div class="feat-cat-title"><span>🩺</span> Doctor Features</div>
+      <div class="feat-grid">
+        <div class="feat-card reveal"><div class="feat-ico fi-g">📷</div><h3>QR Scanner</h3><p>Built-in QR code scanner using the phone camera. Scan a patient card and see their complete medical history in under 3 seconds.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-a">🎤</div><h3>Voice-Dictated Visits</h3><p>Doctor speaks diagnosis, prescription, and notes in Hindi or English. Text auto-fills the form. Each voice click appends — doesn't overwrite.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-b">⚠️</div><h3>Allergy Alert Banner</h3><p>Red animated banner appears immediately when viewing a patient with known allergies. Impossible to miss before prescribing.</p></div>
+        <div class="feat-card reveal"><div class="feat-ico fi-p">📊</div><h3>Doctor Analytics</h3><p>Monthly patient count, top diagnoses, follow-up compliance rate, busiest day of week, and 7-day visit trend chart.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-g">📋</div><h3>Prescription Templates</h3><p>Save frequently-used prescriptions as one-click templates. Saves 3-4 minutes per patient on documentation.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-a">📤</div><h3>Patient Referrals</h3><p>Refer a patient to another doctor or hospital. System generates a referral letter PDF with complete patient history attached.</p></div>
+      </div>
+    </div>
+    <div class="feat-cat">
+      <div class="feat-cat-title"><span>🎥</span> Telemedicine & Online Consultations <span class="feat-badge feat-badge-new">New</span></div>
+      <div class="feat-grid">
+        <div class="feat-card reveal"><div class="feat-ico fi-b">👤</div><h3>Online Patient Accounts</h3><p>Patients create separate online accounts with live photo, Aadhar verification, and medical history. Auto-approved instantly — no admin wait.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-g">📅</div><h3>Doctor Slot Management</h3><p>Doctors generate time slots by selecting date, start time, end time, and duration per patient. System auto-creates all slots.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-a">💳</div><h3>UPI Payment with QR</h3><p>Doctor's UPI QR code shown on payment page. Patient pays and uploads screenshot. Doctor verifies and confirms the appointment.</p></div>
+        <div class="feat-card reveal"><div class="feat-ico fi-b">🎥</div><h3>Jitsi Video Calls</h3><p>Powered by Jitsi Meet — completely free, no account needed. Unique room per appointment. Works on any browser, any device.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-p">💬</div><h3>Post-Call Prescriptions</h3><p>After the call, doctor sends clinical notes and prescription digitally. Patient sees it in their Messages section instantly.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-g">🕐</div><h3>Real-time Availability</h3><p>Doctor's profile shows live availability — slots today, this week. Green/Yellow/Red indicator based on actual available slots.</p></div>
+      </div>
+    </div>
+    <div class="feat-cat">
+      <div class="feat-cat-title"><span>👩‍⚕️</span> ASHA Worker Features</div>
+      <div class="feat-grid">
+        <div class="feat-card reveal"><div class="feat-ico fi-g">🎯</div><h3>Target Tracker</h3><p>Supervisor sets monthly targets — registrations, home visits, IFA tablets distributed. ASHA sees progress bars in real time.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-a">📓</div><h3>Daily Activity Log</h3><p>Replaces the paper diary. Log home visits, medicines distributed, counselling sessions. Supervisor views from admin panel.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-b">🏆</div><h3>Leaderboard & Badges</h3><p>District leaderboard of top ASHA workers by registrations. Milestone badges at 10, 50, 100, and 500 patients. Shareable digital certificate.</p></div>
+        <div class="feat-card reveal"><div class="feat-ico fi-g">💬</div><h3>ASHA to Doctor Messaging</h3><p>ASHA attaches a patient record and sends a clinical question to the assigned doctor. Doctor replies with advice within hours.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-p">🗺️</div><h3>Village Coverage Map</h3><p>Leaflet.js map showing registered patients as dots. Uncovered areas clearly visible. Plan daily route to maximize coverage.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-a">📱</div><h3>Offline PWA</h3><p>Install on Android home screen. Works without internet all day. Auto-syncs when connectivity returns. No data lost ever.</p></div>
+      </div>
+    </div>
+    <div class="feat-cat">
+      <div class="feat-cat-title"><span>⚙️</span> Admin & Security Features</div>
+      <div class="feat-grid">
+        <div class="feat-card reveal"><div class="feat-ico fi-b">🛡️</div><h3>Document Verification</h3><p>Admin reviews Aadhar, medical degree, and council certificate before approving any doctor or ASHA account.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-r">📜</div><h3>Full Audit Trail</h3><p>Every view, edit, login, and approval logged with timestamp and IP address. Tamper-proof. Required for hospital licensing.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-g">📊</div><h3>District Analytics</h3><p>Real-time charts: patient registrations over time, top conditions by district, visit trends, blood group distribution, follow-up rates.</p></div>
+        <div class="feat-card reveal"><div class="feat-ico fi-a">🔐</div><h3>DPDPA Compliance</h3><p>Digital Personal Data Protection Act 2023 compliant. Explicit consent at registration. Patient can revoke at any time.</p></div>
+        <div class="feat-card reveal reveal-delay-1"><div class="feat-ico fi-p">📡</div><h3>Real-time Notifications</h3><p>Live toast notifications when a doctor accesses a patient's record. ASHA workers see activity on their patients in real time.</p></div>
+        <div class="feat-card reveal reveal-delay-2"><div class="feat-ico fi-b">🌐</div><h3>Hindi / Punjabi UI</h3><p>One-click language toggle switches the entire interface to Hindi or Punjabi. Preference saved in browser storage. Works immediately.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-alt sc">
+  <div class="sw">
+    <span class="stag reveal">vs the old way</span>
+    <h2 class="sh reveal reveal-delay-1">AarogyaLink vs Paper Records</h2>
+    <p class="sp reveal reveal-delay-2">See exactly what changes when you switch from paper to AarogyaLink.</p>
+    <table class="cmp-table reveal">
+      <thead><tr><th>Feature</th><th>Paper Records</th><th>AarogyaLink</th></tr></thead>
+      <tbody>
+        <tr><td>Registration time</td><td>10–20 minutes</td><td>Under 2 minutes</td></tr>
+        <tr><td>Works offline</td><td class="cmp-yes">✅</td><td class="cmp-yes">✅</td></tr>
+        <tr><td>Accessible anywhere in India</td><td class="cmp-no">❌</td><td class="cmp-yes">✅</td></tr>
+        <tr><td>Allergy alerts</td><td class="cmp-no">❌</td><td class="cmp-yes">✅</td></tr>
+        <tr><td>Lost record recovery</td><td class="cmp-no">❌</td><td class="cmp-yes">✅</td></tr>
+        <tr><td>Voice input in Hindi</td><td class="cmp-no">❌</td><td class="cmp-yes">✅</td></tr>
+        <tr><td>Cost to patient</td><td>₹0</td><td>₹0</td></tr>
+        <tr><td>Video consultations</td><td class="cmp-no">❌</td><td class="cmp-yes">✅</td></tr>
+        <tr><td>Drug interaction alerts</td><td class="cmp-no">❌</td><td class="cmp-yes">✅</td></tr>
+        <tr><td>Government analytics</td><td class="cmp-no">❌</td><td class="cmp-yes">✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="page-cta">
+  <h2 class="pc-h2 reveal">Ready to experience all these features?</h2>
+  <p class="pc-p reveal reveal-delay-1">Start with a free registration. No setup. No cost.</p>
+  <a href="{{ url_for('auth.register') }}" class="pc-btn reveal reveal-delay-2">🚀 Create Your Account →</a>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Contact Us — AarogyaLink{% endblock %}
+{% block extra_styles %}
+.page-hero{min-height:45vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h)+80px) 5% 80px;background:linear-gradient(155deg,#030d07,#071a0f 40%,#0c2b1a);position:relative;overflow:hidden;text-align:center}
+.ph-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(74,222,128,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.06) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent 70%)}
+.ph-blob{position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(26,107,74,.12);top:-200px;left:50%;transform:translateX(-50%);filter:blur(80px)}
+.ph-inner{position:relative;z-index:1;max-width:700px}
+.ph-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:5px 16px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4ade80;margin-bottom:20px}
+.ph-h1{font-size:clamp(2rem,3.8vw,3rem);font-weight:800;color:#fff;line-height:1.1;margin-bottom:14px}
+.ph-p{font-size:.95rem;color:rgba(255,255,255,.5);line-height:1.7}
+.sec{padding:96px 5%}
+.sec-alt{background:var(--gxxl)}
+.sw{max-width:1100px;margin:0 auto}
+/* Contact grid */
+.contact-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:56px;align-items:start}
+/* Left: info */
+.ci-section{margin-bottom:36px}
+.ci-title{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.contact-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:14px;transition:border-color .2s,transform .2s}
+.contact-card:hover{border-color:rgba(26,107,74,.25);transform:translateY(-2px)}
+.cc-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.cc-g{background:var(--gxl)}.cc-b{background:var(--bluel)}.cc-a{background:var(--amberl)}
+.cc-label{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.cc-value{font-size:.9rem;font-weight:600;color:var(--ink)}
+.cc-sub{font-size:.77rem;color:var(--muted);margin-top:2px}
+/* Map placeholder */
+.map-box{background:linear-gradient(135deg,var(--gxl),var(--gxxl));border:1px solid rgba(26,107,74,.2);border-radius:16px;padding:28px;text-align:center;margin-top:24px}
+.mb-ico{font-size:2.5rem;margin-bottom:10px;display:block}
+.mb-txt{font-size:.88rem;color:var(--g);font-weight:600;margin-bottom:4px}
+.mb-sub{font-size:.78rem;color:var(--muted)}
+/* Right: form */
+.contact-form-wrap{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:36px;box-shadow:var(--shadow-lg)}
+.cf-title{font-size:1.3rem;font-weight:800;color:var(--ink);margin-bottom:6px}
+.cf-sub{font-size:.86rem;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fl{font-size:.8rem;font-weight:600;color:var(--inkm)}
+.fi,.fs,.fta{padding:11px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s,background .2s;width:100%}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--g);background:var(--card);box-shadow:0 0 0 3px rgba(26,107,74,.1)}
+.fta{resize:vertical;min-height:120px}
+.cf-topic{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.ct-opt{position:relative}
+.ct-opt input{position:absolute;opacity:0;width:0;height:0}
+.ct-label{display:block;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-size:.82rem;font-weight:600;color:var(--inkm);cursor:pointer;transition:all .15s;text-align:center}
+.ct-opt input:checked + .ct-label{border-color:var(--g);background:var(--gxl);color:var(--g)}
+.ct-label:hover{border-color:var(--g);background:var(--gxl)}
+.submit-btn{width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;border:none;font-family:'Sora',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(26,107,74,.3)}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(26,107,74,.4)}
+.success-msg{display:none;background:var(--gxl);border:1px solid rgba(26,107,74,.2);border-radius:12px;padding:16px;text-align:center;font-size:.9rem;font-weight:600;color:var(--g);margin-top:14px}
+/* Quick links */
+.quick-links{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1100px;margin:0 auto}
+.ql-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;text-decoration:none;transition:transform .2s,box-shadow .2s,border-color .2s;box-shadow:var(--shadow)}
+.ql-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.1);border-color:rgba(26,107,74,.2)}
+.ql-ico{font-size:2rem;margin-bottom:10px;display:block}
+.ql-title{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.ql-desc{font-size:.8rem;color:var(--muted);line-height:1.55}
+@media(max-width:860px){.contact-grid{grid-template-columns:1fr;gap:36px}.quick-links{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.fg2{grid-template-columns:1fr}.cf-topic{grid-template-columns:1fr}.quick-links{grid-template-columns:1fr}.sec{padding:64px 4%}}
+{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="ph-bg"></div><div class="ph-blob"></div>
+  <div class="ph-inner">
+    <div class="ph-tag">💬 Get in Touch</div>
+    <h1 class="ph-h1">Contact AarogyaLink</h1>
+    <p class="ph-p">Questions, partnership inquiries, government integration requests, or technical support — we respond to every message within 24 hours.</p>
+  </div>
+</div>
+
+<section class="sec">
+  <div class="sw">
+    <div class="contact-grid">
+      <!-- Left info -->
+      <div>
+        <div class="ci-section">
+          <div class="ci-title">📞 Direct Contact</div>
+          <div class="contact-card"><div class="cc-ico cc-g">📧</div><div><div class="cc-label">Email</div><div class="cc-value">hello@aarogyalink.in</div><div class="cc-sub">Response within 24 hours</div></div></div>
+          <div class="contact-card"><div class="cc-ico cc-b">📧</div><div><div class="cc-label">Technical Support</div><div class="cc-value">support@aarogyalink.in</div><div class="cc-sub">For bugs, errors, or login issues</div></div></div>
+          <div class="contact-card"><div class="cc-ico cc-a">🔒</div><div><div class="cc-label">Privacy & Data</div><div class="cc-value">privacy@aarogyalink.in</div><div class="cc-sub">DPDPA requests and data concerns</div></div></div>
+          <div class="contact-card"><div class="cc-ico cc-g">🤝</div><div><div class="cc-label">Partnerships & NGOs</div><div class="cc-value">partnerships@aarogyalink.in</div><div class="cc-sub">Government, NGO, hospital integrations</div></div></div>
+        </div>
+        <div class="ci-section">
+          <div class="ci-title">🕐 Response Times</div>
+          <div class="contact-card" style="flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--inkm)">General inquiries</span><span style="font-weight:700;color:var(--g)">Within 24 hours</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--inkm)">Technical support</span><span style="font-weight:700;color:var(--g)">Within 4 hours</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--inkm)">Privacy requests</span><span style="font-weight:700;color:var(--g)">Within 15 days</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem"><span style="color:var(--inkm)">Partnership requests</span><span style="font-weight:700;color:var(--g)">Within 48 hours</span></div>
+          </div>
+        </div>
+        <div class="map-box">
+          <span class="mb-ico">🇮🇳</span>
+          <div class="mb-txt">AarogyaLink Health Technology</div>
+          <div class="mb-sub">Punjab, India · Serving rural communities across India</div>
+        </div>
+      </div>
+
+      <!-- Right form -->
+      <div class="contact-form-wrap reveal">
+        <div class="cf-title">Send us a Message</div>
+        <div class="cf-sub">Fill the form and we'll get back to you. For urgent technical issues, email support@aarogyalink.in directly.</div>
+        <form id="contactForm" onsubmit="submitForm(event)">
+          <div class="fg2">
+            <div class="fg"><label class="fl">Your Name *</label><input type="text" class="fi" required placeholder="Full name"></div>
+            <div class="fg"><label class="fl">Email *</label><input type="email" class="fi" required placeholder="your@email.com"></div>
+          </div>
+          <div class="fg"><label class="fl">Phone (optional)</label><input type="tel" class="fi" placeholder="9876543210"></div>
+          <div class="fg"><label class="fl">I am a...</label>
+            <select class="fs">
+              <option>ASHA Worker</option>
+              <option>Doctor / Healthcare Professional</option>
+              <option>Hospital Administrator</option>
+              <option>Government Official</option>
+              <option>NGO / Researcher</option>
+              <option>Patient / Family Member</option>
+              <option>Developer / Technical</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="fg"><label class="fl" style="margin-bottom:8px">Topic *</label>
+            <div class="cf-topic">
+              <div class="ct-opt"><input type="radio" name="topic" id="t1" checked><label class="ct-label" for="t1">🆘 Technical Help</label></div>
+              <div class="ct-opt"><input type="radio" name="topic" id="t2"><label class="ct-label" for="t2">🤝 Partnership</label></div>
+              <div class="ct-opt"><input type="radio" name="topic" id="t3"><label class="ct-label" for="t3">🏛️ Government Integration</label></div>
+              <div class="ct-opt"><input type="radio" name="topic" id="t4"><label class="ct-label" for="t4">💡 Feature Request</label></div>
+            </div>
+          </div>
+          <div class="fg"><label class="fl">Message *</label><textarea class="fta" required placeholder="Tell us what you need. Be as detailed as possible — it helps us respond better."></textarea></div>
+          <button type="submit" class="submit-btn">Send Message →</button>
+        </form>
+        <div class="success-msg" id="successMsg">✅ Message sent! We'll get back to you within 24 hours.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec-alt">
+  <div class="sw" style="text-align:center;margin-bottom:40px">
+    <div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:10px">Quick Links</div>
+    <div style="font-size:clamp(1.6rem,2.8vw,2.2rem);font-weight:800;color:var(--ink);margin-bottom:10px">Find What You Need</div>
+    <div style="font-size:.97rem;color:var(--muted);max-width:480px;margin:0 auto 40px">Common resources that might answer your question before you contact us.</div>
+    <div class="quick-links">
+      <a href="{{ url_for('pages.how_it_works') }}" class="ql-card reveal"><span class="ql-ico">📋</span><div class="ql-title">How It Works</div><div class="ql-desc">Step-by-step guide for every user role from registration to doctor visits.</div></a>
+      <a href="{{ url_for('pages.asha_guide') }}" class="ql-card reveal reveal-delay-1"><span class="ql-ico">👩‍⚕️</span><div class="ql-title">ASHA Worker Guide</div><div class="ql-desc">Complete guide in Hindi and English for ASHA workers to use AarogyaLink.</div></a>
+      <a href="{{ url_for('pages.documentation') }}" class="ql-card reveal reveal-delay-2"><span class="ql-ico">📚</span><div class="ql-title">Documentation</div><div class="ql-desc">Technical docs, API reference, and deployment guide for developers.</div></a>
+      <a href="{{ url_for('pages.privacy') }}" class="ql-card reveal"><span class="ql-ico">🔒</span><div class="ql-title">Privacy Policy</div><div class="ql-desc">How we collect, use, and protect your personal health data.</div></a>
+      <a href="{{ url_for('pages.features') }}" class="ql-card reveal reveal-delay-1"><span class="ql-ico">✨</span><div class="ql-title">All Features</div><div class="ql-desc">Complete list of every feature AarogyaLink offers across all user roles.</div></a>
+      <a href="{{ url_for('auth.register') }}" class="ql-card reveal reveal-delay-2"><span class="ql-ico">🚀</span><div class="ql-title">Get Started</div><div class="ql-desc">Create your doctor or ASHA worker account and start using AarogyaLink today.</div></a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+function submitForm(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('.submit-btn');
+  btn.textContent='Sending...';btn.disabled=true;
+  setTimeout(()=>{
+    e.target.style.display='none';
+    document.getElementById('successMsg').style.display='block';
+  },1200);
+}
+</script>
+{% endblock %}

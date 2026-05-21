@@ -41,6 +41,20 @@
     .page-body-white{background:var(--white)}
     .page-body-dark{background:var(--ink)}
 
+    /* ── Global mobile utilities ── */
+    img{max-width:100%;height:auto}
+    table{width:100%;overflow-x:auto;display:block}
+    input,select,textarea,button{
+      -webkit-appearance:none;
+      -moz-appearance:none;
+      touch-action:manipulation;
+    }
+    /* Prevent text overflow everywhere */
+    *{word-break:break-word}
+    /* Tap target minimum size */
+    a,button{min-height:36px;display:inline-flex;align-items:center}
+    a.nav-link,a.nav-pill{min-height:auto}
+
     body{font-family:'Sora',sans-serif;background:var(--white);color:var(--ink);line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
     /* ── Scrollbar ── */
@@ -474,18 +488,18 @@
         </div>
         <div class="footer-col">
           <h4>Product</h4>
-          <a href="#how-it-works">How it works</a>
-          <a href="#features">Features</a>
+          <a href="{{ url_for('pages.how_it_works') }}">How it works</a>
+          <a href="{{ url_for('pages.features') }}">Features</a>
           <a href="{{ url_for('patient.register') }}">Register Patient</a>
           {% if current_user.is_authenticated and (current_user.is_doctor() or current_user.is_admin()) %}
           <a href="{{ url_for('scan.scan') }}">Scan QR Card</a>{% endif %}
         </div>
         <div class="footer-col">
           <h4>Resources</h4>
-          <a href="#">ASHA Worker Guide</a>
-          <a href="#">Documentation</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Contact Us</a>
+          <a href="{{ url_for('pages.asha_guide') }}">ASHA Worker Guide</a>
+          <a href="{{ url_for('pages.documentation') }}">Documentation</a>
+          <a href="{{ url_for('pages.privacy') }}">Privacy Policy</a>
+          <a href="{{ url_for('pages.contact') }}">Contact Us</a>
         </div>
         <div class="footer-col">
           <h4>Connect</h4>
