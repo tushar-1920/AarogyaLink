@@ -32,10 +32,6 @@ def features():
 def asha_guide():
     return render_template('pages/asha_guide.html')
 
-@pages_bp.route('/documentation')
-def documentation():
-    return render_template('pages/documentation.html')
-
 @pages_bp.route('/privacy')
 def privacy():
     return render_template('pages/privacy.html')

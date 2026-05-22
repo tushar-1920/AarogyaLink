@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Contact Us — AarogyaLink{% endblock %}
 {% block extra_styles %}
-.page-hero{min-height:45vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h)+80px) 5% 80px;background:linear-gradient(155deg,#030d07,#071a0f 40%,#0c2b1a);position:relative;overflow:hidden;text-align:center}
+.page-hero{min-height:45vh;display:flex;align-items:center;justify-content:center;padding-top:calc(var(--nav-h) + 80px);padding-left:5%;padding-right:5%;padding-bottom:80px;background:linear-gradient(155deg,#030d07,#071a0f 40%,#0c2b1a);position:relative;overflow:hidden;text-align:center}
 .ph-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(74,222,128,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.06) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent 70%)}
 .ph-blob{position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(26,107,74,.12);top:-200px;left:50%;transform:translateX(-50%);filter:blur(80px)}
 .ph-inner{position:relative;z-index:1;max-width:700px}
@@ -142,7 +142,7 @@
     <div class="quick-links">
       <a href="{{ url_for('pages.how_it_works') }}" class="ql-card reveal"><span class="ql-ico">📋</span><div class="ql-title">How It Works</div><div class="ql-desc">Step-by-step guide for every user role from registration to doctor visits.</div></a>
       <a href="{{ url_for('pages.asha_guide') }}" class="ql-card reveal reveal-delay-1"><span class="ql-ico">👩‍⚕️</span><div class="ql-title">ASHA Worker Guide</div><div class="ql-desc">Complete guide in Hindi and English for ASHA workers to use AarogyaLink.</div></a>
-      <a href="{{ url_for('pages.documentation') }}" class="ql-card reveal reveal-delay-2"><span class="ql-ico">📚</span><div class="ql-title">Documentation</div><div class="ql-desc">Technical docs, API reference, and deployment guide for developers.</div></a>
+      <a href="{{ url_for('pages.privacy') }}" class="ql-card reveal reveal-delay-2"><span class="ql-ico">🔒</span><div class="ql-title">Privacy Policy</div><div class="ql-desc">How we protect your data and your rights under DPDPA 2023.</div></a>
       <a href="{{ url_for('pages.privacy') }}" class="ql-card reveal"><span class="ql-ico">🔒</span><div class="ql-title">Privacy Policy</div><div class="ql-desc">How we collect, use, and protect your personal health data.</div></a>
       <a href="{{ url_for('pages.features') }}" class="ql-card reveal reveal-delay-1"><span class="ql-ico">✨</span><div class="ql-title">All Features</div><div class="ql-desc">Complete list of every feature AarogyaLink offers across all user roles.</div></a>
       <a href="{{ url_for('auth.register') }}" class="ql-card reveal reveal-delay-2"><span class="ql-ico">🚀</span><div class="ql-title">Get Started</div><div class="ql-desc">Create your doctor or ASHA worker account and start using AarogyaLink today.</div></a>

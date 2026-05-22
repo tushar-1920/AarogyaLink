@@ -29,6 +29,10 @@
     }
 
     html{scroll-behavior:smooth;font-size:16px}
+    /* ── Ensure nothing overlaps fixed navbar ── */
+    .hero,.page-hero,.page-body,main,section{z-index:1}
+    .navbar{z-index:9999 !important}
+
     /* ── Global page wrapper — guarantees content never hides behind navbar ── */
     .page-body{
       min-height:100vh;
@@ -65,7 +69,7 @@
 
     /* ══════════════ NAVBAR ══════════════ */
     .navbar{
-      position:fixed;top:0;left:0;right:0;z-index:200;
+      position:fixed;top:0;left:0;right:0;z-index:9999;
       height:var(--nav-h);
       min-height:var(--nav-h);
       display:flex;align-items:center;justify-content:space-between;
@@ -143,7 +147,7 @@
     @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,107,74,.5)}50%{box-shadow:0 0 0 8px rgba(26,107,74,0)}}
 
     /* Nav links */
-    .nav-links{display:flex;align-items:center;gap:1px;list-style:none;flex-wrap:nowrap;overflow:hidden}
+    .nav-links{display:flex;align-items:center;gap:0;list-style:none;flex-wrap:nowrap;overflow:hidden;flex:1;justify-content:center}
     .nav-link{
       text-decoration:none;font-size:.875rem;font-weight:500;color:var(--inkm);
       padding:7px 14px;border-radius:9px;
@@ -497,7 +501,7 @@
         <div class="footer-col">
           <h4>Resources</h4>
           <a href="{{ url_for('pages.asha_guide') }}">ASHA Worker Guide</a>
-          <a href="{{ url_for('pages.documentation') }}">Documentation</a>
+          
           <a href="{{ url_for('pages.privacy') }}">Privacy Policy</a>
           <a href="{{ url_for('pages.contact') }}">Contact Us</a>
         </div>
