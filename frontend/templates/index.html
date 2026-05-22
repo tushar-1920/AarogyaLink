@@ -7,15 +7,19 @@
    HERO — DARK FULL SCREEN
 ═══════════════════════════════════════════════ */
 .hero{
-  min-height:100svh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:calc(var(--nav-h) + 80px) 5% 80px;
-  position:relative;overflow:hidden;
+  padding-top:calc(var(--nav-h) + 80px);
+  padding-bottom:80px;
+  padding-left:5%;
+  padding-right:5%;
   background:linear-gradient(155deg,#030d07 0%,#071a0f 30%,#0c2b1a 60%,#082012 100%);
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 /* ── Animated background layers ── */
-.hbg{position:absolute;inset:0;z-index:0;overflow:hidden}
+.hbg{position:absolute;inset:0;z-index:0;overflow:hidden;}
 .hbg-grid{
   position:absolute;inset:0;
   background-image:
@@ -45,17 +49,17 @@
 
 /* ── Hero inner grid ── */
 .hero-inner{
-  max-width:1120px;width:100%;
-  display:grid;grid-template-columns:1fr 1.08fr;
-  gap:72px;align-items:center;
-  position:relative;z-index:1;
-  min-height:0;
+  max-width:1120px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:56px;
+  align-items:center;
+  position:relative;
+  z-index:2;
+  width:100%;
 }
-/* Ensure hero left content is always visible */
-.hero-inner > div:first-child{
-  min-width:0;
-  overflow:visible;
-}
+.hero-inner > *{min-width:0;}
 
 /* ── Left: copy ── */
 .h-eyebrow{
@@ -223,8 +227,9 @@
 
 /* ── Stats bar ── */
 .stats-bar{
-  position:relative;z-index:1;
-  max-width:1120px;width:100%;margin-top:80px;
+  position:relative;z-index:2;
+  max-width:1120px;width:100%;
+  margin:64px auto 0;
   background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.09);
   border-radius:24px;padding:34px 48px;
