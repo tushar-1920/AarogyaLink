@@ -7,9 +7,9 @@
    HERO — DARK FULL SCREEN
 ═══════════════════════════════════════════════ */
 .hero{
-  min-height:100vh;
+  min-height:100svh;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:calc(var(--nav-h) + 90px) 5% 90px;
+  padding:calc(var(--nav-h) + 80px) 5% 80px;
   position:relative;overflow:hidden;
   background:linear-gradient(155deg,#030d07 0%,#071a0f 30%,#0c2b1a 60%,#082012 100%);
 }
@@ -49,6 +49,12 @@
   display:grid;grid-template-columns:1fr 1.08fr;
   gap:72px;align-items:center;
   position:relative;z-index:1;
+  min-height:0;
+}
+/* Ensure hero left content is always visible */
+.hero-inner > div:first-child{
+  min-width:0;
+  overflow:visible;
 }
 
 /* ── Left: copy ── */
@@ -533,8 +539,8 @@
    RESPONSIVE — TABLET
 ═══════════════════════════════════════════════ */
 @media(max-width:960px){
-  .hero-inner{grid-template-columns:1fr;gap:52px;text-align:left}
-  .hcard{max-width:460px}.card-orbit,.fb3,.card-aura{display:none}
+  .hero-inner{grid-template-columns:1fr;gap:40px;text-align:left}
+  .hcard{max-width:420px;margin:0 auto}.card-orbit,.fb3,.card-aura{display:none}
   .steps-timeline{grid-template-columns:1fr 1fr;gap:28px}.steps-timeline::before{display:none}
   .features-grid,.roles-grid{grid-template-columns:1fr 1fr}
   .impact-grid,.numbers-row{grid-template-columns:1fr}
@@ -548,27 +554,30 @@
    RESPONSIVE — MOBILE
 ═══════════════════════════════════════════════ */
 @media(max-width:640px){
-  .hero{padding:calc(var(--nav-h) + 60px) 4% 60px}
-  .hero-h1{font-size:2.1rem}
-  .hero-inner{gap:40px}
-  .hcard{max-width:100%}
-  .fb1,.fb2{display:none}
+  .hero{padding:calc(var(--nav-h) + 56px) 4% 56px}
+  .hero-h1{font-size:1.95rem;letter-spacing:-.02em}
+  .hero-inner{gap:36px;grid-template-columns:1fr}
+  .hcard{max-width:100%;display:block}
+  .fb1,.fb2,.fb3{display:none}
   .hero-btns{flex-direction:column;align-items:stretch;gap:10px}
-  .btn-hero-primary,.btn-hero-ghost{width:100%;justify-content:center;max-width:100%}
-  .h-trust{gap:5px}
-  .stats-bar{grid-template-columns:1fr 1fr;padding:16px 16px;gap:14px;margin-top:48px}
-  .sbn{font-size:1.7rem}
-  .sbl{font-size:.65rem}
-  .section{padding:72px 4%}
-  .cta-section{padding:72px 4%}
-  .consult-section{padding:72px 4%}
+  .btn-hero-primary,.btn-hero-ghost{width:100%;justify-content:center;max-width:100%;display:flex}
+  .h-trust{gap:5px;flex-wrap:wrap}
+  .stats-bar{grid-template-columns:1fr 1fr;padding:16px;gap:12px;margin-top:40px;border-radius:16px}
+  .sbn{font-size:1.6rem}
+  .sbl{font-size:.64rem}
+  .section{padding:64px 4%}
+  .cta-section{padding:64px 4%}
+  .consult-section{padding:64px 4%}
   .features-grid,.roles-grid{grid-template-columns:1fr}
   .steps-timeline{grid-template-columns:1fr;gap:20px}
   .impact-grid{grid-template-columns:1fr}
-  .s-sub{margin-bottom:40px}
-  .why-visual{padding:24px}
-  .why-stat-big{font-size:3rem}
-  .consult-inner{gap:32px}
+  .s-sub{margin-bottom:36px}
+  .why-grid{grid-template-columns:1fr}
+  .why-visual{padding:22px}
+  .why-stat-big{font-size:2.8rem}
+  .consult-inner{grid-template-columns:1fr;gap:28px}
+  .h-eyebrow{font-size:.65rem;padding:5px 12px 5px 8px}
+  .hero-p{font-size:.95rem}
 }
 @media(max-width:400px){
   .hero-h1{font-size:1.9rem}
