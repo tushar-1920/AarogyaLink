@@ -46,31 +46,48 @@
     .page-body-dark{background:var(--ink)}
 
     /* ── AI Tools Dropdown ── */
-    .nav-dropdown{position:relative;list-style:none}
-    .ai-nav-btn{cursor:pointer;user-select:none}
+    .nav-dropdown{position:relative;list-style:none;display:flex;align-items:center}
+    .ai-nav-btn{cursor:pointer;user-select:none;display:flex;align-items:center;gap:4px}
     .nav-drop-menu{
-      position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);
-      background:var(--card);border:1px solid var(--border);
-      border-radius:16px;padding:8px;
-      box-shadow:0 16px 48px rgba(0,0,0,.15),0 0 0 1px rgba(0,0,0,.04);
-      min-width:230px;z-index:10000;
-      opacity:0;pointer-events:none;transform:translateX(-50%) translateY(-8px);
-      transition:opacity .18s,transform .18s;
+      position:absolute;
+      top:calc(100% + 10px);
+      left:50%;
+      margin-left:-115px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:8px;
+      box-shadow:0 20px 60px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.05);
+      min-width:230px;
+      z-index:99999;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(-6px);
+      transition:opacity .2s ease,transform .2s ease,visibility .2s;
     }
-    .nav-dropdown:hover .nav-drop-menu,
-    .nav-dropdown:focus-within .nav-drop-menu{
-      opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);
+    .nav-dropdown:hover .nav-drop-menu{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0);
     }
     .ndm-item{
       display:flex;align-items:center;gap:11px;
       padding:10px 12px;border-radius:10px;text-decoration:none;
       transition:background .15s;
+      min-height:0;
     }
     .ndm-item:hover{background:var(--gxxl)}
     .ndm-item.active{background:var(--gxl)}
     .ndm-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
     .ndm-title{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:1px}
     .ndm-sub{font-size:.7rem;color:var(--muted)}
+    /* Dropdown arrow indicator */
+    .nav-drop-menu::before{
+      content:'';position:absolute;top:-6px;left:50%;margin-left:-6px;
+      width:12px;height:12px;background:var(--card);
+      border-left:1px solid var(--border);border-top:1px solid var(--border);
+      transform:rotate(45deg);
+    }
 
     /* ── Global mobile utilities ── */
     img{max-width:100%;height:auto}
@@ -96,7 +113,7 @@
 
     /* ══════════════ NAVBAR ══════════════ */
     .navbar{
-      position:fixed;top:0;left:0;right:0;z-index:9999;
+      position:fixed;top:0;left:0;right:0;z-index:9999;overflow:visible;
       height:var(--nav-h);
       min-height:var(--nav-h);
       display:flex;align-items:center;justify-content:space-between;
@@ -174,7 +191,7 @@
     @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,107,74,.5)}50%{box-shadow:0 0 0 8px rgba(26,107,74,0)}}
 
     /* Nav links */
-    .nav-links{display:flex;align-items:center;gap:0;list-style:none;flex-wrap:nowrap;overflow:hidden;flex:1;justify-content:center}
+    .nav-links{display:flex;align-items:center;gap:0;list-style:none;flex-wrap:nowrap;overflow:visible;flex:1;justify-content:center}
     .nav-link{
       text-decoration:none;font-size:.875rem;font-weight:500;color:var(--inkm);
       padding:7px 14px;border-radius:9px;
