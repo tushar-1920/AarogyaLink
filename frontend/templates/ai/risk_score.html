@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+{% block title %}Health Risk Score — AarogyaLink{% endblock %}
+{% block extra_styles %}
+.ai-page{padding-top:calc(var(--nav-h)+40px);padding-bottom:80px;padding-left:4%;padding-right:4%;background:var(--gxxl);min-height:100vh}
+.ai-wrap{max-width:1100px;margin:0 auto}
+.ai-tag{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#fef2f2,#fecaca);border:1px solid rgba(220,38,38,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#dc2626;margin-bottom:12px}
+.ai-h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--ink);margin-bottom:6px}
+.ai-sub{font-size:.9rem;color:var(--muted);line-height:1.6;max-width:600px;margin-bottom:28px}
+/* Main grid */
+.risk-grid{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start}
+/* Left: form */
+.form-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.fp-title{font-size:.92rem;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.fl{font-size:.76rem;font-weight:600;color:var(--inkm)}
+.fi,.fs{padding:9px 12px;border-radius:9px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.85rem;color:var(--ink);outline:none;width:100%;transition:border-color .2s}
+.fi:focus,.fs:focus{border-color:var(--red);background:var(--card)}
+.calc-btn{width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,#991b1b,#dc2626);border:none;color:#fff;font-family:'Sora',sans-serif;font-size:.97rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(220,38,38,.3);transition:transform .15s,box-shadow .15s;margin-top:6px}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(220,38,38,.45)}
+.calc-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+/* Right: results */
+.results-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;box-shadow:var(--shadow);min-height:400px}
+.rp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:360px;text-align:center;color:var(--muted)}
+.rp-empty-ico{font-size:4rem;margin-bottom:14px}
+/* Score display */
+.score-hero{text-align:center;margin-bottom:28px}
+.score-ring{width:160px;height:160px;margin:0 auto 16px;position:relative;display:flex;align-items:center;justify-content:center}
+.score-ring svg{position:absolute;top:0;left:0;transform:rotate(-90deg)}
+.score-num{font-size:3rem;font-weight:900;line-height:1;font-family:'Noto Serif',serif}
+.score-label{font-size:.82rem;color:var(--muted);margin-top:2px;font-weight:600}
+.score-cat{display:inline-block;padding:5px 18px;border-radius:20px;font-size:.85rem;font-weight:700;margin-top:8px}
+.score-summary{font-size:.9rem;color:var(--inkm);line-height:1.75;max-width:500px;margin:12px auto 0;text-align:left}
+/* Domain scores */
+.domain-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+.domain-card{background:var(--gxxl);border-radius:12px;padding:14px;text-align:center}
+.dc-name{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.dc-score{font-size:1.4rem;font-weight:800;margin-bottom:3px}
+.dc-bar{height:4px;border-radius:2px;background:var(--border);margin-bottom:5px;overflow:hidden}
+.dc-bar-fill{height:100%;border-radius:2px;transition:width 1s ease}
+.dc-label{font-size:.7rem;color:var(--muted);line-height:1.4}
+/* Risk factors */
+.risk-item{display:flex;align-items:flex-start;gap:12px;background:var(--gxxl);border-radius:12px;padding:13px;margin-bottom:8px}
+.ri-impact{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+.ri-high{background:var(--redl);color:var(--red)}.ri-medium{background:var(--amberl);color:var(--amber)}.ri-low{background:var(--gxl);color:var(--g)}
+.ri-name{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+.ri-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+/* Actions */
+.action-item{display:flex;align-items:flex-start;gap:11px;padding:12px;border-radius:11px;margin-bottom:8px;border:1px solid}
+.ai-immediate{background:var(--redl);border-color:rgba(220,38,38,.2)}
+.ai-week{background:var(--amberl);border-color:rgba(180,83,9,.2)}
+.ai-month{background:var(--gxl);border-color:rgba(26,107,74,.15)}
+.action-badge{font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;margin-top:2px}
+.ab-i{background:var(--red);color:#fff}.ab-w{background:var(--amber);color:#fff}.ab-m{background:var(--g);color:#fff}
+.action-text{font-size:.84rem;color:var(--inkm);line-height:1.55}
+.action-reason{font-size:.77rem;color:var(--muted);margin-top:3px}
+/* Section headers */
+.sh{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 10px;display:flex;align-items:center;gap:6px}
+/* Doctor alert */
+.doctor-alert{background:linear-gradient(135deg,#fef2f2,#fecaca);border:2px solid rgba(220,38,38,.3);border-radius:14px;padding:16px 18px;margin-bottom:18px;display:flex;gap:12px;align-items:center}
+.da-ico{font-size:1.8rem;flex-shrink:0}
+.da-title{font-size:.92rem;font-weight:700;color:var(--red);margin-bottom:3px}
+.da-reason{font-size:.82rem;color:var(--red);opacity:.85;line-height:1.5}
+/* Loading */
+.loading-overlay{text-align:center;padding:60px 20px}
+.lo-spinner{font-size:3rem;animation:lo-spin 1.5s linear infinite;display:block;margin:0 auto 16px}
+@keyframes lo-spin{to{transform:rotate(360deg)}}
+.lo-steps{display:flex;flex-direction:column;gap:6px;margin-top:16px;text-align:left;max-width:280px;margin-left:auto;margin-right:auto}
+.lo-step{font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.lo-step.done{color:var(--g)}.lo-step.done::before{content:'✅'}
+.lo-step.active{color:var(--ink);font-weight:600}.lo-step.active::before{content:'⚙️'}
+.lo-step::before{width:16px;flex-shrink:0}
+@media(max-width:900px){.risk-grid{grid-template-columns:1fr}.domain-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.domain-grid{grid-template-columns:1fr 1fr}.ai-page{padding-top:calc(var(--nav-h)+24px)}}
+{% endblock %}
+{% block content %}
+<div class="ai-page">
+  <div class="ai-wrap">
+    <div class="reveal">
+      <div class="ai-tag">❤️ Health Risk AI</div>
+      <h1 class="ai-h1">Health Risk Score Calculator</h1>
+      <p class="ai-sub">AI analyzes patient history, conditions, medications, and lifestyle to generate a 0–100 risk score with domain breakdowns, top risk factors, and prioritized action plan.</p>
+    </div>
+
+    <div class="risk-grid">
+      <!-- Left: Form -->
+      <div class="form-panel reveal">
+        <div class="fp-title">🧬 Patient & Lifestyle Data</div>
+
+        <div class="fg">
+          <div class="fl">Select Patient *</div>
+          <select class="fs" id="patientSelect">
+            <option value="">— Select a patient —</option>
+            {% for p in patients %}
+            <option value="{{ p.id }}">{{ p.name }} ({{ p.age }}y · {{ p.village }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div style="background:var(--gxxl);border-radius:12px;padding:14px;margin-bottom:14px">
+          <div style="font-size:.76rem;font-weight:700;color:var(--inkm);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Lifestyle Factors</div>
+
+          <div class="fg">
+            <div class="fl">Smoking status</div>
+            <select class="fs" id="smoking">
+              <option value="unknown">Unknown</option>
+              <option value="never">Never smoked</option>
+              <option value="former">Former smoker</option>
+              <option value="current">Current smoker</option>
+              <option value="heavy">Heavy smoker (20+ cigarettes/day)</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="fl">Alcohol consumption</div>
+            <select class="fs" id="alcohol">
+              <option value="unknown">Unknown</option>
+              <option value="none">None</option>
+              <option value="occasional">Occasional (social)</option>
+              <option value="moderate">Moderate (weekly)</option>
+              <option value="heavy">Heavy (daily)</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="fl">Physical activity</div>
+            <select class="fs" id="activity">
+              <option value="unknown">Unknown</option>
+              <option value="sedentary">Sedentary (desk work, no exercise)</option>
+              <option value="light">Light (walking occasionally)</option>
+              <option value="moderate">Moderate (30 min 3x/week)</option>
+              <option value="active">Active (daily exercise)</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="fl">Diet type</div>
+            <select class="fs" id="diet">
+              <option value="unknown">Unknown</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="mixed">Mixed (veg + non-veg)</option>
+              <option value="junk_heavy">High in processed/junk food</option>
+              <option value="healthy">Balanced and nutritious</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="fl">Water source</div>
+            <select class="fs" id="water">
+              <option value="unknown">Unknown</option>
+              <option value="municipal">Municipal tap water</option>
+              <option value="borewell">Borewell / hand pump</option>
+              <option value="river">River / open well</option>
+              <option value="filtered">Filtered / RO water</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="fl">Occupation</div>
+            <select class="fs" id="occupation">
+              <option value="unknown">Unknown</option>
+              <option value="farmer">Farmer / agricultural worker</option>
+              <option value="labourer">Manual labourer</option>
+              <option value="office">Office / desk work</option>
+              <option value="homemaker">Homemaker</option>
+              <option value="student">Student</option>
+              <option value="healthcare">Healthcare worker</option>
+            </select>
+          </div>
+          <div class="fg">
+            <div class="fl">Family history of major illness</div>
+            <select class="fs" id="family_history">
+              <option value="unknown">Unknown</option>
+              <option value="none">No known family history</option>
+              <option value="diabetes">Diabetes</option>
+              <option value="heart">Heart disease</option>
+              <option value="cancer">Cancer</option>
+              <option value="multiple">Multiple conditions</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="calc-btn" id="calcBtn" onclick="calculateRisk()">
+          🧬 Calculate Risk Score
+        </button>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="results-panel reveal reveal-delay-1" id="resultsPanel">
+        <div class="rp-empty" id="emptyState">
+          <div class="rp-empty-ico">🧬</div>
+          <div style="font-size:1rem;font-weight:700;color:var(--inkm);margin-bottom:8px">Select a patient to calculate</div>
+          <div style="font-size:.86rem;line-height:1.65;max-width:320px">Fill the form on the left and click "Calculate Risk Score". AI will generate a comprehensive health risk profile.</div>
+        </div>
+        <div id="loadingState" style="display:none" class="loading-overlay">
+          <span class="lo-spinner">🧬</span>
+          <div style="font-size:.97rem;font-weight:700;color:var(--ink);margin-bottom:6px">Calculating Health Risk Score...</div>
+          <div style="font-size:.84rem;color:var(--muted);margin-bottom:16px">GPT-4o analyzing patient profile</div>
+          <div class="lo-steps" id="loSteps">
+            <div class="lo-step active">Reading patient history</div>
+            <div class="lo-step">Analyzing conditions and medications</div>
+            <div class="lo-step">Computing domain risk scores</div>
+            <div class="lo-step">Generating recommendations</div>
+          </div>
+        </div>
+        <div id="resultsContent" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+let loadingInterval;
+
+function animateLoadingSteps() {
+  const steps = document.querySelectorAll('.lo-step');
+  let i = 0;
+  loadingInterval = setInterval(() => {
+    steps.forEach(s => { s.classList.remove('active','done'); });
+    if (i > 0) {
+      for (let j = 0; j < i; j++) steps[j]?.classList.add('done');
+    }
+    steps[i]?.classList.add('active');
+    i++;
+    if (i >= steps.length) clearInterval(loadingInterval);
+  }, 1800);
+}
+
+async function calculateRisk() {
+  const patientId = document.getElementById('patientSelect').value;
+  if (!patientId) { alert('Please select a patient first.'); return; }
+
+  document.getElementById('emptyState').style.display    = 'none';
+  document.getElementById('loadingState').style.display  = 'block';
+  document.getElementById('resultsContent').style.display= 'none';
+  document.getElementById('calcBtn').disabled = true;
+
+  animateLoadingSteps();
+
+  const lifestyle = {
+    smoking:        document.getElementById('smoking').value,
+    alcohol:        document.getElementById('alcohol').value,
+    activity:       document.getElementById('activity').value,
+    diet:           document.getElementById('diet').value,
+    water:          document.getElementById('water').value,
+    occupation:     document.getElementById('occupation').value,
+    family_history: document.getElementById('family_history').value,
+  };
+
+  try {
+    const resp = await fetch('/ai/risk-score/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patient_id: patientId, lifestyle })
+    });
+    const data = await resp.json();
+    clearInterval(loadingInterval);
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('calcBtn').disabled = false;
+
+    if (data.error) {
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('emptyState').innerHTML = `<div class="rp-empty-ico">❌</div><div>${data.error}</div>`;
+      return;
+    }
+    renderResults(data.result);
+  } catch(e) {
+    clearInterval(loadingInterval);
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('calcBtn').disabled = false;
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('emptyState').innerHTML = `<div class="rp-empty-ico">❌</div><div>Connection error: ${e.message}</div>`;
+  }
+}
+
+function getScoreColor(score) {
+  if (score <= 25) return '#22c55e';
+  if (score <= 50) return '#f59e0b';
+  if (score <= 75) return '#f97316';
+  return '#ef4444';
+}
+
+function getScoreCatStyle(cat) {
+  const m = {
+    LOW:      'background:#e6f4ee;color:#1a6b4a',
+    MODERATE: 'background:#fef3c7;color:#b45309',
+    HIGH:     'background:#ffedd5;color:#c2410c',
+    CRITICAL: 'background:#fef2f2;color:#dc2626',
+  };
+  return m[cat] || m.MODERATE;
+}
+
+function renderResults(r) {
+  const score = r.overall_score || 0;
+  const color = r.risk_color || getScoreColor(score);
+  const circumference = 2 * Math.PI * 64; // radius 64
+  const dashOffset = circumference - (score / 100) * circumference;
+
+  let html = ``;
+
+  // Doctor alert
+  if (r.doctor_alert) {
+    html += `<div class="doctor-alert">
+      <div class="da-ico">🚨</div>
+      <div><div class="da-title">Requires Immediate Doctor Attention</div>
+      <div class="da-reason">${r.doctor_alert_reason || ''}</div></div>
+    </div>`;
+  }
+
+  // Score ring
+  html += `<div class="score-hero">
+    <div class="score-ring">
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <circle cx="80" cy="80" r="64" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+        <circle cx="80" cy="80" r="64" fill="none" stroke="${color}" stroke-width="12"
+          stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
+          stroke-linecap="round" style="transition:stroke-dashoffset 1.5s ease"/>
+      </svg>
+      <div>
+        <div class="score-num" style="color:${color}">${score}</div>
+        <div class="score-label">/ 100</div>
+      </div>
+    </div>
+    <div class="score-cat" style="${getScoreCatStyle(r.risk_category)}">${r.risk_category} RISK</div>
+    <div class="score-summary">${r.summary || ''}</div>
+  </div>`;
+
+  // Domain scores
+  if (r.domain_scores) {
+    html += `<div class="sh">📊 Risk by Domain</div>
+    <div class="domain-grid">`;
+    const domains = {
+      cardiovascular:    '❤️ Cardiac',
+      metabolic:         '🩸 Metabolic',
+      respiratory:       '🫁 Respiratory',
+      infectious_disease:'🦠 Infections',
+      mental_health:     '🧠 Mental',
+      lifestyle:         '🏃 Lifestyle',
+    };
+    Object.entries(domains).forEach(([key, label]) => {
+      const d = r.domain_scores[key];
+      if (!d) return;
+      const c = getScoreColor(d.score);
+      html += `<div class="domain-card">
+        <div class="dc-name">${label}</div>
+        <div class="dc-score" style="color:${c}">${d.score}</div>
+        <div class="dc-bar"><div class="dc-bar-fill" style="width:${d.score}%;background:${c}"></div></div>
+        <div class="dc-label">${d.label}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Top risk factors
+  if (r.top_risk_factors && r.top_risk_factors.length > 0) {
+    html += `<div class="sh">⚠️ Top Risk Factors</div>`;
+    r.top_risk_factors.forEach(f => {
+      const ic = `ri-${f.impact}`;
+      const il = f.impact === 'high' ? 'H' : f.impact === 'medium' ? 'M' : 'L';
+      html += `<div class="risk-item">
+        <div class="ri-impact ${ic}">${il}</div>
+        <div><div class="ri-name">${f.factor}</div><div class="ri-desc">${f.description}</div></div>
+      </div>`;
+    });
+  }
+
+  // Immediate actions
+  if (r.immediate_actions && r.immediate_actions.length > 0) {
+    html += `<div class="sh">✅ Action Plan</div>`;
+    r.immediate_actions.forEach(a => {
+      const cls = a.urgency === 'immediate' ? 'ai-immediate' : a.urgency === 'this_week' ? 'ai-week' : 'ai-month';
+      const bc  = a.urgency === 'immediate' ? 'ab-i' : a.urgency === 'this_week' ? 'ab-w' : 'ab-m';
+      const bl  = a.urgency === 'immediate' ? 'NOW' : a.urgency === 'this_week' ? 'THIS WEEK' : 'THIS MONTH';
+      html += `<div class="action-item ${cls}">
+        <div class="action-badge ${bc}">${bl}</div>
+        <div><div class="action-text">${a.action}</div><div class="action-reason">${a.reason}</div></div>
+      </div>`;
+    });
+  }
+
+  // Screening
+  if (r.screening_recommendations && r.screening_recommendations.length > 0) {
+    html += `<div class="sh">🔬 Screening Recommendations</div>`;
+    html += `<div style="display:flex;flex-direction:column;gap:7px">`;
+    r.screening_recommendations.forEach(s => {
+      html += `<div style="display:flex;align-items:center;gap:12px;background:var(--gxxl);border-radius:10px;padding:11px 14px;font-size:.84rem">
+        <div style="font-weight:700;color:var(--ink);flex:1">${s.test}</div>
+        <div style="color:var(--g);font-weight:600;white-space:nowrap">${s.frequency}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // 5-year outlook
+  if (r['5_year_outlook']) {
+    html += `<div style="background:linear-gradient(135deg,#0c2b1a,#1a6b4a);border-radius:14px;padding:18px;margin-top:18px;color:#fff">
+      <div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px">🔮 5-Year Health Outlook</div>
+      <div style="font-size:.9rem;color:rgba(255,255,255,.8);line-height:1.7">${r['5_year_outlook']}</div>
+    </div>`;
+  }
+
+  const content = document.getElementById('resultsContent');
+  content.innerHTML = html;
+  content.style.display = 'block';
+
+  // Animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.dc-bar-fill').forEach(b => {
+      const w = b.style.width;
+      b.style.width = '0';
+      setTimeout(() => { b.style.width = w; }, 100);
+    });
+  }, 100);
+}
+</script>
+{% endblock %}

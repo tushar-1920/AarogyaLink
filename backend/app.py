@@ -32,6 +32,7 @@ def create_app(config_class=Config):
     from routes.scan      import scan_bp
     from routes.admin        import admin_bp
     from routes.telemedicine import tele_bp
+    from routes.ai_features  import ai_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(pages_bp)
@@ -41,6 +42,7 @@ def create_app(config_class=Config):
     app.register_blueprint(scan_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(tele_bp)
+    app.register_blueprint(ai_bp)
 
     # Create upload dirs
     static = os.path.abspath(Config.STATIC_FOLDER)

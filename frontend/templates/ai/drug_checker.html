@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block title %}Drug Interaction Checker — AarogyaLink{% endblock %}
+{% block extra_styles %}
+.ai-page{padding-top:calc(var(--nav-h)+40px);padding-bottom:80px;padding-left:4%;padding-right:4%;background:var(--gxxl);min-height:100vh}
+.ai-wrap{max-width:1000px;margin:0 auto}
+.ai-tag{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid rgba(180,83,9,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#b45309;margin-bottom:12px}
+.ai-h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--ink);margin-bottom:6px}
+.ai-sub{font-size:.9rem;color:var(--muted);line-height:1.6;max-width:600px;margin-bottom:28px}
+.checker-grid{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
+/* Drug input panel */
+.drug-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.dp-title{font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.drug-input-row{display:flex;gap:8px;margin-bottom:14px}
+.drug-input{flex:1;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.88rem;color:var(--ink);outline:none;transition:border-color .2s}
+.drug-input:focus{border-color:var(--amber);background:var(--card)}
+.add-btn{padding:10px 14px;border-radius:10px;background:var(--amber);border:none;color:#fff;font-weight:700;cursor:pointer;font-size:.88rem;white-space:nowrap;transition:opacity .15s}
+.add-btn:hover{opacity:.85}
+.drug-tags{display:flex;flex-wrap:wrap;gap:7px;min-height:44px;margin-bottom:16px}
+.dtag{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:var(--amberl);border:1px solid rgba(180,83,9,.2);font-size:.8rem;font-weight:600;color:var(--amber)}
+.dtag-rm{background:none;border:none;color:var(--amber);cursor:pointer;font-size:1rem;padding:0;line-height:1;opacity:.7;transition:opacity .15s}
+.dtag-rm:hover{opacity:1}
+.patient-sel{width:100%;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);background:var(--gxxl);font-family:'Sora',sans-serif;font-size:.86rem;color:var(--ink);outline:none;margin-bottom:14px}
+.patient-sel:focus{border-color:var(--amber)}
+.check-btn{width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,#b45309,#d97706);border:none;color:#fff;font-family:'Sora',sans-serif;font-size:.97rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(180,83,9,.3);transition:transform .15s,box-shadow .15s}
+.check-btn:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(180,83,9,.4)}
+.check-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+/* Common drug pills */
+.common-drugs{margin-top:16px;padding-top:14px;border-top:1px solid var(--borderl)}
+.cd-title{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.cd-pill{padding:5px 9px;border-radius:8px;background:var(--gxxl);border:1px solid var(--border);font-size:.75rem;font-weight:500;color:var(--inkm);cursor:pointer;transition:all .15s;text-align:center}
+.cd-pill:hover{border-color:var(--amber);background:var(--amberl);color:var(--amber)}
+/* Results panel */
+.results-panel{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow);min-height:300px}
+.rp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;text-align:center;color:var(--muted)}
+.rp-empty-ico{font-size:3.5rem;margin-bottom:14px}
+.rp-empty h3{font-size:1rem;font-weight:700;color:var(--inkm);margin-bottom:6px}
+.rp-empty p{font-size:.84rem;line-height:1.6}
+/* Risk banner */
+.risk-banner{border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
+.rb-safe{background:var(--gxl);border:1px solid rgba(26,107,74,.2)}
+.rb-caution{background:var(--amberl);border:1px solid rgba(180,83,9,.2)}
+.rb-dangerous{background:var(--redl);border:1px solid rgba(220,38,38,.2)}
+.rb-ico{font-size:2rem;flex-shrink:0}
+.rb-title{font-size:1rem;font-weight:800;margin-bottom:3px}
+.rb-safe .rb-title{color:var(--g)}.rb-caution .rb-title{color:var(--amber)}.rb-dangerous .rb-title{color:var(--red)}
+.rb-msg{font-size:.84rem;line-height:1.55}
+.rb-safe .rb-msg{color:var(--g)}.rb-caution .rb-msg{color:var(--amber)}.rb-dangerous .rb-msg{color:var(--red)}
+/* Interaction cards */
+.int-card{background:var(--gxxl);border-radius:13px;padding:16px;margin-bottom:12px;border-left:4px solid}
+.ic-mild{border-color:#f59e0b}.ic-moderate{border-color:#f97316}.ic-severe{border-color:#ef4444}
+.ic-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ic-drugs{font-size:.88rem;font-weight:700;color:var(--ink)}
+.ic-sev{font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:10px;text-transform:uppercase;letter-spacing:.06em}
+.sev-mild{background:#fef3c7;color:#b45309}.sev-moderate{background:#ffedd5;color:#ea580c}.sev-severe{background:var(--redl);color:var(--red)}
+.ic-effect{font-size:.84rem;color:var(--inkm);margin-bottom:6px;line-height:1.55}
+.ic-rec{font-size:.82rem;font-weight:600;color:var(--g);background:var(--gxl);border-radius:8px;padding:7px 11px;margin-top:8px}
+.ic-mech{font-size:.78rem;color:var(--muted);margin-top:5px;font-style:italic}
+/* Allergy alerts */
+.allergy-alert{background:var(--redl);border:1px solid rgba(220,38,38,.2);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;gap:10px}
+.aa-ico{font-size:1.2rem;flex-shrink:0}
+.aa-title{font-size:.87rem;font-weight:700;color:var(--red);margin-bottom:3px}
+.aa-desc{font-size:.82rem;color:var(--red);opacity:.8;line-height:1.5}
+/* Section titles */
+.sec-title{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 10px;display:flex;align-items:center;gap:6px}
+/* Loading */
+.loading-overlay{text-align:center;padding:48px 20px}
+.lo-spinner{font-size:2.5rem;animation:spin 1.5s linear infinite;display:block;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:860px){.checker-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.ai-page{padding-top:calc(var(--nav-h)+24px)}.cd-grid{grid-template-columns:1fr 1fr 1fr}}
+{% endblock %}
+{% block content %}
+<div class="ai-page">
+  <div class="ai-wrap">
+    <div class="reveal">
+      <div class="ai-tag">💊 Drug Safety AI</div>
+      <h1 class="ai-h1">Drug Interaction Checker</h1>
+      <p class="ai-sub">Add medicines to check for dangerous interactions, allergy conflicts, and get safer alternatives. AI-powered by GPT-4o with clinical pharmacology data.</p>
+    </div>
+
+    <div class="checker-grid">
+      <!-- Left: Input -->
+      <div class="drug-panel reveal">
+        <div class="dp-title">💊 Add Medicines to Check</div>
+        
+        <select class="patient-sel" id="patientSelect" onchange="loadPatientMeds()">
+          <option value="">— Or select patient to auto-load their meds —</option>
+          {% for p in patients %}
+          <option value="{{ p.id }}" data-meds="{{ p.medications or '' }}">
+            {{ p.name }} ({{ p.age }}y) · {{ p.medications or 'No meds recorded' }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <div class="drug-input-row">
+          <input type="text" class="drug-input" id="drugInput" placeholder="Type medicine name..." 
+            onkeydown="if(event.key==='Enter')addDrug()"
+            oninput="showSuggestions(this.value)">
+          <button class="add-btn" onclick="addDrug()">+ Add</button>
+        </div>
+
+        <div class="drug-tags" id="drugTags">
+          <div style="font-size:.8rem;color:var(--muted);display:flex;align-items:center">Add at least 2 medicines...</div>
+        </div>
+
+        <button class="check-btn" id="checkBtn" onclick="checkInteractions()">
+          🔍 Check Interactions
+        </button>
+
+        <div class="common-drugs">
+          <div class="cd-title">Quick add common medicines</div>
+          <div class="cd-grid">
+            {% for drug in ['Metformin','Amlodipine','Aspirin','Atorvastatin','Ramipril','Metoprolol','Omeprazole','Paracetamol','Ibuprofen','Warfarin','Digoxin','Furosemide','Amoxicillin','Ciprofloxacin','Doxycycline','Insulin'] %}
+            <div class="cd-pill" onclick="addSpecificDrug('{{ drug }}')">{{ drug }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="results-panel reveal reveal-delay-1" id="resultsPanel">
+        <div class="rp-empty" id="emptyState">
+          <div class="rp-empty-ico">💊</div>
+          <h3>Add medicines to check</h3>
+          <p>Add 2 or more medicines on the left and click "Check Interactions". AI will analyze all drug-drug and drug-allergy interactions.</p>
+        </div>
+        <div id="loadingState" style="display:none" class="loading-overlay">
+          <span class="lo-spinner">⚙️</span>
+          <div style="font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:6px">Analyzing interactions...</div>
+          <div style="font-size:.84rem;color:var(--muted)">GPT-4o checking clinical pharmacology database</div>
+        </div>
+        <div id="resultsContent" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+let drugs = [];
+
+function loadPatientMeds() {
+  const sel = document.getElementById('patientSelect');
+  const opt = sel.options[sel.selectedIndex];
+  if (!sel.value || !opt.dataset.meds) return;
+  
+  const meds = opt.dataset.meds.split(',').map(m => m.trim()).filter(Boolean);
+  meds.forEach(m => { if (!drugs.includes(m)) drugs.push(m); });
+  renderDrugTags();
+}
+
+function addDrug() {
+  const input = document.getElementById('drugInput');
+  const val   = input.value.trim();
+  if (!val) return;
+  if (!drugs.includes(val)) { drugs.push(val); renderDrugTags(); }
+  input.value = '';
+  input.focus();
+}
+
+function addSpecificDrug(name) {
+  if (!drugs.includes(name)) { drugs.push(name); renderDrugTags(); }
+}
+
+function removeDrug(name) {
+  drugs = drugs.filter(d => d !== name);
+  renderDrugTags();
+}
+
+function renderDrugTags() {
+  const container = document.getElementById('drugTags');
+  if (drugs.length === 0) {
+    container.innerHTML = '<div style="font-size:.8rem;color:var(--muted);display:flex;align-items:center">Add at least 2 medicines...</div>';
+    return;
+  }
+  container.innerHTML = drugs.map(d => `
+    <div class="dtag">
+      💊 ${d}
+      <button class="dtag-rm" onclick="removeDrug('${d}')" title="Remove">×</button>
+    </div>
+  `).join('');
+}
+
+function showSuggestions(val) {
+  // Simple autocomplete could be added here
+}
+
+async function checkInteractions() {
+  if (drugs.length < 2) {
+    alert('Please add at least 2 medicines to check interactions.');
+    return;
+  }
+
+  document.getElementById('emptyState').style.display    = 'none';
+  document.getElementById('loadingState').style.display  = 'block';
+  document.getElementById('resultsContent').style.display= 'none';
+
+  const patientId = document.getElementById('patientSelect').value;
+
+  try {
+    const resp = await fetch('/ai/drug-checker/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ drugs, patient_id: patientId })
+    });
+    const data = await resp.json();
+    
+    document.getElementById('loadingState').style.display = 'none';
+    
+    if (data.error) {
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('emptyState').innerHTML = `<div class="rp-empty-ico">❌</div><h3>Error</h3><p>${data.error}</p>`;
+      return;
+    }
+
+    renderResults(data.result);
+  } catch(e) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('emptyState').style.display   = 'block';
+    document.getElementById('emptyState').innerHTML = `<div class="rp-empty-ico">❌</div><h3>Connection Error</h3><p>${e.message}</p>`;
+  }
+}
+
+function renderResults(r) {
+  const riskMap = {
+    SAFE:      { cls: 'rb-safe',      ico: '✅', label: 'SAFE' },
+    CAUTION:   { cls: 'rb-caution',   ico: '⚠️', label: 'CAUTION' },
+    DANGEROUS: { cls: 'rb-dangerous', ico: '🚨', label: 'DANGEROUS' },
+  };
+  const rm = riskMap[r.overall_risk] || riskMap['CAUTION'];
+
+  let html = `
+    <div class="risk-banner ${rm.cls}">
+      <div class="rb-ico">${rm.ico}</div>
+      <div>
+        <div class="rb-title">Overall Risk: ${rm.label}</div>
+        <div class="rb-msg">${r.overall_message || ''}</div>
+      </div>
+    </div>`;
+
+  // Allergy alerts
+  if (r.allergy_alerts && r.allergy_alerts.length > 0) {
+    html += `<div class="sec-title">🚨 Allergy Alerts</div>`;
+    r.allergy_alerts.forEach(a => {
+      html += `<div class="allergy-alert"><div class="aa-ico">🚨</div><div><div class="aa-title">${a.drug} — Allergy Risk</div><div class="aa-desc">${a.risk}</div></div></div>`;
+    });
+  }
+
+  // Interactions
+  if (r.interactions && r.interactions.length > 0) {
+    html += `<div class="sec-title">⚡ Drug Interactions (${r.interactions.length} found)</div>`;
+    r.interactions.forEach(i => {
+      const cls = `ic-${i.severity}`;
+      const sevCls = `sev-${i.severity}`;
+      html += `
+        <div class="int-card ${cls}">
+          <div class="ic-header">
+            <div class="ic-drugs">💊 ${(i.drugs || []).join(' + ')}</div>
+            <div class="ic-sev ${sevCls}">${i.severity}</div>
+          </div>
+          <div class="ic-effect">${i.effect}</div>
+          <div class="ic-rec">✅ ${i.recommendation}</div>
+          ${i.mechanism ? `<div class="ic-mech">🔬 ${i.mechanism}</div>` : ''}
+        </div>`;
+    });
+  } else {
+    html += `<div class="sec-title">✅ No significant interactions found</div>`;
+  }
+
+  // Alternatives
+  if (r.alternatives && r.alternatives.length > 0) {
+    html += `<div class="sec-title">🔄 Safer Alternatives</div>`;
+    r.alternatives.forEach(a => {
+      html += `<div style="background:var(--gxl);border-radius:11px;padding:12px 14px;margin-bottom:8px;font-size:.84rem;color:var(--inkm)">
+        Replace <strong>${a.replace}</strong> with <strong style="color:var(--g)">${a.with}</strong> — ${a.reason}
+      </div>`;
+    });
+  }
+
+  // Clinical notes
+  if (r.clinical_notes) {
+    html += `<div style="background:var(--gxxl);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:14px;font-size:.84rem;color:var(--inkm);line-height:1.65">
+      <strong>🩺 Doctor's Note:</strong> ${r.clinical_notes}
+    </div>`;
+  }
+
+  const content = document.getElementById('resultsContent');
+  content.innerHTML = html;
+  content.style.display = 'block';
+}
+</script>
+{% endblock %}

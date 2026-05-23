@@ -15,6 +15,8 @@ services:
         value: admin@aarogyalink.in
       - key: ADMIN_PASSWORD
         value: Admin@2025#Secure
+      - key: OPENAI_API_KEY
+        value: your-openai-api-key-here
     disk:
       name: uploads
       mountPath: /opt/render/project/src/frontend/static/uploads
