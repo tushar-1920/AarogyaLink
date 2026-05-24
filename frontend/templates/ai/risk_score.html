@@ -1,11 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Health Risk Score — AarogyaLink{% endblock %}
 {% block extra_styles %}
-.ai-page{padding-top:calc(var(--nav-h)+40px);padding-bottom:80px;padding-left:4%;padding-right:4%;background:var(--gxxl);min-height:100vh}
+.ai-page{
+  padding-top:0;
+  padding-bottom:80px;
+  background:var(--gxxl);
+  min-height:100vh;
+}
+.ai-page-hero{
+  background:linear-gradient(135deg,#450a0a,#991b1b,#dc2626);
+  padding-top:calc(var(--nav-h) + 56px);
+  padding-bottom:48px;
+  padding-left:5%;
+  padding-right:5%;
+  margin-bottom:32px;
+  position:relative;
+  overflow:hidden;
+}
+.ai-page-hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+.ai-page-hero-inner{position:relative;z-index:1;max-width:860px}
+.ai-wrap{max-width:1000px;margin:0 auto;padding:0 4%}
 .ai-wrap{max-width:1100px;margin:0 auto}
-.ai-tag{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#fef2f2,#fecaca);border:1px solid rgba(220,38,38,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#dc2626;margin-bottom:12px}
-.ai-h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--ink);margin-bottom:6px}
-.ai-sub{font-size:.9rem;color:var(--muted);line-height:1.6;max-width:600px;margin-bottom:28px}
+.ai-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fca5a5;margin-bottom:12px}
+.ai-h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:#fff;margin-bottom:6px}
+.ai-sub{font-size:.9rem;color:rgba(255,255,255,.65);line-height:1.6;max-width:600px;margin-bottom:0}
 /* Main grid */
 .risk-grid{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start}
 /* Left: form */
@@ -74,13 +97,14 @@
 {% endblock %}
 {% block content %}
 <div class="ai-page">
-  <div class="ai-wrap">
-    <div class="reveal">
+  <div class="ai-page-hero">
+    <div class="ai-page-hero-inner reveal">
       <div class="ai-tag">❤️ Health Risk AI</div>
       <h1 class="ai-h1">Health Risk Score Calculator</h1>
       <p class="ai-sub">AI analyzes patient history, conditions, medications, and lifestyle to generate a 0–100 risk score with domain breakdowns, top risk factors, and prioritized action plan.</p>
     </div>
-
+  </div>
+  <div class="ai-wrap">
     <div class="risk-grid">
       <!-- Left: Form -->
       <div class="form-panel reveal">

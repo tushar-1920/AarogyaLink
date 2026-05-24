@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% block title %}AI Symptom Checker — AarogyaLink{% endblock %}
 {% block extra_styles %}
-.ai-page{padding-top:calc(var(--nav-h) + 40px);padding-bottom:80px;padding-left:4%;padding-right:4%;background:var(--gxxl);min-height:100vh}
-.ai-wrap{max-width:1000px;margin:0 auto}
+.ai-page{padding-top:0;padding-bottom:80px;background:var(--gxxl);min-height:100vh}
+.ai-page-hero{background:linear-gradient(135deg,#2e1065,#4c1d95,#6d28d9);padding-top:calc(var(--nav-h) + 56px);padding-bottom:48px;padding-left:5%;padding-right:5%;margin-bottom:32px;position:relative;overflow:hidden}
+.ai-page-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:44px 44px}
+.ai-page-hero-inner{position:relative;z-index:1;max-width:860px}
+.ai-wrap{max-width:1000px;margin:0 auto;padding:0 4%}
 .ai-header{margin-bottom:28px}
-.ai-tag{display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#ede9fe,#ddd6fe);border:1px solid rgba(124,58,237,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7c3aed;margin-bottom:12px}
-.ai-h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--ink);margin-bottom:6px}
-.ai-sub{font-size:.9rem;color:var(--muted);line-height:1.6;max-width:600px}
+.ai-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#c4b5fd;margin-bottom:12px}
+.ai-h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:#fff;margin-bottom:6px}
+.ai-sub{font-size:.9rem;color:rgba(255,255,255,.65);line-height:1.6;max-width:600px;margin-bottom:0}
 /* Controls row */
 .controls-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:flex-end}
 .ctrl-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:160px}
@@ -70,17 +73,18 @@
 .pc-amber{background:var(--amberl);color:var(--amber)}
 .pc-red{background:var(--redl);color:var(--red)}
 .pc-green{background:var(--gxl);color:var(--g)}
-@media(max-width:640px){.chat-msgs{height:340px}.controls-row{flex-direction:column}.msg-bubble{max-width:88%}.ai-page{padding-top:calc(var(--nav-h)+28px)}}
+@media(max-width:640px){.chat-msgs{height:340px}.controls-row{flex-direction:column}.msg-bubble{max-width:88%}}
 {% endblock %}
 {% block content %}
 <div class="ai-page">
-  <div class="ai-wrap">
-    <div class="ai-header reveal">
+  <div class="ai-page-hero">
+    <div class="ai-page-hero-inner reveal">
       <div class="ai-tag">🤖 AI-Powered</div>
       <h1 class="ai-h1">Symptom Checker Chatbot</h1>
       <p class="ai-sub">Describe symptoms in Hindi or English. AarogyaAI analyzes patient history and gives urgency assessment, possible conditions, and recommended actions.</p>
     </div>
-
+  </div>
+  <div class="ai-wrap">
     <div class="controls-row reveal">
       <div class="ctrl-group">
         <div class="ctrl-label">Select Patient (Optional)</div>
