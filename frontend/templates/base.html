@@ -112,40 +112,56 @@
     ::-webkit-scrollbar-thumb:hover{background:var(--g)}
 
     /* ══════════════ NAVBAR ══════════════ */
+    /* ── NAVBAR — always solid white by default ── */
     .navbar{
       position:fixed;top:0;left:0;right:0;z-index:9999;overflow:visible;
       height:var(--nav-h);
       min-height:var(--nav-h);
       display:flex;align-items:center;justify-content:space-between;
       padding:0 5%;
+      background:rgba(255,255,255,.97);
+      border-bottom:1px solid var(--border);
+      box-shadow:0 2px 20px rgba(0,0,0,.06);
+      transition:background .3s ease,border-color .3s ease,box-shadow .3s ease;
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+    }
+    /* On homepage only: transparent navbar over dark hero */
+    body.nav-hero .navbar{
       background:transparent;
       border-bottom:1px solid transparent;
-      transition:background .3s ease,border-color .3s ease,box-shadow .3s ease;
+      box-shadow:none;
     }
-    /* Solid on scroll */
-    .navbar.scrolled{
+    body.nav-hero .navbar.scrolled{
       background:rgba(255,255,255,.97);
       border-bottom:1px solid var(--border);
       box-shadow:0 2px 20px rgba(0,0,0,.07);
     }
-    /* Inner pages (dashboard, admin, profile) — always solid via body.nav-solid */
+    /* Homepage transparent state — white text on dark bg */
+    body.nav-hero .navbar:not(.scrolled) .nav-link{ color:rgba(255,255,255,.9); }
+    body.nav-hero .navbar:not(.scrolled) .nav-link:hover{ background:rgba(255,255,255,.15); color:#fff; }
+    body.nav-hero .navbar:not(.scrolled) .nav-link.active{ background:rgba(255,255,255,.2); color:#fff; }
+    body.nav-hero .navbar:not(.scrolled) .nav-logo-text{ color:#fff; }
+    body.nav-hero .navbar:not(.scrolled) .nav-logo-dot{ background:#fff; }
+    body.nav-hero .navbar:not(.scrolled) .btn-ghost{ color:#fff; border-color:rgba(255,255,255,.4); }
+    body.nav-hero .navbar:not(.scrolled) .btn-ghost:hover{ background:rgba(255,255,255,.15); }
+    body.nav-hero .navbar:not(.scrolled) .nav-badge{ background:rgba(255,255,255,.15); color:#fff; border-color:rgba(255,255,255,.25); }
+    body.nav-hero .navbar:not(.scrolled) .nav-hamburger span{ background:#fff; }
+    body.nav-hero .navbar:not(.scrolled) .nav-pill{ background:rgba(255,255,255,.18); color:#fff; border-color:rgba(255,255,255,.3); }
+    body.nav-hero .navbar:not(.scrolled) .nav-pill.amber{ background:rgba(255,255,255,.18); color:#fff; }
+    /* All other pages — solid dark text always */
+    .navbar .nav-link{ color:var(--inkm); }
+    .navbar .nav-link:hover{ background:var(--gxl); color:var(--g); }
+    .navbar .nav-link.active{ background:var(--gxl); color:var(--g); }
+    .navbar .nav-logo-text{ color:var(--g); }
+    .navbar .nav-logo-dot{ background:var(--g); }
+    .navbar .nav-hamburger span{ background:var(--ink); }
+    /* nav-solid kept for compatibility */
     body.nav-solid .navbar{
       background:rgba(255,255,255,.97) !important;
       border-bottom:1px solid var(--border) !important;
       box-shadow:0 2px 20px rgba(0,0,0,.07) !important;
     }
-    /* Transparent state: white text for dark hero backgrounds */
-    .navbar:not(.scrolled) .nav-link{ color:rgba(255,255,255,.9); }
-    .navbar:not(.scrolled) .nav-link:hover{ background:rgba(255,255,255,.15); color:#fff; }
-    .navbar:not(.scrolled) .nav-link.active{ background:rgba(255,255,255,.2); color:#fff; }
-    .navbar:not(.scrolled) .nav-logo-text{ color:#fff; }
-    .navbar:not(.scrolled) .nav-logo-dot{ background:#fff; }
-    .navbar:not(.scrolled) .btn-ghost{ color:#fff; border-color:rgba(255,255,255,.4); }
-    .navbar:not(.scrolled) .btn-ghost:hover{ background:rgba(255,255,255,.15); }
-    .navbar:not(.scrolled) .nav-badge{ background:rgba(255,255,255,.15); color:#fff; border-color:rgba(255,255,255,.25); }
-    .navbar:not(.scrolled) .nav-hamburger span{ background:#fff; }
-    .navbar:not(.scrolled) .nav-pill{ background:rgba(255,255,255,.18); color:#fff; border-color:rgba(255,255,255,.3); }
-    .navbar:not(.scrolled) .nav-pill.amber{ background:rgba(255,255,255,.18); color:#fff; }
     /* Solid state overrides */
     body.nav-solid .navbar .nav-link,
     .navbar.scrolled .nav-link{ color:var(--inkm); }
@@ -631,26 +647,17 @@
   </footer>
 
   <script>
-    // Navbar: transparent on hero pages, solid on scroll + inner pages
+    // Navbar: solid white on ALL pages by default
+    // Only homepage gets transparent navbar over dark hero
     const nav = document.getElementById('navbar');
-
-    // Pages with light/white backgrounds need solid dark navbar text
-    // Inner app pages: always solid
-    // Homepage (/): transparent with dark text (light background)
-    // Future dark hero pages: transparent with white text
-    const solidPages = [
-      '/dashboard', '/admin', '/patient/', '/auth/', '/scan'
-    ];
-    const isSolidPage = solidPages.some(p => window.location.pathname.startsWith(p));
-
-    // Homepage has white background — keep nav-solid so text stays dark
     const isHomepage = window.location.pathname === '/';
 
-    if (isSolidPage || isHomepage) {
-      document.body.classList.add('nav-solid');
+    if (isHomepage) {
+      // Homepage: transparent navbar over dark green hero
+      document.body.classList.add('nav-hero');
     }
 
-    // Scroll: add scrolled class after 10px
+    // Scroll: add scrolled class after 10px (used by homepage only)
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 10);
     }, {passive: true});
