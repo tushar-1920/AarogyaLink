@@ -544,8 +544,8 @@
    RESPONSIVE — TABLET
 ═══════════════════════════════════════════════ */
 @media(max-width:960px){
-  .hero-inner{grid-template-columns:1fr;gap:40px;text-align:left}
-  .hcard{max-width:420px;margin:0 auto}.card-orbit,.fb3,.card-aura{display:none}
+  .hero-inner{grid-template-columns:1fr;gap:32px;text-align:left;display:flex;flex-direction:column}
+  .hero-card-wrap{display:none}
   .steps-timeline{grid-template-columns:1fr 1fr;gap:28px}.steps-timeline::before{display:none}
   .features-grid,.roles-grid{grid-template-columns:1fr 1fr}
   .impact-grid,.numbers-row{grid-template-columns:1fr}
@@ -1020,6 +1020,84 @@
           <div>
             <div class="impact-name">Pushpa Devi</div>
             <div class="impact-role">ASHA Worker, Bhullar Village, Muktsar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════ HINDI SECTION ═══════════════ -->
+<section class="section" style="background:linear-gradient(135deg,#030d07,#071a0f 40%,#0a2414);color:#fff;padding:80px 5%">
+  <div class="sw">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;max-width:1120px;margin:0 auto">
+      <div class="reveal">
+        <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4ade80;margin-bottom:18px">
+          🇮🇳 हिंदी में AarogyaLink
+        </div>
+        <h2 style="font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:18px;letter-spacing:-.02em">
+          हर मरीज़ की कहानी,<br>
+          <span style="background:linear-gradient(135deg,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Noto Serif',serif;font-style:italic">हमेशा उनके साथ।</span>
+        </h2>
+        <p style="font-size:.97rem;color:rgba(255,255,255,.55);line-height:1.85;margin-bottom:28px">
+          AarogyaLink हर ग्रामीण भारतीय को एक <strong style="color:rgba(255,255,255,.85)">आजीवन QR स्वास्थ्य कार्ड</strong> देता है।
+          कोई भी डॉक्टर, कहीं भी, इसे स्कैन करके पूरा मेडिकल इतिहास देख सकता है —
+          <strong style="color:rgba(255,255,255,.85)">तुरंत</strong>। कोई कागज़ नहीं। कोई परेशानी नहीं।
+        </p>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px">
+            <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🎤</div>
+            <div>
+              <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px">हिंदी में बोलकर रजिस्टर करें</div>
+              <div style="font-size:.75rem;color:rgba(255,255,255,.45)">आशा दीदी सिर्फ बोलकर मरीज़ का नाम, उम्र और गाँव भर सकती हैं</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px">
+            <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">📵</div>
+            <div>
+              <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px">इंटरनेट के बिना भी काम करता है</div>
+              <div style="font-size:.75rem;color:rgba(255,255,255,.45)">गाँव में नेटवर्क नहीं? कोई बात नहीं — डेटा बाद में sync होगा</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px">
+            <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🆓</div>
+            <div>
+              <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px">मरीज़ के लिए बिल्कुल मुफ़्त</div>
+              <div style="font-size:.75rem;color:rgba(255,255,255,.45)">QR कार्ड सिर्फ ₹3 में प्रिंट होता है — कोई छुपी फ़ीस नहीं</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px">
+            <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🔲</div>
+            <div>
+              <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px">एक QR कार्ड — पूरी ज़िंदगी</div>
+              <div style="font-size:.75rem;color:rgba(255,255,255,.45)">किसी भी PHC या अस्पताल में डॉक्टर स्कैन करके पूरा इतिहास देखें</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px">
+          <div style="font-size:.72rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px">आशा कार्यकर्ता की आवाज़</div>
+          <p style="font-size:1rem;color:rgba(255,255,255,.75);line-height:1.85;font-style:italic;margin-bottom:20px">
+            "मुझे सिर्फ फोन पे बात करनी है, फॉर्म भर देता है। हिंदी में बोलती हूँ, सब कुछ हो जाता है। गाँव में भी इंटरनेट नहीं चाहिए — यह सब से बड़ी बात है।"
+          </p>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:42px;height:42px;border-radius:50%;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:rgba(255,255,255,.8)">PD</div>
+            <div>
+              <div style="font-size:.88rem;font-weight:600;color:#fff">पुष्पा देवी</div>
+              <div style="font-size:.73rem;color:rgba(255,255,255,.4)">आशा कार्यकर्ता, भुल्लर गाँव, मुक्तसर</div>
+            </div>
+          </div>
+          <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:14px;text-align:center">
+              <div style="font-size:1.6rem;font-weight:800;color:#4ade80;font-family:'Noto Serif',serif">2 मिनट</div>
+              <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-top:3px">एक मरीज़ रजिस्टर करने में</div>
+            </div>
+            <div style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:14px;text-align:center">
+              <div style="font-size:1.6rem;font-weight:800;color:#4ade80;font-family:'Noto Serif',serif">₹0</div>
+              <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-top:3px">मरीज़ के लिए लागत</div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,64 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Create Account<script>
-let stream = null;
-
-async function openCamera() {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:320,height:320}});
-    const video = document.getElementById('cameraFeed');
-    video.srcObject = stream;
-    video.style.display = 'block';
-    document.getElementById('openCamBtn').style.display = 'none';
-    document.getElementById('captureBtn').style.display = 'inline-flex';
-    document.getElementById('camNote').textContent = 'Position your face clearly in the frame, then click Capture Photo.';
-  } catch(e) {
-    document.getElementById('camNote').textContent = '⚠️ Camera access denied. Please allow camera permission and try again.';
-  }
-}
-
-function capturePhoto() {
-  const video  = document.getElementById('cameraFeed');
-  const canvas = document.getElementById('photoCanvas');
-  canvas.width  = 320;
-  canvas.height = 320;
-  const ctx = canvas.getContext('2d');
-  // Draw circular crop
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(160,160,160,0,Math.PI*2);
-  ctx.clip();
-  ctx.drawImage(video,0,0,320,320);
-  ctx.restore();
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-  document.getElementById('photoData').value = dataUrl;
-  // Show preview
-  const preview = document.getElementById('photoPreview');
-  preview.style.backgroundImage = `url(${dataUrl})`;
-  preview.style.backgroundSize  = 'cover';
-  preview.style.backgroundPosition = 'center';
-  preview.innerHTML = '';
-  document.getElementById('photoStatus').textContent = '✅';
-  document.getElementById('photoStatus').style.background = '#22c55e';
-  // Hide camera
-  video.style.display = 'none';
-  if (stream) stream.getTracks().forEach(t => t.stop());
-  document.getElementById('captureBtn').style.display = 'none';
-  document.getElementById('retakeBtn').style.display = 'inline-flex';
-  document.getElementById('camNote').textContent = '✅ Photo captured! Will appear on your navbar profile badge.';
-}
-
-function retakePhoto() {
-  document.getElementById('photoData').value = '';
-  document.getElementById('photoPreview').style.backgroundImage = '';
-  document.getElementById('photoPreview').innerHTML = '👤';
-  document.getElementById('photoStatus').textContent = '❓';
-  document.getElementById('photoStatus').style.background = 'var(--border)';
-  document.getElementById('retakeBtn').style.display = 'none';
-  document.getElementById('openCamBtn').style.display = 'inline-flex';
-  document.getElementById('camNote').textContent = 'Take a clear selfie — this appears on your profile badge in the navbar.';
-}
-</script>
-{% endblock %}
+{% block title %}Create Account — AarogyaLink{% endblock %}
 
 {% block extra_styles %}
 .auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 56px) 5% 60px;background:linear-gradient(160deg,var(--white) 60%,var(--gxxl))}
@@ -112,6 +53,7 @@ function retakePhoto() {
 .submit-btn:hover{background:var(--gl);transform:translateY(-2px)}
 .terms-note{font-size:.72rem;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6}
 @media(max-width:640px){.form-grid,.role-grid{grid-template-columns:1fr}.auth-card{padding:22px}}
+{% endblock %}
 {% endblock %}
 
 {% block content %}
@@ -276,17 +218,66 @@ function retakePhoto() {
   </div>
 </div>
 {% endblock %}
+{% endblock %}
 
 {% block extra_js %}
 <script>
-function switchRole(role) {
-  const isDr = role === 'doctor';
-  document.getElementById('doctorFields').style.display     = isDr ? 'block' : 'none';
-  document.getElementById('ashaFields').style.display       = isDr ? 'none'  : 'block';
-  document.getElementById('doctorDocSection').classList.toggle('show', isDr);
-  document.getElementById('ashaDocSection').classList.toggle('show', !isDr);
+/* ── Live Camera Capture ── */
+let camStream = null;
+
+async function openCamera() {
+  try {
+    camStream = await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'user',width:{ideal:320},height:{ideal:320}}
+    });
+    const video = document.getElementById('cameraFeed');
+    video.srcObject = camStream;
+    video.style.display = 'block';
+    document.getElementById('openCamBtn').style.display  = 'none';
+    document.getElementById('captureBtn').style.display  = 'inline-flex';
+    document.getElementById('camNote').textContent = 'Position your face clearly, then click Capture Photo.';
+  } catch(e) {
+    document.getElementById('camNote').textContent = '⚠️ Camera access denied. Please allow camera permission and try again.';
+  }
 }
-// Init on load
-switchRole('asha');
+
+function capturePhoto() {
+  const video  = document.getElementById('cameraFeed');
+  const canvas = document.getElementById('photoCanvas');
+  canvas.width  = 320;
+  canvas.height = 320;
+  const ctx = canvas.getContext('2d');
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(160, 160, 160, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(video, 0, 0, 320, 320);
+  ctx.restore();
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  document.getElementById('photoData').value = dataUrl;
+  const preview = document.getElementById('photoPreview');
+  preview.style.backgroundImage    = `url(${dataUrl})`;
+  preview.style.backgroundSize     = 'cover';
+  preview.style.backgroundPosition = 'center';
+  preview.innerHTML = '';
+  document.getElementById('photoStatus').textContent   = '✅';
+  document.getElementById('photoStatus').style.background = '#22c55e';
+  video.style.display = 'none';
+  if (camStream) camStream.getTracks().forEach(t => t.stop());
+  document.getElementById('captureBtn').style.display  = 'none';
+  document.getElementById('retakeBtn').style.display   = 'inline-flex';
+  document.getElementById('camNote').textContent = '✅ Photo captured! This will appear on your navbar profile badge.';
+}
+
+function retakePhoto() {
+  document.getElementById('photoData').value = '';
+  document.getElementById('photoPreview').style.backgroundImage = '';
+  document.getElementById('photoPreview').innerHTML = '👤';
+  document.getElementById('photoStatus').textContent   = '❓';
+  document.getElementById('photoStatus').style.background = 'var(--border)';
+  document.getElementById('retakeBtn').style.display   = 'none';
+  document.getElementById('openCamBtn').style.display  = 'inline-flex';
+  document.getElementById('camNote').textContent = 'Take a clear selfie — this appears on your profile badge in the navbar.';
+}
 </script>
 {% endblock %}
