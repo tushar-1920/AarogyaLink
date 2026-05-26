@@ -112,6 +112,289 @@
     ::-webkit-scrollbar-thumb:hover{background:var(--g)}
 
     /* ══════════════ NAVBAR ══════════════ */
+    /* ══════════════════════════════════════
+       ADVANCED NAVBAR
+    ══════════════════════════════════════ */
+    .navbar{
+      position:fixed;top:0;left:0;right:0;
+      z-index:9999;overflow:visible;
+      height:var(--nav-h);
+      min-height:var(--nav-h);
+      display:flex;align-items:center;
+      justify-content:space-between;
+      padding:0 4%;
+      background:rgba(255,255,255,.96);
+      border-bottom:1px solid var(--border);
+      box-shadow:0 1px 0 rgba(0,0,0,.06);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      transition:background .3s,box-shadow .3s;
+    }
+    /* Shimmer line at bottom of navbar */
+    .navbar::after{
+      content:'';
+      position:absolute;bottom:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,transparent,var(--g),#4ade80,var(--g),transparent);
+      background-size:200% 100%;
+      animation:navShimmer 3s linear infinite;
+    }
+    @keyframes navShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    /* Homepage: transparent over dark hero */
+    body.nav-hero .navbar{
+      background:transparent;
+      border-bottom:1px solid transparent;
+      box-shadow:none;
+    }
+    body.nav-hero .navbar::after{opacity:0}
+    body.nav-hero .navbar.scrolled{
+      background:rgba(255,255,255,.97);
+      border-bottom:1px solid var(--border);
+      box-shadow:0 2px 20px rgba(0,0,0,.07);
+    }
+    body.nav-hero .navbar.scrolled::after{opacity:1}
+    /* Logo */
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+    .nav-logo-mark{
+      width:38px;height:38px;border-radius:11px;
+      background:linear-gradient(135deg,var(--gd),var(--g));
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;flex-shrink:0;
+      box-shadow:0 3px 10px rgba(26,107,74,.25);
+      transition:transform .2s var(--ease-spring),box-shadow .2s;
+    }
+    .nav-logo:hover .nav-logo-mark{transform:rotate(-8deg) scale(1.08);box-shadow:0 6px 16px rgba(26,107,74,.35)}
+    .nav-logo-info{}
+    .nav-logo-text{display:block;font-size:.95rem;font-weight:800;color:var(--g);line-height:1.1;letter-spacing:-.01em}
+    .nav-logo-sub{display:block;font-size:.6rem;color:var(--muted);font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+    body.nav-hero .navbar:not(.scrolled) .nav-logo-text{color:#fff}
+    body.nav-hero .navbar:not(.scrolled) .nav-logo-sub{color:rgba(255,255,255,.5)}
+    /* Nav links */
+    .nav-links{display:flex;align-items:center;gap:2px;list-style:none;flex-wrap:nowrap;overflow:visible;flex:1;justify-content:center;margin:0;padding:0}
+    .nav-link{
+      color:var(--inkm);font-size:.78rem;font-weight:500;
+      padding:6px 10px;border-radius:8px;
+      text-decoration:none;
+      transition:color .18s,background .18s;
+      white-space:nowrap;flex-shrink:0;
+      display:flex;align-items:center;gap:5px;
+      position:relative;
+    }
+    .nav-link:hover{background:var(--gxl);color:var(--g)}
+    .nav-link.active{background:var(--gxl);color:var(--g);font-weight:600}
+    .nav-link.active::after{
+      content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+      width:20px;height:2px;background:var(--g);border-radius:2px;
+    }
+    /* Hero state links */
+    body.nav-hero .navbar:not(.scrolled) .nav-link{color:rgba(255,255,255,.85)}
+    body.nav-hero .navbar:not(.scrolled) .nav-link:hover{background:rgba(255,255,255,.12);color:#fff}
+    body.nav-hero .navbar:not(.scrolled) .nav-link.active{background:rgba(255,255,255,.18);color:#fff}
+    /* Nav pill */
+    .nav-pill{
+      display:inline-flex;align-items:center;gap:5px;
+      font-size:.75rem;font-weight:600;
+      padding:5px 11px;border-radius:20px;
+      background:var(--gxl);color:var(--g);
+      border:1px solid rgba(26,107,74,.2);
+      text-decoration:none;white-space:nowrap;
+      transition:all .18s;
+    }
+    .nav-pill:hover{background:var(--g);color:#fff;border-color:var(--g)}
+    .nav-pill.amber{background:var(--amberl);color:var(--amber);border-color:rgba(180,83,9,.2)}
+    .nav-pill.amber:hover{background:var(--amber);color:#fff}
+    .pill-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .pill-dot.green{background:#22c55e;animation:pulse 2s infinite}
+    .pill-dot.amber{background:var(--amber);animation:pulse 2s infinite}
+    /* Nav right section */
+    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    /* Search button */
+    .nav-search-btn{
+      width:34px;height:34px;border-radius:9px;
+      background:var(--gxxl);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;font-size:.9rem;color:var(--muted);
+      transition:all .15s;flex-shrink:0;
+    }
+    .nav-search-btn:hover{background:var(--gxl);color:var(--g);border-color:rgba(26,107,74,.2)}
+    /* Search overlay */
+    .search-overlay{
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+      z-index:99998;display:none;align-items:flex-start;justify-content:center;
+      padding-top:calc(var(--nav-h) + 20px);
+    }
+    .search-overlay.open{display:flex}
+    .search-box{
+      background:var(--card);border-radius:18px;
+      padding:20px;width:100%;max-width:580px;
+      box-shadow:0 24px 80px rgba(0,0,0,.3);
+      border:1px solid var(--border);
+    }
+    .sb-input-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .sb-icon{font-size:1.1rem;color:var(--muted)}
+    .sb-input{flex:1;border:none;background:none;font-family:'Sora',sans-serif;font-size:1.05rem;color:var(--ink);outline:none}
+    .sb-input::placeholder{color:var(--muted)}
+    .sb-close{background:var(--gxxl);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:.78rem;font-weight:600;color:var(--muted);cursor:pointer}
+    .sb-results{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
+    .sb-result{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:11px;text-decoration:none;transition:background .15s}
+    .sb-result:hover{background:var(--gxl)}
+    .sb-res-av{width:36px;height:36px;border-radius:50%;background:var(--gxl);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--g);flex-shrink:0}
+    .sb-res-name{font-size:.88rem;font-weight:700;color:var(--ink)}
+    .sb-res-info{font-size:.75rem;color:var(--muted)}
+    .sb-empty{text-align:center;padding:24px;font-size:.88rem;color:var(--muted)}
+    /* Profile dropdown */
+    .nav-profile{position:relative;flex-shrink:0}
+    .nav-profile-btn{
+      display:flex;align-items:center;gap:8px;
+      padding:5px 10px 5px 5px;
+      border-radius:12px;border:1px solid var(--border);
+      background:var(--card);cursor:pointer;
+      transition:all .18s;
+    }
+    .nav-profile-btn:hover{border-color:rgba(26,107,74,.3);background:var(--gxxl)}
+    .npb-av{
+      width:30px;height:30px;border-radius:50%;
+      object-fit:cover;flex-shrink:0;
+      border:2px solid rgba(26,107,74,.2);
+    }
+    .npb-av-fallback{
+      width:30px;height:30px;border-radius:50%;
+      background:linear-gradient(135deg,var(--gxl),var(--g));
+      display:flex;align-items:center;justify-content:center;
+      font-size:.75rem;font-weight:800;color:#fff;flex-shrink:0;
+      border:2px solid rgba(26,107,74,.2);
+    }
+    .npb-info{display:flex;flex-direction:column;line-height:1.2}
+    .npb-name{font-size:.78rem;font-weight:700;color:var(--ink)}
+    .npb-role{font-size:.62rem;color:var(--muted);font-weight:500}
+    .npb-arrow{font-size:.65rem;color:var(--muted);transition:transform .2s}
+    .nav-profile:hover .npb-arrow,.nav-profile.open .npb-arrow{transform:rotate(180deg)}
+    /* Profile menu */
+    .nav-profile-menu{
+      position:absolute;top:calc(100% + 8px);right:0;
+      background:var(--card);border:1px solid var(--border);
+      border-radius:16px;padding:8px;min-width:200px;
+      box-shadow:0 20px 60px rgba(0,0,0,.15);
+      z-index:99999;
+      opacity:0;visibility:hidden;transform:translateY(-6px);
+      transition:all .2s;
+    }
+    .nav-profile:hover .nav-profile-menu{opacity:1;visibility:visible;transform:translateY(0)}
+    .npm-header{padding:10px 12px 10px;border-bottom:1px solid var(--borderl);margin-bottom:6px}
+    .npm-name{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:2px}
+    .npm-email{font-size:.72rem;color:var(--muted)}
+    .npm-item{
+      display:flex;align-items:center;gap:9px;
+      padding:9px 12px;border-radius:9px;
+      text-decoration:none;font-size:.83rem;
+      color:var(--inkm);font-weight:500;
+      transition:background .15s;cursor:pointer;
+    }
+    .npm-item:hover{background:var(--gxl);color:var(--g)}
+    .npm-item.danger{color:var(--red)}
+    .npm-item.danger:hover{background:var(--redl)}
+    .npm-div{height:1px;background:var(--borderl);margin:4px 0}
+    .npm-ico{font-size:1rem;flex-shrink:0;width:18px;text-align:center}
+    /* Nav buttons */
+    .btn-primary{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:8px 16px;border-radius:10px;
+      background:linear-gradient(135deg,var(--gd),var(--g));
+      color:#fff;font-family:'Sora',sans-serif;font-size:.8rem;font-weight:700;
+      text-decoration:none;
+      box-shadow:0 3px 12px rgba(26,107,74,.3);
+      transition:transform .18s,box-shadow .18s;
+      white-space:nowrap;
+    }
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,107,74,.4)}
+    .btn-ghost{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:7px 14px;border-radius:10px;
+      background:transparent;color:var(--inkm);
+      border:1px solid var(--border);
+      font-family:'Sora',sans-serif;font-size:.8rem;font-weight:600;
+      text-decoration:none;transition:all .18s;white-space:nowrap;
+    }
+    .btn-ghost:hover{border-color:var(--g);color:var(--g);background:var(--gxl)}
+    body.nav-hero .navbar:not(.scrolled) .btn-ghost{color:#fff;border-color:rgba(255,255,255,.4)}
+    body.nav-hero .navbar:not(.scrolled) .btn-ghost:hover{background:rgba(255,255,255,.15)}
+    /* Hamburger */
+    .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
+    .nav-hamburger span{display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:all .3s}
+    .nav-hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+    .nav-hamburger.open span:nth-child(2){opacity:0}
+    .nav-hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+    body.nav-hero .navbar:not(.scrolled) .nav-hamburger span{background:#fff}
+    /* nav-solid compat */
+    body.nav-solid .navbar{background:rgba(255,255,255,.97)!important;border-bottom:1px solid var(--border)!important}
+
+        /* ── AI Tools Dropdown ── */
+    .nav-dropdown{position:relative;list-style:none;display:flex;align-items:center}
+    .ai-nav-btn{cursor:pointer;user-select:none;display:flex;align-items:center;gap:4px}
+    .nav-drop-menu{
+      position:absolute;
+      top:calc(100% + 10px);
+      left:50%;
+      margin-left:-115px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:8px;
+      box-shadow:0 20px 60px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.05);
+      min-width:230px;
+      z-index:99999;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(-6px);
+      transition:opacity .2s ease,transform .2s ease,visibility .2s;
+    }
+    .nav-dropdown:hover .nav-drop-menu{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0);
+    }
+    .ndm-item{
+      display:flex;align-items:center;gap:11px;
+      padding:10px 12px;border-radius:10px;text-decoration:none;
+      transition:background .15s;
+      min-height:0;
+    }
+    .ndm-item:hover{background:var(--gxxl)}
+    .ndm-item.active{background:var(--gxl)}
+    .ndm-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+    .ndm-title{font-size:.82rem;font-weight:700;color:var(--ink);margin-bottom:1px}
+    .ndm-sub{font-size:.7rem;color:var(--muted)}
+    /* Dropdown arrow indicator */
+    .nav-drop-menu::before{
+      content:'';position:absolute;top:-6px;left:50%;margin-left:-6px;
+      width:12px;height:12px;background:var(--card);
+      border-left:1px solid var(--border);border-top:1px solid var(--border);
+      transform:rotate(45deg);
+    }
+
+    /* ── Global mobile utilities ── */
+    img{max-width:100%;height:auto}
+    table{width:100%;overflow-x:auto;display:block}
+    input,select,textarea,button{
+      -webkit-appearance:none;
+      -moz-appearance:none;
+      touch-action:manipulation;
+    }
+    /* Prevent text overflow everywhere */
+    *{word-break:break-word}
+    /* Tap target minimum size */
+    a,button{min-height:36px;display:inline-flex;align-items:center}
+    a.nav-link,a.nav-pill{min-height:auto}
+
+    body{font-family:'Sora',sans-serif;background:var(--white);color:var(--ink);line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar{width:4px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--g)}
+
+    /* ══════════════ NAVBAR ══════════════ */
     /* ── NAVBAR — always solid white by default ── */
     .navbar{
       position:fixed;top:0;left:0;right:0;z-index:9999;overflow:visible;
@@ -377,19 +660,37 @@
 <body>
 
   <!-- ══════════════ NAVBAR ══════════════ -->
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay" onclick="if(event.target===this)closeSearch()">
+    <div class="search-box">
+      <div class="sb-input-row">
+        <span class="sb-icon">🔍</span>
+        <input type="text" class="sb-input" id="searchInput" placeholder="Search patients by name, ID, village..." oninput="doSearch(this.value)" autocomplete="off">
+        <button class="sb-close" onclick="closeSearch()">ESC</button>
+      </div>
+      <div class="sb-results" id="searchResults">
+        <div class="sb-empty">Type to search patients...</div>
+      </div>
+    </div>
+  </div>
+
   <nav class="navbar" id="navbar">
+    <!-- Logo -->
     <a href="{{ url_for('main.index') }}" class="nav-logo">
       <div class="nav-logo-mark">🌿</div>
-      <span class="nav-logo-text">AarogyaLink</span>
-      <div class="nav-logo-dot"></div>
+      <div class="nav-logo-info">
+        <span class="nav-logo-text">AarogyaLink</span>
+        <span class="nav-logo-sub">Rural Health Platform</span>
+      </div>
     </a>
 
+    <!-- Nav Links -->
     <ul class="nav-links">
-      <li><a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint=='main.index' %}active{% endif %}">Home</a></li>
+      <li><a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint=='main.index' %}active{% endif %}">🏠 Home</a></li>
 
       {% if current_user.is_authenticated %}
         {% if current_user.is_asha() or current_user.is_admin() %}
-        <li><a href="{{ url_for('patient.register') }}" class="nav-link {% if request.endpoint=='patient.register' %}active{% endif %}">Register Patient</a></li>
+        <li><a href="{{ url_for('patient.register') }}" class="nav-link {% if request.endpoint=='patient.register' %}active{% endif %}">📋 Register</a></li>
         {% endif %}
         {% if current_user.is_doctor() or current_user.is_admin() %}
         <li>
@@ -398,7 +699,7 @@
           </a>
         </li>
         {% endif %}
-        <li><a href="{{ url_for('dashboard.index') }}" class="nav-link {% if 'dashboard' in (request.endpoint or '') %}active{% endif %}">Dashboard</a></li>
+        <li><a href="{{ url_for('dashboard.index') }}" class="nav-link {% if 'dashboard' in (request.endpoint or '') %}active{% endif %}">📊 Dashboard</a></li>
         {% if current_user.is_admin() %}
         <li>
           <a href="{{ url_for('admin.dashboard') }}" class="nav-pill amber {% if 'admin' in (request.endpoint or '') %}active{% endif %}">
@@ -407,31 +708,10 @@
         </li>
         {% endif %}
         {% if current_user.is_doctor() %}
-          {# Doctor online consult nav — always visible for doctors #}
-          <li>
-            <a href="{{ url_for('tele.doctor_slots') }}"
-               class="nav-link {% if request.endpoint=='tele.doctor_slots' %}active{% endif %}">
-              📅 My Slots
-            </a>
-          </li>
-          <li>
-            <a href="{{ url_for('tele.doctor_appointments') }}"
-               class="nav-link {% if request.endpoint=='tele.doctor_appointments' %}active{% endif %}">
-              📋 Bookings
-            </a>
-          </li>
-          <li>
-            <a href="{{ url_for('tele.doctor_payment_setup') }}"
-               class="nav-link {% if request.endpoint=='tele.doctor_payment_setup' %}active{% endif %}">
-              💳 Payment
-            </a>
-          </li>
-          {# AI Tools dropdown for doctors #}
+          <li><a href="{{ url_for('tele.doctor_slots') }}" class="nav-link {% if request.endpoint=='tele.doctor_slots' %}active{% endif %}">📅 Slots</a></li>
+          <li><a href="{{ url_for('tele.doctor_appointments') }}" class="nav-link {% if request.endpoint=='tele.doctor_appointments' %}active{% endif %}">📋 Bookings</a></li>
           <li class="nav-dropdown">
-            <a href="{{ url_for('ai.symptom_checker') }}"
-               class="nav-link ai-nav-btn {% if 'ai.' in (request.endpoint or '') %}active{% endif %}">
-              🤖 AI Tools ▾
-            </a>
+            <a class="nav-link ai-nav-btn {% if 'ai.' in (request.endpoint or '') %}active{% endif %}">🤖 AI <span style="font-size:.6rem;opacity:.7">▾</span></a>
             <div class="nav-drop-menu">
               <a href="{{ url_for('ai.symptom_checker') }}" class="ndm-item {% if request.endpoint=='ai.symptom_checker' %}active{% endif %}">
                 <div class="ndm-ico" style="background:#ede9fe">🧠</div>
@@ -439,85 +719,92 @@
               </a>
               <a href="{{ url_for('ai.drug_checker') }}" class="ndm-item {% if request.endpoint=='ai.drug_checker' %}active{% endif %}">
                 <div class="ndm-ico" style="background:#fef3c7">💊</div>
-                <div><div class="ndm-title">Drug Interaction</div><div class="ndm-sub">Check medicine conflicts</div></div>
+                <div><div class="ndm-title">Drug Interaction</div><div class="ndm-sub">Check conflicts</div></div>
               </a>
               <a href="{{ url_for('ai.risk_score_page') }}" class="ndm-item {% if request.endpoint=='ai.risk_score_page' %}active{% endif %}">
                 <div class="ndm-ico" style="background:#fef2f2">❤️</div>
-                <div><div class="ndm-title">Health Risk Score</div><div class="ndm-sub">0–100 risk calculator</div></div>
+                <div><div class="ndm-title">Risk Score</div><div class="ndm-sub">0–100 calculator</div></div>
               </a>
             </div>
           </li>
+          <li><a href="{{ url_for('tele.doctor_payment_setup') }}" class="nav-link {% if request.endpoint=='tele.doctor_payment_setup' %}active{% endif %}">💳 Payment</a></li>
         {% endif %}
-        {# AI Tools for ASHA workers too #}
         {% if current_user.is_asha() %}
           <li class="nav-dropdown">
-            <a href="{{ url_for('ai.symptom_checker') }}"
-               class="nav-link ai-nav-btn {% if 'ai.' in (request.endpoint or '') %}active{% endif %}">
-              🤖 AI Tools ▾
-            </a>
+            <a class="nav-link ai-nav-btn {% if 'ai.' in (request.endpoint or '') %}active{% endif %}">🤖 AI <span style="font-size:.6rem;opacity:.7">▾</span></a>
             <div class="nav-drop-menu">
-              <a href="{{ url_for('ai.symptom_checker') }}" class="ndm-item">
-                <div class="ndm-ico" style="background:#ede9fe">🧠</div>
-                <div><div class="ndm-title">Symptom Checker</div><div class="ndm-sub">Hindi/English AI chat</div></div>
-              </a>
-              <a href="{{ url_for('ai.risk_score_page') }}" class="ndm-item">
-                <div class="ndm-ico" style="background:#fef2f2">❤️</div>
-                <div><div class="ndm-title">Health Risk Score</div><div class="ndm-sub">0–100 risk calculator</div></div>
-              </a>
+              <a href="{{ url_for('ai.symptom_checker') }}" class="ndm-item"><div class="ndm-ico" style="background:#ede9fe">🧠</div><div><div class="ndm-title">Symptom Checker</div><div class="ndm-sub">Hindi/English</div></div></a>
+              <a href="{{ url_for('ai.risk_score_page') }}" class="ndm-item"><div class="ndm-ico" style="background:#fef2f2">❤️</div><div><div class="ndm-title">Risk Score</div><div class="ndm-sub">0–100 calculator</div></div></a>
             </div>
           </li>
         {% endif %}
-        {# Consult only for NON-doctors (patients / ASHA / admin) #}
         {% if not current_user.is_doctor() %}
-        <li>
-          <a href="{{ url_for('tele.find_doctors') }}"
-             class="nav-pill {% if 'tele' in (request.endpoint or '') %}active{% endif %}"
-             style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">
-            🩺 Consult
-          </a>
-        </li>
+        <li><a href="{{ url_for('tele.find_doctors') }}" class="nav-pill {% if 'tele' in (request.endpoint or '') %}active{% endif %}" style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">🩺 Consult</a></li>
         {% endif %}
       {% elif session.get('op_id') %}
-        {# Online patient session — show patient nav #}
-        <li>
-          <a href="{{ url_for('tele.find_doctors') }}"
-             class="nav-pill {% if request.endpoint=='tele.find_doctors' %}active{% endif %}"
-             style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">
-            🩺 Consult
-          </a>
-        </li>
-        <li><a href="{{ url_for('tele.my_appointments') }}" class="nav-link {% if request.endpoint=='tele.my_appointments' %}active{% endif %}">📋 My Appointments</a></li>
-        <li><a href="{{ url_for('tele.patient_messages') }}" class="nav-link {% if request.endpoint=='tele.patient_messages' %}active{% endif %}">💬 Messages</a></li>
+        <li><a href="{{ url_for('tele.find_doctors') }}" class="nav-pill" style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">🩺 Consult</a></li>
+        <li><a href="{{ url_for('tele.my_appointments') }}" class="nav-link">📋 Appointments</a></li>
+        <li><a href="{{ url_for('tele.patient_messages') }}" class="nav-link">💬 Messages</a></li>
       {% else %}
-        {# Not logged in — show Consult always #}
-        <li><a href="#how-it-works" class="nav-link">How it works</a></li>
-        <li><a href="#features" class="nav-link">Features</a></li>
-        <li>
-          <a href="{{ url_for('tele.find_doctors') }}"
-             class="nav-pill {% if 'tele' in (request.endpoint or '') %}active{% endif %}"
-             style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">
-            🩺 Consult
-          </a>
-        </li>
+        <li><a href="{{ url_for('pages.how_it_works') }}" class="nav-link">How it works</a></li>
+        <li><a href="{{ url_for('pages.features') }}" class="nav-link">Features</a></li>
+        <li><a href="{{ url_for('tele.find_doctors') }}" class="nav-pill" style="background:var(--bluel);color:var(--blue);border-color:rgba(29,78,216,.2)">🩺 Consult</a></li>
       {% endif %}
     </ul>
 
-    <div class="nav-cta">
+    <!-- Right: Search + Profile/CTA -->
+    <div class="nav-right">
       {% if current_user.is_authenticated %}
-        {% if current_user.is_doctor() %}<span class="nav-badge badge-doctor">🩺 Doctor</span>
-        {% elif current_user.is_asha() %}<span class="nav-badge badge-asha">👩‍⚕️ ASHA</span>
-        {% elif current_user.is_admin() %}<span class="nav-badge badge-admin">⚙️ Admin</span>{% endif %}
-        <a href="{{ url_for('auth.logout') }}" class="btn-ghost">Sign out</a>
+        <!-- Search button -->
+        <button class="nav-search-btn" onclick="openSearch()" title="Search patients">🔍</button>
+
+        <!-- Profile dropdown with photo -->
+        <div class="nav-profile" id="navProfile">
+          <div class="nav-profile-btn" onclick="this.closest('.nav-profile').classList.toggle('open')">
+            {% if current_user.photo_path %}
+              <img src="{{ url_for('static', filename=current_user.photo_path) }}"
+                   class="npb-av" alt="{{ current_user.name }}"
+                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="npb-av-fallback" style="display:none">{{ current_user.name[:2].upper() }}</div>
+            {% else %}
+              <div class="npb-av-fallback">{{ current_user.name[:2].upper() }}</div>
+            {% endif %}
+            <div class="npb-info">
+              <span class="npb-name">{{ current_user.name.split()[0] }}</span>
+              <span class="npb-role">
+                {% if current_user.is_doctor() %}Doctor
+                {% elif current_user.is_asha() %}ASHA Worker
+                {% else %}Admin{% endif %}
+              </span>
+            </div>
+            <span class="npb-arrow">▾</span>
+          </div>
+          <div class="nav-profile-menu">
+            <div class="npm-header">
+              <div class="npm-name">{{ current_user.name }}</div>
+              <div class="npm-email">{{ current_user.email }}</div>
+            </div>
+            <a href="{{ url_for('dashboard.index') }}" class="npm-item"><span class="npm-ico">📊</span> Dashboard</a>
+            {% if current_user.is_doctor() %}
+            <a href="{{ url_for('tele.doctor_payment_setup') }}" class="npm-item"><span class="npm-ico">💳</span> Payment Setup</a>
+            {% endif %}
+            <div class="npm-div"></div>
+            <a href="{{ url_for('auth.logout') }}" class="npm-item danger"><span class="npm-ico">🚪</span> Sign Out</a>
+          </div>
+        </div>
+
       {% elif session.get('op_id') %}
-        {# Online patient is signed in via session #}
-        <span class="nav-badge" style="background:#dbeafe;color:#1d4ed8;border:1px solid rgba(29,78,216,.15)">👤 Patient</span>
-        <a href="{{ url_for('tele.patient_messages') }}" class="btn-ghost" style="font-size:.8rem">💬 Messages</a>
-        <a href="{{ url_for('tele.my_appointments') }}" class="btn-ghost" style="font-size:.8rem">📋 Bookings</a>
-        <a href="{{ url_for('tele.op_logout') }}" class="btn-ghost">Sign out</a>
+        <span style="font-size:.75rem;font-weight:600;color:var(--blue);background:var(--bluel);padding:5px 11px;border-radius:20px;border:1px solid rgba(29,78,216,.15)">👤 Patient</span>
+        <a href="{{ url_for('tele.op_logout') }}" class="btn-ghost" style="font-size:.78rem">Sign out</a>
       {% else %}
-        <a href="{{ url_for('auth.login') }}" class="btn-ghost" style="font-size:.8rem">Staff Login</a>
-        <a href="{{ url_for('tele.op_register') }}" class="btn-primary"><span>Consult a Doctor</span><span>→</span></a>
+        <a href="{{ url_for('auth.login') }}" class="btn-ghost">Staff Login</a>
+        <a href="{{ url_for('tele.op_register') }}" class="btn-primary">🩺 Consult a Doctor →</a>
       {% endif %}
+
+      <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
     </div>
 
     <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
@@ -647,20 +934,64 @@
   </footer>
 
   <script>
-    // Navbar: solid white on ALL pages by default
-    // Only homepage gets transparent navbar over dark hero
     const nav = document.getElementById('navbar');
     const isHomepage = window.location.pathname === '/';
-
-    if (isHomepage) {
-      // Homepage: transparent navbar over dark green hero
-      document.body.classList.add('nav-hero');
-    }
-
-    // Scroll: add scrolled class after 10px (used by homepage only)
+    if (isHomepage) document.body.classList.add('nav-hero');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 10);
     }, {passive: true});
+
+    // Close profile menu on outside click
+    document.addEventListener('click', e => {
+      const profile = document.getElementById('navProfile');
+      if (profile && !profile.contains(e.target)) {
+        profile.classList.remove('open');
+      }
+    });
+
+    // Global Patient Search
+    let searchTimeout;
+    function openSearch() {
+      document.getElementById('searchOverlay').classList.add('open');
+      setTimeout(() => document.getElementById('searchInput').focus(), 100);
+    }
+    function closeSearch() {
+      document.getElementById('searchOverlay').classList.remove('open');
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchResults').innerHTML = '<div class="sb-empty">Type to search patients...</div>';
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeSearch();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    });
+    async function doSearch(q) {
+      clearTimeout(searchTimeout);
+      if (!q.trim()) {
+        document.getElementById('searchResults').innerHTML = '<div class="sb-empty">Type to search patients...</div>';
+        return;
+      }
+      searchTimeout = setTimeout(async () => {
+        try {
+          const r = await fetch(`/patient/search?q=${encodeURIComponent(q)}&format=json`);
+          const d = await r.json();
+          const res = document.getElementById('searchResults');
+          if (!d.patients || d.patients.length === 0) {
+            res.innerHTML = '<div class="sb-empty">No patients found</div>';
+            return;
+          }
+          res.innerHTML = d.patients.slice(0,6).map(p => `
+            <a href="/patient/${p.id}" class="sb-result" onclick="closeSearch()">
+              <div class="sb-res-av">${p.name.charAt(0)}</div>
+              <div>
+                <div class="sb-res-name">${p.name}</div>
+                <div class="sb-res-info">${p.id} · ${p.village || ''} · ${p.age || ''}y · ${p.blood_group || ''}</div>
+              </div>
+            </a>`).join('');
+        } catch(e) {
+          document.getElementById('searchResults').innerHTML = '<div class="sb-empty">Search unavailable</div>';
+        }
+      }, 300);
+    }
 
     // Hamburger
     const hb = document.getElementById('hamburger');

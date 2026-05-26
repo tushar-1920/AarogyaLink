@@ -22,6 +22,27 @@ def save_doc(file_obj, subfolder, user_id, suffix):
     return f"uploads/{subfolder}/{filename}"
 
 
+def save_base64_photo(b64_data, subfolder, user_id):
+    """Save base64 photo data from live camera capture."""
+    import base64, re as _re
+    if not b64_data:
+        return None
+    try:
+        # Strip data URL prefix if present
+        b64_data = _re.sub(r'^data:image/\w+;base64,', '', b64_data)
+        img_bytes = base64.b64decode(b64_data)
+        upload_dir = os.path.join(current_app.static_folder, "uploads", subfolder)
+        os.makedirs(upload_dir, exist_ok=True)
+        filename  = f"{user_id}_photo.jpg"
+        full_path = os.path.join(upload_dir, filename)
+        with open(full_path, 'wb') as f:
+            f.write(img_bytes)
+        return f"uploads/{subfolder}/{filename}"
+    except Exception as e:
+        print(f"[Photo save error] {e}")
+        return None
+
+
 @auth_bp.route("/auth/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
