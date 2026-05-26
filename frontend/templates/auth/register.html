@@ -70,6 +70,7 @@
       <p class="auth-sub">Already registered? <a href="{{ url_for('auth.login') }}">Sign in here</a></p>
 
       <form method="POST" action="{{ url_for('auth.register') }}" enctype="multipart/form-data" id="regForm">
+        <input type="hidden" name="photo_data" id="photoData">
 
         <!-- Step 1: Role -->
         <div class="sec-label">👤 I am a...</div>
@@ -96,7 +97,29 @@
           </div>
         </div>
 
-        <!-- Step 2: Personal info -->
+        <!-- Live Photo Capture -->
+        <div class="sec-label">📸 Profile Photo</div>
+        <div style="background:var(--gxxl);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:22px">
+          <div style="font-size:.76rem;color:var(--muted);margin-bottom:14px">Your photo appears on your navbar profile badge after login</div>
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+            <div style="position:relative;flex-shrink:0">
+              <div id="photoPreview" style="width:76px;height:76px;border-radius:50%;background:var(--gxl);border:3px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:1.8rem;overflow:hidden;background-size:cover;background-position:center">👤</div>
+              <div id="photoStatus" style="position:absolute;bottom:0;right:0;width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.6rem;border:2px solid var(--card)">❓</div>
+            </div>
+            <div style="flex:1;min-width:160px">
+              <video id="cameraFeed" autoplay playsinline muted style="display:none;width:100%;max-width:220px;border-radius:10px;border:1.5px solid var(--border);margin-bottom:8px"></video>
+              <canvas id="photoCanvas" style="display:none"></canvas>
+              <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:7px">
+                <button type="button" id="openCamBtn" onclick="openCamera()" style="padding:7px 14px;border-radius:9px;background:var(--g);border:none;color:#fff;font-family:Sora,sans-serif;font-size:.8rem;font-weight:700;cursor:pointer">📷 Open Camera</button>
+                <button type="button" id="captureBtn" onclick="capturePhoto()" style="display:none;padding:7px 14px;border-radius:9px;background:var(--gd);border:none;color:#fff;font-family:Sora,sans-serif;font-size:.8rem;font-weight:700;cursor:pointer">✅ Capture</button>
+                <button type="button" id="retakeBtn" onclick="retakePhoto()" style="display:none;padding:7px 12px;border-radius:9px;background:var(--gxxl);border:1px solid var(--border);color:var(--inkm);font-family:Sora,sans-serif;font-size:.8rem;font-weight:600;cursor:pointer">🔄 Retake</button>
+              </div>
+              <div id="camNote" style="font-size:.72rem;color:var(--muted);line-height:1.5">Take a clear selfie — appears on your navbar profile badge.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal info -->
         <div class="sec-label">📋 Personal Information</div>
         <div class="form-grid">
           <div class="form-group full">
@@ -153,7 +176,7 @@
           </div>
         </div>
 
-        <!-- ASHA Aadhar number -->
+        <!-- ASHA fields -->
         <div id="ashaFields">
           <div class="sec-label" style="margin-top:4px">🪪 Identity</div>
           <div class="form-grid">
@@ -182,7 +205,7 @@
         <div class="doc-section" id="doctorDocSection">
           <div class="doc-info-box">
             <strong>📋 Doctor Documents Required:</strong><br>
-            All three documents are required for verification. Admin will review them before granting access. Upload clear, legible scans or photos.
+            All three documents are required for verification. Admin will review them before granting access.
           </div>
           <div class="doc-upload-row">
             <label class="doc-label">Aadhar Card <span class="doc-req">(Required)</span></label>
@@ -220,30 +243,49 @@
 
 {% block extra_js %}
 <script>
+/* ── Role Switcher ── */
+function switchRole(role) {
+  const isDoctor = role === 'doctor';
+
+  // Show/hide doctor fields
+  document.getElementById('doctorFields').style.display    = isDoctor ? 'block' : 'none';
+  document.getElementById('ashaFields').style.display      = isDoctor ? 'none'  : 'block';
+
+  // Show/hide document sections
+  document.getElementById('ashaDocSection').style.display   = isDoctor ? 'none'  : 'block';
+  document.getElementById('doctorDocSection').style.display  = isDoctor ? 'block' : 'none';
+
+  // Update ashaDocSection class
+  document.getElementById('ashaDocSection').className   = isDoctor ? 'doc-section' : 'doc-section show';
+  document.getElementById('doctorDocSection').className  = isDoctor ? 'doc-section show' : 'doc-section';
+}
+
+// Run on load to set correct initial state
+switchRole('asha');
+
 /* ── Live Camera Capture ── */
 let camStream = null;
 
 async function openCamera() {
   try {
     camStream = await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:'user',width:{ideal:320},height:{ideal:320}}
+      video: {facingMode: 'user', width: {ideal: 320}, height: {ideal: 320}}
     });
     const video = document.getElementById('cameraFeed');
     video.srcObject = camStream;
     video.style.display = 'block';
     document.getElementById('openCamBtn').style.display  = 'none';
-    document.getElementById('captureBtn').style.display  = 'inline-flex';
-    document.getElementById('camNote').textContent = 'Position your face clearly, then click Capture Photo.';
+    document.getElementById('captureBtn').style.display  = 'inline-block';
+    document.getElementById('camNote').textContent = 'Position your face clearly, then click Capture.';
   } catch(e) {
-    document.getElementById('camNote').textContent = '⚠️ Camera access denied. Please allow camera permission and try again.';
+    document.getElementById('camNote').textContent = '⚠️ Camera access denied. Please allow camera and try again.';
   }
 }
 
 function capturePhoto() {
   const video  = document.getElementById('cameraFeed');
   const canvas = document.getElementById('photoCanvas');
-  canvas.width  = 320;
-  canvas.height = 320;
+  canvas.width = 320; canvas.height = 320;
   const ctx = canvas.getContext('2d');
   ctx.save();
   ctx.beginPath();
@@ -258,24 +300,24 @@ function capturePhoto() {
   preview.style.backgroundSize     = 'cover';
   preview.style.backgroundPosition = 'center';
   preview.innerHTML = '';
-  document.getElementById('photoStatus').textContent   = '✅';
+  document.getElementById('photoStatus').textContent      = '✅';
   document.getElementById('photoStatus').style.background = '#22c55e';
   video.style.display = 'none';
   if (camStream) camStream.getTracks().forEach(t => t.stop());
-  document.getElementById('captureBtn').style.display  = 'none';
-  document.getElementById('retakeBtn').style.display   = 'inline-flex';
-  document.getElementById('camNote').textContent = '✅ Photo captured! This will appear on your navbar profile badge.';
+  document.getElementById('captureBtn').style.display = 'none';
+  document.getElementById('retakeBtn').style.display  = 'inline-block';
+  document.getElementById('camNote').textContent = '✅ Photo captured! Will appear on your navbar profile badge.';
 }
 
 function retakePhoto() {
   document.getElementById('photoData').value = '';
   document.getElementById('photoPreview').style.backgroundImage = '';
   document.getElementById('photoPreview').innerHTML = '👤';
-  document.getElementById('photoStatus').textContent   = '❓';
+  document.getElementById('photoStatus').textContent      = '❓';
   document.getElementById('photoStatus').style.background = 'var(--border)';
-  document.getElementById('retakeBtn').style.display   = 'none';
-  document.getElementById('openCamBtn').style.display  = 'inline-flex';
-  document.getElementById('camNote').textContent = 'Take a clear selfie — this appears on your profile badge in the navbar.';
+  document.getElementById('retakeBtn').style.display  = 'none';
+  document.getElementById('openCamBtn').style.display = 'inline-block';
+  document.getElementById('camNote').textContent = 'Take a clear selfie — appears on your navbar profile badge.';
 }
 </script>
 {% endblock %}

@@ -43,7 +43,7 @@ def save_base64_photo(b64_data, subfolder, user_id):
         return None
 
 
-@auth_bp.route("/auth/login", methods=["GET", "POST"])
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
@@ -71,7 +71,7 @@ def login():
     return render_template("auth/login.html")
 
 
-@auth_bp.route("/auth/register", methods=["GET", "POST"])
+@auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
@@ -142,7 +142,7 @@ def register():
     return render_template("auth/register.html")
 
 
-@auth_bp.route("/auth/logout")
+@auth_bp.route("/logout")
 @login_required
 def logout():
     logout_user()
