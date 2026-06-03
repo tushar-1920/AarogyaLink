@@ -1666,8 +1666,9 @@
         });
         const d = await r.json();
         removeBotTyping();
-        if(d.error){ addBotMsg('bot','⚠️ '+d.error); }
-        else{ addBotMsg('bot', d.reply); speak(d.reply); }
+        if(d.reply){ addBotMsg('bot', d.reply); if(!d.error) speak(d.reply); }
+        else if(d.error){ addBotMsg('bot','⚠️ '+d.error); }
+        else{ addBotMsg('bot','⚠️ Something went wrong. Please try again.'); }
       }catch(e){
         removeBotTyping();
         addBotMsg('bot','⚠️ Connection error. Please try again.');

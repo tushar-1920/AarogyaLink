@@ -17,7 +17,10 @@ OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', '')
 
 def call_gpt(messages, model="gpt-4o", max_tokens=1200, json_mode=False):
     """Call OpenAI API using urllib (no extra packages needed)."""
-    import urllib.request, json as _json
+    import urllib.request, urllib.error, json as _json
+
+    if not OPENAI_API_KEY:
+        raise RuntimeError("OPENAI_API_KEY is not set. Add it in Render Environment settings.")
     
     payload = {
         "model": model,
@@ -41,8 +44,11 @@ def call_gpt(messages, model="gpt-4o", max_tokens=1200, json_mode=False):
         with urllib.request.urlopen(req, timeout=30) as resp:
             result = _json.loads(resp.read())
             return result['choices'][0]['message']['content']
+    except urllib.error.HTTPError as e:
+        body = e.read().decode('utf-8', errors='replace')
+        raise RuntimeError(f"OpenAI HTTP {e.code}: {body[:200]}")
     except Exception as e:
-        raise RuntimeError(f"OpenAI API error: {e}")
+        raise RuntimeError(f"OpenAI API error: {type(e).__name__}: {e}")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -405,3 +411,141 @@ def batch_risk():
 
     results.sort(key=lambda x: x['score'], reverse=True)
     return jsonify({'success': True, 'patients': results})
+
+
+# ═══════════════════════════════════════════════════════════════
+#  AAROGYABOT — Advanced Voice AI Assistant
+# ═══════════════════════════════════════════════════════════════
+
+@ai_bp.route('/ai/chatbot/chat', methods=['POST'])
+def chatbot_chat():
+    """AarogyaBot — context-aware AI assistant. Privacy-first."""
+    from flask import session
+    data     = request.get_json()
+    user_msg = data.get('message', '').strip()
+    history  = data.get('history', [])
+    language = data.get('language', 'auto')
+
+    if not user_msg:
+        return jsonify({'error': 'Empty message'}), 400
+
+    # ── Determine who is asking (privacy gate) ──
+    is_staff   = current_user.is_authenticated
+    user_role  = current_user.role if is_staff else 'public'
+    user_name  = current_user.name if is_staff else 'Guest'
+
+    # ── Build patient context ONLY for authenticated staff ──
+    patient_ctx = ""
+    actions_ctx = ""
+
+    if is_staff:
+        if current_user.is_admin():
+            my_patients = Patient.query.filter_by(is_active=True).limit(50).all()
+        elif current_user.is_asha():
+            my_patients = Patient.query.filter_by(registered_by=current_user.id, is_active=True).all()
+        else:  # doctor — can access all active patients (they scan QR)
+            my_patients = Patient.query.filter_by(is_active=True).limit(50).all()
+
+        # Pending follow-ups
+        followups = []
+        for p in my_patients:
+            lv = p.last_visit()
+            if lv and lv.follow_up:
+                try:
+                    if lv.follow_up <= datetime.utcnow().date():
+                        followups.append(p.name)
+                except Exception:
+                    pass
+
+        patient_summary = []
+        for p in my_patients[:30]:
+            conds = ', '.join(p.conditions_list()) or 'None'
+            allergies = ', '.join(p.allergies_list()) or 'None'
+            patient_summary.append(
+                f"- {p.name} (ID:{p.id}, {p.age}y, {p.gender}, {p.village}): "
+                f"Conditions: {conds}; Allergies: {allergies}; Visits: {p.visit_count()}"
+            )
+
+        patient_ctx = f"""
+═══ AUTHORIZED USER DATA (PRIVATE) ═══
+You are speaking with {user_name}, a verified {user_role.upper()}.
+They have access to {len(my_patients)} patients.
+
+PATIENTS THIS USER CAN ACCESS:
+{chr(10).join(patient_summary) if patient_summary else 'No patients registered yet.'}
+
+PENDING FOLLOW-UPS TODAY: {', '.join(followups) if followups else 'None'}
+"""
+        actions_ctx = """
+ACTIONS YOU CAN SUGGEST (tell user to click):
+- Register patient → /patient/register
+- Scan QR → /scan
+- Symptom Checker → /ai/symptom-checker
+- Drug Interaction Checker → /ai/drug-checker
+- Health Risk Score → /ai/risk-score
+- Dashboard → /dashboard
+- Doctor slots → /consult/doctor/slots
+"""
+    else:
+        patient_ctx = """
+═══ PUBLIC USER (NOT LOGGED IN) ═══
+This user is NOT authenticated. You must NEVER reveal any specific patient's
+private data. You can only answer general questions about AarogyaLink,
+how it works, health information, and guide them to register or login.
+"""
+
+    # ── Language instruction ──
+    lang_map = {
+        'hi': "Respond in Hindi (Devanagari). Keep medical terms in English.",
+        'pa': "Respond in Punjabi (Gurmukhi script). Keep medical terms in English.",
+        'en': "Respond in clear, simple English.",
+        'auto': "Detect the language of the user's message (Hindi, Punjabi, or English) and respond in that SAME language. If Hindi use Devanagari, if Punjabi use Gurmukhi.",
+    }
+    lang_instruction = lang_map.get(language, lang_map['auto'])
+
+    # ── System prompt ──
+    system_prompt = f"""You are AarogyaBot 🌿 — the friendly, intelligent voice assistant for AarogyaLink, a rural health records and telemedicine platform in India.
+
+ABOUT AAROGYALINK (you know everything about it):
+- A platform giving every rural Indian a lifelong QR health card
+- ASHA workers register patients (voice in Hindi, works offline, 2 min)
+- Each patient gets a unique ID, QR code, and printable PDF health card (₹3 to print)
+- Doctors scan the QR at any hospital → see full medical history instantly
+- Doctors add visits with diagnosis, prescription, follow-up dates
+- Telemedicine: patients book video consultations with verified doctors, pay via UPI, join Jitsi video calls
+- AI Tools: Symptom Checker (Hindi/English chat), Drug Interaction Checker, Health Risk Score
+- Three roles: ASHA Worker (registers), Doctor (treats), Admin (verifies & manages)
+- DPDPA 2023 compliant, works offline, free for patients forever
+
+{patient_ctx}
+{actions_ctx}
+
+CRITICAL PRIVACY RULES:
+- If user is NOT logged in (public), NEVER reveal any real patient's name, disease, phone, or records
+- ONLY discuss patients listed in the AUTHORIZED USER DATA above
+- If asked about a patient NOT in the list, say you don't have access to that patient
+- Never expose Aadhar numbers or phone numbers
+- Keep all conversation private to this session
+
+YOUR PERSONALITY:
+- Warm, helpful, concise. Like a knowledgeable colleague.
+- Use simple language suitable for rural healthcare workers
+- For medical questions, give helpful info but always recommend consulting a doctor
+- When user wants to do something, guide them to the right page/button
+- Use occasional emojis (🌿💊📋) but don't overdo it
+
+{lang_instruction}
+
+Keep responses SHORT and conversational (2-4 sentences usually) since this is a voice chat. Only go longer if explaining something complex."""
+
+    messages = [{"role": "system", "content": system_prompt}]
+    for h in history[-8:]:
+        messages.append({"role": h['role'], "content": h['content']})
+    messages.append({"role": "user", "content": user_msg})
+
+    try:
+        reply = call_gpt(messages, max_tokens=500)
+        return jsonify({'reply': reply, 'role': user_role})
+    except Exception as e:
+        print(f"[AarogyaBot error] {e}")
+        return jsonify({'reply': f"⚠️ {str(e)}", 'error': str(e)}), 200
