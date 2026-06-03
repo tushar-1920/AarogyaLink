@@ -1389,5 +1389,324 @@
     document.querySelectorAll('.flash').forEach(el=>setTimeout(()=>el.remove(),4000));
   </script>
   {% block extra_js %}{% endblock %}
+
+  <!-- ══════════════ AAROGYABOT — Floating AI Assistant ══════════════ -->
+  <style>
+    .bot-fab{
+      position:fixed;bottom:24px;right:24px;z-index:9990;
+      width:62px;height:62px;border-radius:50%;
+      background:linear-gradient(135deg,#0f4a32,#22c55e);
+      border:1px solid rgba(74,222,128,.4);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;
+      box-shadow:0 8px 32px rgba(34,197,94,.4),0 0 0 0 rgba(74,222,128,.5);
+      transition:transform .25s var(--ease-spring),box-shadow .25s;
+      animation:botPulse 3s infinite;
+    }
+    @keyframes botPulse{
+      0%,100%{box-shadow:0 8px 32px rgba(34,197,94,.4),0 0 0 0 rgba(74,222,128,.4)}
+      50%{box-shadow:0 8px 32px rgba(34,197,94,.5),0 0 0 12px rgba(74,222,128,0)}
+    }
+    .bot-fab:hover{transform:scale(1.1) rotate(8deg)}
+    .bot-fab svg{width:32px;height:32px}
+    .bot-fab-badge{
+      position:absolute;top:-2px;right:-2px;
+      width:18px;height:18px;border-radius:50%;
+      background:#fbbf24;border:2px solid #fff;
+      display:flex;align-items:center;justify-content:center;
+      font-size:.6rem;font-weight:800;color:#7c2d12;
+    }
+    /* Chat panel */
+    .bot-panel{
+      position:fixed;bottom:24px;right:24px;z-index:99995;
+      width:380px;max-width:calc(100vw - 32px);
+      height:560px;max-height:calc(100vh - 100px);
+      background:rgba(10,21,16,.98);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(74,222,128,.2);
+      border-radius:22px;
+      box-shadow:0 24px 80px rgba(0,0,0,.55);
+      display:none;flex-direction:column;overflow:hidden;
+      transform:translateY(20px) scale(.96);opacity:0;
+      transition:transform .28s var(--ease-spring),opacity .25s;
+    }
+    .bot-panel.open{display:flex;transform:translateY(0) scale(1);opacity:1}
+    /* Header */
+    .bot-head{
+      background:linear-gradient(135deg,#0f4a32,#1a6b4a);
+      padding:16px 18px;display:flex;align-items:center;gap:12px;
+      border-bottom:1px solid rgba(74,222,128,.15);
+    }
+    .bot-head-av{
+      width:40px;height:40px;border-radius:50%;
+      background:rgba(255,255,255,.12);
+      display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+      flex-shrink:0;border:1px solid rgba(74,222,128,.3);
+    }
+    .bot-head-info{flex:1}
+    .bot-head-name{font-size:.95rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px}
+    .bot-head-status{font-size:.7rem;color:rgba(74,222,128,.8);display:flex;align-items:center;gap:5px;margin-top:1px}
+    .bot-head-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
+    .bot-head-close{
+      width:34px;height:34px;border-radius:50%;
+      background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;
+      font-size:1.1rem;cursor:pointer;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      transition:background .15s;
+    }
+    .bot-head-close:hover{background:rgba(255,255,255,.28)}
+    @media(max-width:480px){
+      .bot-head-close{width:42px;height:42px;font-size:1.4rem;background:rgba(248,113,113,.25);border:1.5px solid rgba(248,113,113,.4);color:#fff}
+      .bot-head{padding:18px}
+    }
+    /* Lang selector */
+    .bot-langs{display:flex;gap:5px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
+    .bot-lang{
+      flex:1;padding:6px;border-radius:8px;
+      background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+      font-size:.72rem;font-weight:600;color:rgba(255,255,255,.5);
+      cursor:pointer;text-align:center;transition:all .15s;
+    }
+    .bot-lang.active{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.4);color:#4ade80}
+    /* Messages */
+    .bot-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+    .bot-msg{display:flex;gap:8px;align-items:flex-start;animation:botMsgIn .3s ease}
+    @keyframes botMsgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .bot-msg.user{flex-direction:row-reverse}
+    .bot-msg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+    .bot-msg-av.bot{background:linear-gradient(135deg,#0f4a32,#22c55e)}
+    .bot-msg-av.user{background:rgba(255,255,255,.12)}
+    .bot-bubble{max-width:78%;padding:10px 13px;font-size:.85rem;line-height:1.6}
+    .bot-bubble.bot{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.12);border-radius:14px 14px 14px 4px;color:rgba(255,255,255,.85)}
+    .bot-bubble.user{background:linear-gradient(135deg,#15803d,#22c55e);border-radius:14px 14px 4px 14px;color:#fff}
+    .bot-bubble a{color:#4ade80;font-weight:600}
+    .bot-typing{display:flex;gap:4px;padding:12px 14px;background:rgba(74,222,128,.08);border-radius:14px 14px 14px 4px;width:fit-content}
+    .bot-typing span{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:botType 1.2s infinite}
+    .bot-typing span:nth-child(2){animation-delay:.2s}
+    .bot-typing span:nth-child(3){animation-delay:.4s}
+    @keyframes botType{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+    /* Quick suggestions */
+    .bot-quick{padding:8px 14px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.06)}
+    .bot-chip{padding:5px 11px;border-radius:16px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.15);font-size:.72rem;color:rgba(74,222,128,.9);cursor:pointer;white-space:nowrap;transition:all .15s}
+    .bot-chip:hover{background:rgba(74,222,128,.18)}
+    /* Input */
+    .bot-input-row{padding:12px 14px;display:flex;gap:8px;align-items:center;border-top:1px solid rgba(255,255,255,.06)}
+    .bot-mic{
+      width:40px;height:40px;border-radius:50%;flex-shrink:0;
+      background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);
+      color:#4ade80;font-size:1.1rem;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;transition:all .15s;
+    }
+    .bot-mic:hover{background:rgba(74,222,128,.2)}
+    .bot-mic.listening{background:#ef4444;border-color:#ef4444;color:#fff;animation:micPulse 1s infinite}
+    @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+    .bot-input{
+      flex:1;padding:10px 14px;border-radius:20px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+      font-family:'Sora',sans-serif;font-size:.85rem;color:#fff;outline:none;
+    }
+    .bot-input::placeholder{color:rgba(255,255,255,.3)}
+    .bot-input:focus{border-color:rgba(74,222,128,.4)}
+    .bot-send{
+      width:40px;height:40px;border-radius:50%;flex-shrink:0;
+      background:linear-gradient(135deg,#15803d,#22c55e);border:none;
+      color:#fff;font-size:1rem;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;transition:transform .15s;
+    }
+    .bot-send:hover{transform:scale(1.08)}
+    .bot-send:disabled{opacity:.5;cursor:not-allowed}
+    /* Mobile */
+    @media(max-width:480px){
+      .bot-panel{
+        width:100vw;height:100vh;max-width:100vw;max-height:100vh;
+        bottom:0;right:0;border-radius:0;
+        z-index:99999;
+      }
+      .bot-fab{bottom:18px;right:18px;width:56px;height:56px}
+      .bot-fab svg{width:28px;height:28px}
+      /* Make header sticky at top so close button always visible */
+      .bot-head{position:sticky;top:0;z-index:5}
+    }
+  </style>
+
+  <!-- Floating button -->
+  <div class="bot-fab" id="botFab" onclick="toggleBot()" title="Ask AarogyaBot">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="7" width="16" height="12" rx="4" fill="#fff" opacity=".95"/>
+      <circle cx="9" cy="13" r="1.6" fill="#15803d"/>
+      <circle cx="15" cy="13" r="1.6" fill="#15803d"/>
+      <path d="M9.5 16.5h5" stroke="#15803d" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M12 7V4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="12" cy="3" r="1.6" fill="#fff"/>
+      <path d="M4 11H2.5M20 11h1.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <div class="bot-fab-badge">AI</div>
+  </div>
+
+  <!-- Chat panel -->
+  <div class="bot-panel" id="botPanel">
+    <div class="bot-head">
+      <div class="bot-head-av">🌿</div>
+      <div class="bot-head-info">
+        <div class="bot-head-name">AarogyaBot <span style="font-size:.6rem;background:rgba(255,255,255,.2);padding:1px 6px;border-radius:8px;font-weight:600">AI</span></div>
+        <div class="bot-head-status"><span class="bot-head-dot"></span> Voice · हिंदी · ਪੰਜਾਬੀ · English</div>
+      </div>
+      <button class="bot-head-close" onclick="toggleBot()">✕</button>
+    </div>
+
+    <div class="bot-langs">
+      <div class="bot-lang active" onclick="setBotLang('auto',this)">🌐 Auto</div>
+      <div class="bot-lang" onclick="setBotLang('hi',this)">🇮🇳 हिंदी</div>
+      <div class="bot-lang" onclick="setBotLang('pa',this)">🇮🇳 ਪੰਜਾਬੀ</div>
+      <div class="bot-lang" onclick="setBotLang('en',this)">🇺🇸 Eng</div>
+    </div>
+
+    <div class="bot-msgs" id="botMsgs">
+      <div class="bot-msg">
+        <div class="bot-msg-av bot">🌿</div>
+        <div class="bot-bubble bot">
+          {% if current_user.is_authenticated %}
+          Namaste {{ current_user.name.split()[0] }}! 🌿 I'm AarogyaBot. Ask me about your patients, follow-ups, drug interactions, or anything about AarogyaLink. You can type or use the 🎤 mic in Hindi, Punjabi, or English!
+          {% else %}
+          Namaste! 🌿 I'm AarogyaBot, your AI health assistant. Ask me how AarogyaLink works, about QR health cards, video consultations, or general health questions. Type or speak in Hindi, Punjabi, or English!
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="bot-quick" id="botQuick">
+      {% if current_user.is_authenticated %}
+      <div class="bot-chip" onclick="botQuickAsk('How many follow-ups today?')">📅 Today's follow-ups</div>
+      <div class="bot-chip" onclick="botQuickAsk('How do I register a patient?')">📋 Register help</div>
+      <div class="bot-chip" onclick="botQuickAsk('आज मेरे कितने मरीज़ हैं?')">🇮🇳 मरीज़</div>
+      {% else %}
+      <div class="bot-chip" onclick="botQuickAsk('How does AarogyaLink work?')">❓ How it works</div>
+      <div class="bot-chip" onclick="botQuickAsk('How to book a video consultation?')">🎥 Consultation</div>
+      <div class="bot-chip" onclick="botQuickAsk('AarogyaLink क्या है?')">🇮🇳 हिंदी में</div>
+      {% endif %}
+    </div>
+
+    <div class="bot-input-row">
+      <button class="bot-mic" id="botMic" onclick="toggleMic()" title="Speak">🎤</button>
+      <input type="text" class="bot-input" id="botInput" placeholder="Type or speak..."
+        onkeydown="if(event.key==='Enter')botSend()">
+      <button class="bot-send" id="botSend" onclick="botSend()">➤</button>
+    </div>
+  </div>
+
+  <script>
+    let botHistory = [];
+    let botLang = 'auto';
+    let recognition = null;
+    let isListening = false;
+
+    function toggleBot(){
+      const panel = document.getElementById('botPanel');
+      const fab = document.getElementById('botFab');
+      panel.classList.toggle('open');
+      fab.style.display = panel.classList.contains('open') ? 'none' : 'flex';
+    }
+    function setBotLang(lang, el){
+      botLang = lang;
+      document.querySelectorAll('.bot-lang').forEach(b=>b.classList.remove('active'));
+      el.classList.add('active');
+      // Update speech recognition language
+      if(recognition){
+        recognition.lang = lang==='hi'?'hi-IN':lang==='pa'?'pa-IN':lang==='en'?'en-IN':'hi-IN';
+      }
+    }
+    function botQuickAsk(text){
+      document.getElementById('botInput').value = text;
+      botSend();
+    }
+    function addBotMsg(role, text){
+      const msgs = document.getElementById('botMsgs');
+      const div = document.createElement('div');
+      div.className = 'bot-msg ' + (role==='user'?'user':'');
+      const av = document.createElement('div');
+      av.className = 'bot-msg-av ' + (role==='user'?'user':'bot');
+      av.textContent = role==='user'?'👤':'🌿';
+      const bubble = document.createElement('div');
+      bubble.className = 'bot-bubble ' + (role==='user'?'user':'bot');
+      if(role==='bot'){
+        bubble.innerHTML = text
+          .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+          .replace(/\/([a-z\-\/]+)/g, m => `<a href="${m}">${m}</a>`)
+          .replace(/\n/g,'<br>');
+      } else {
+        bubble.textContent = text;
+      }
+      div.appendChild(av); div.appendChild(bubble);
+      msgs.appendChild(div);
+      msgs.scrollTop = msgs.scrollHeight;
+      botHistory.push({role: role==='user'?'user':'assistant', content: text});
+    }
+    function showBotTyping(){
+      const msgs = document.getElementById('botMsgs');
+      const div = document.createElement('div');
+      div.className='bot-msg'; div.id='botTyping';
+      div.innerHTML='<div class="bot-msg-av bot">🌿</div><div class="bot-typing"><span></span><span></span><span></span></div>';
+      msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
+    }
+    function removeBotTyping(){ document.getElementById('botTyping')?.remove(); }
+
+    async function botSend(){
+      const input = document.getElementById('botInput');
+      const msg = input.value.trim();
+      if(!msg) return;
+      input.value='';
+      document.getElementById('botSend').disabled=true;
+      document.getElementById('botQuick').style.display='none';
+      addBotMsg('user', msg);
+      showBotTyping();
+      try{
+        const r = await fetch('/ai/chatbot/chat',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({message:msg,history:botHistory.slice(-8),language:botLang})
+        });
+        const d = await r.json();
+        removeBotTyping();
+        if(d.error){ addBotMsg('bot','⚠️ '+d.error); }
+        else{ addBotMsg('bot', d.reply); speak(d.reply); }
+      }catch(e){
+        removeBotTyping();
+        addBotMsg('bot','⚠️ Connection error. Please try again.');
+      }
+      document.getElementById('botSend').disabled=false;
+    }
+
+    /* ── Voice Output (Text to Speech) ── */
+    function speak(text){
+      if(!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      // Strip markdown and links for speech
+      const clean = text.replace(/\*\*/g,'').replace(/\/[a-z\-\/]+/g,'').replace(/[🌿💊📋🎥❤️🧠📅👩‍⚕️🩺⚙️🔲✅⚠️]/g,'');
+      const u = new SpeechSynthesisUtterance(clean);
+      u.lang = botLang==='hi'?'hi-IN':botLang==='pa'?'pa-IN':botLang==='en'?'en-IN':'hi-IN';
+      u.rate = 0.95;
+      window.speechSynthesis.speak(u);
+    }
+
+    /* ── Voice Input (Speech to Text) ── */
+    function toggleMic(){
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if(!SpeechRec){ alert('Voice input not supported in this browser. Try Chrome.'); return; }
+      if(isListening){ recognition.stop(); return; }
+      recognition = new SpeechRec();
+      recognition.lang = botLang==='hi'?'hi-IN':botLang==='pa'?'pa-IN':botLang==='en'?'en-IN':'hi-IN';
+      recognition.interimResults=false;
+      recognition.maxAlternatives=1;
+      recognition.onstart=()=>{isListening=true;document.getElementById('botMic').classList.add('listening');};
+      recognition.onend=()=>{isListening=false;document.getElementById('botMic').classList.remove('listening');};
+      recognition.onresult=(e)=>{
+        const text = e.results[0][0].transcript;
+        document.getElementById('botInput').value = text;
+        botSend();
+      };
+      recognition.onerror=()=>{isListening=false;document.getElementById('botMic').classList.remove('listening');};
+      recognition.start();
+    }
+  </script>
+
 </body>
 </html>
