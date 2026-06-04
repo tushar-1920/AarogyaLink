@@ -1197,7 +1197,9 @@
     {# No mm-user block for online patients — their name shows in nav badge #}
 
     <a href="{{ url_for('main.index') }}">🏠 Home</a>
+    {% if current_user.is_authenticated %}
     <a href="{{ url_for('patient.search') }}">🔍 Search Patient</a>
+    {% endif %}
     {% if not current_user.is_authenticated or not current_user.is_doctor() %}
     <a href="{{ url_for('tele.find_doctors') }}" style="color:var(--blue);font-weight:600">🩺 Consult a Doctor</a>
     {% endif %}
