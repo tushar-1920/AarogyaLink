@@ -541,6 +541,34 @@
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 
 /* ═══════════════════════════════════════════════
+   HINDI SECTION — "हर मरीज़ की कहानी"
+═══════════════════════════════════════════════ */
+.hindi-section{background:linear-gradient(135deg,#030d07,#071a0f 40%,#0a2414);color:#fff;padding:80px 5%}
+.hindi-inner{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.hindi-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4ade80;margin-bottom:18px}
+.hindi-h2{font-size:clamp(1.7rem,4.5vw,2.6rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:18px;letter-spacing:-.02em}
+.hindi-h2 em{background:linear-gradient(135deg,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Noto Serif',serif;font-style:italic}
+.hindi-p{font-size:.97rem;color:rgba(255,255,255,.55);line-height:1.85;margin-bottom:28px}
+.hindi-p strong{color:rgba(255,255,255,.85)}
+.hindi-features{display:flex;flex-direction:column;gap:12px}
+.hindi-feat{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px}
+.hindi-feat-ico{width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.hindi-feat-body{min-width:0}
+.hindi-feat-title{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px}
+.hindi-feat-desc{font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.5}
+.hindi-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px}
+.hindi-card-label{font-size:.72rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.hindi-quote{font-size:1rem;color:rgba(255,255,255,.75);line-height:1.85;font-style:italic;margin-bottom:20px}
+.hindi-author{display:flex;align-items:center;gap:12px}
+.hindi-av{width:42px;height:42px;border-radius:50%;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:rgba(255,255,255,.8);flex-shrink:0}
+.hindi-author-name{font-size:.88rem;font-weight:600;color:#fff}
+.hindi-author-role{font-size:.73rem;color:rgba(255,255,255,.4)}
+.hindi-stats{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hindi-stat{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:14px;text-align:center}
+.hindi-stat-num{font-size:1.6rem;font-weight:800;color:#4ade80;font-family:'Noto Serif',serif}
+.hindi-stat-label{font-size:.72rem;color:rgba(255,255,255,.45);margin-top:3px}
+
+/* ═══════════════════════════════════════════════
    RESPONSIVE — TABLET
 ═══════════════════════════════════════════════ */
 @media(max-width:960px){
@@ -552,7 +580,7 @@
   .num-cell{border-right:none;border-bottom:1px solid rgba(255,255,255,.07)}
   .stats-bar{grid-template-columns:1fr 1fr;gap:20px;padding:24px 28px}
   .sbc+.sbc::before{display:none}
-  .why-grid,.consult-inner{grid-template-columns:1fr;gap:40px}
+  .why-grid,.consult-inner,.hindi-inner{grid-template-columns:1fr;gap:40px}
 }
 
 /* ═══════════════════════════════════════════════
@@ -583,11 +611,22 @@
   .consult-inner{grid-template-columns:1fr;gap:28px}
   .h-eyebrow{font-size:.65rem;padding:5px 12px 5px 8px}
   .hero-p{font-size:.95rem}
+  .hindi-section{padding:56px 4%}
+  .hindi-inner{gap:32px}
+  .hindi-p{font-size:.9rem}
+  .hindi-card{padding:20px}
+  .hindi-feat{padding:12px 14px}
+  .hindi-feat-ico{width:32px;height:32px;font-size:1rem}
+  .hindi-stats{gap:8px}
+  .hindi-stat{padding:12px}
+  .hindi-stat-num{font-size:1.35rem}
 }
 @media(max-width:400px){
   .hero-h1{font-size:1.9rem}
   .stats-bar{padding:14px 12px}
   .sbn{font-size:1.5rem}
+  .hindi-h2{font-size:1.55rem}
+  .hindi-stats{grid-template-columns:1fr}
 }
 {% endblock %}
 
@@ -1029,74 +1068,72 @@
 
 
 <!-- ═══════════════ HINDI SECTION ═══════════════ -->
-<section class="section" style="background:linear-gradient(135deg,#030d07,#071a0f 40%,#0a2414);color:#fff;padding:80px 5%">
+<section class="hindi-section">
   <div class="sw">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;max-width:1120px;margin:0 auto">
+    <div class="hindi-inner">
       <div class="reveal">
-        <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:20px;padding:5px 14px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4ade80;margin-bottom:18px">
-          🇮🇳 हिंदी में AarogyaLink
-        </div>
-        <h2 style="font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:18px;letter-spacing:-.02em">
+        <div class="hindi-badge">🇮🇳 हिंदी में AarogyaLink</div>
+        <h2 class="hindi-h2">
           हर मरीज़ की कहानी,<br>
-          <span style="background:linear-gradient(135deg,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Noto Serif',serif;font-style:italic">हमेशा उनके साथ।</span>
+          <em>हमेशा उनके साथ।</em>
         </h2>
-        <p style="font-size:.97rem;color:rgba(255,255,255,.55);line-height:1.85;margin-bottom:28px">
-          AarogyaLink हर ग्रामीण भारतीय को एक <strong style="color:rgba(255,255,255,.85)">आजीवन QR स्वास्थ्य कार्ड</strong> देता है।
+        <p class="hindi-p">
+          AarogyaLink हर ग्रामीण भारतीय को एक <strong>आजीवन QR स्वास्थ्य कार्ड</strong> देता है।
           कोई भी डॉक्टर, कहीं भी, इसे स्कैन करके पूरा मेडिकल इतिहास देख सकता है —
-          <strong style="color:rgba(255,255,255,.85)">तुरंत</strong>। कोई कागज़ नहीं। कोई परेशानी नहीं।
+          <strong>तुरंत</strong>। कोई कागज़ नहीं। कोई परेशानी नहीं।
         </p>
-        <div style="display:flex;flex-direction:column;gap:12px">
-          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🎤</div>
-            <div>
-              <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px">हिंदी में बोलकर रजिस्टर करें</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.45)">आशा दीदी सिर्फ बोलकर मरीज़ का नाम, उम्र और गाँव भर सकती हैं</div>
+        <div class="hindi-features">
+          <div class="hindi-feat">
+            <div class="hindi-feat-ico">🎤</div>
+            <div class="hindi-feat-body">
+              <div class="hindi-feat-title">हिंदी में बोलकर रजिस्टर करें</div>
+              <div class="hindi-feat-desc">आशा दीदी सिर्फ बोलकर मरीज़ का नाम, उम्र और गाँव भर सकती हैं</div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">📵</div>
-            <div>
-              <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px">इंटरनेट के बिना भी काम करता है</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.45)">गाँव में नेटवर्क नहीं? कोई बात नहीं — डेटा बाद में sync होगा</div>
+          <div class="hindi-feat">
+            <div class="hindi-feat-ico">📵</div>
+            <div class="hindi-feat-body">
+              <div class="hindi-feat-title">इंटरनेट के बिना भी काम करता है</div>
+              <div class="hindi-feat-desc">गाँव में नेटवर्क नहीं? कोई बात नहीं — डेटा बाद में sync होगा</div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🆓</div>
-            <div>
-              <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px">मरीज़ के लिए बिल्कुल मुफ़्त</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.45)">QR कार्ड सिर्फ ₹3 में प्रिंट होता है — कोई छुपी फ़ीस नहीं</div>
+          <div class="hindi-feat">
+            <div class="hindi-feat-ico">🆓</div>
+            <div class="hindi-feat-body">
+              <div class="hindi-feat-title">मरीज़ के लिए बिल्कुल मुफ़्त</div>
+              <div class="hindi-feat-desc">QR कार्ड सिर्फ ₹3 में प्रिंट होता है — कोई छुपी फ़ीस नहीं</div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px">
-            <div style="width:36px;height:36px;border-radius:9px;background:rgba(74,222,128,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">🔲</div>
-            <div>
-              <div style="font-size:.88rem;font-weight:700;color:#fff;margin-bottom:2px">एक QR कार्ड — पूरी ज़िंदगी</div>
-              <div style="font-size:.75rem;color:rgba(255,255,255,.45)">किसी भी PHC या अस्पताल में डॉक्टर स्कैन करके पूरा इतिहास देखें</div>
+          <div class="hindi-feat">
+            <div class="hindi-feat-ico">🔲</div>
+            <div class="hindi-feat-body">
+              <div class="hindi-feat-title">एक QR कार्ड — पूरी ज़िंदगी</div>
+              <div class="hindi-feat-desc">किसी भी PHC या अस्पताल में डॉक्टर स्कैन करके पूरा इतिहास देखें</div>
             </div>
           </div>
         </div>
       </div>
       <div class="reveal reveal-delay-1">
-        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px">
-          <div style="font-size:.72rem;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px">आशा कार्यकर्ता की आवाज़</div>
-          <p style="font-size:1rem;color:rgba(255,255,255,.75);line-height:1.85;font-style:italic;margin-bottom:20px">
+        <div class="hindi-card">
+          <div class="hindi-card-label">आशा कार्यकर्ता की आवाज़</div>
+          <p class="hindi-quote">
             "मुझे सिर्फ फोन पे बात करनी है, फॉर्म भर देता है। हिंदी में बोलती हूँ, सब कुछ हो जाता है। गाँव में भी इंटरनेट नहीं चाहिए — यह सब से बड़ी बात है।"
           </p>
-          <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:42px;height:42px;border-radius:50%;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:rgba(255,255,255,.8)">PD</div>
+          <div class="hindi-author">
+            <div class="hindi-av">PD</div>
             <div>
-              <div style="font-size:.88rem;font-weight:600;color:#fff">पुष्पा देवी</div>
-              <div style="font-size:.73rem;color:rgba(255,255,255,.4)">आशा कार्यकर्ता, भुल्लर गाँव, मुक्तसर</div>
+              <div class="hindi-author-name">पुष्पा देवी</div>
+              <div class="hindi-author-role">आशा कार्यकर्ता, भुल्लर गाँव, मुक्तसर</div>
             </div>
           </div>
-          <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:14px;text-align:center">
-              <div style="font-size:1.6rem;font-weight:800;color:#4ade80;font-family:'Noto Serif',serif">2 मिनट</div>
-              <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-top:3px">एक मरीज़ रजिस्टर करने में</div>
+          <div class="hindi-stats">
+            <div class="hindi-stat">
+              <div class="hindi-stat-num">2 मिनट</div>
+              <div class="hindi-stat-label">एक मरीज़ रजिस्टर करने में</div>
             </div>
-            <div style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:14px;text-align:center">
-              <div style="font-size:1.6rem;font-weight:800;color:#4ade80;font-family:'Noto Serif',serif">₹0</div>
-              <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-top:3px">मरीज़ के लिए लागत</div>
+            <div class="hindi-stat">
+              <div class="hindi-stat-num">₹0</div>
+              <div class="hindi-stat-label">मरीज़ के लिए लागत</div>
             </div>
           </div>
         </div>
